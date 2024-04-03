@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/04/03 18:16:41 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/04/03 18:31:10 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,7 @@ int	main(void)
 	line = readline(PROMPT);
 	while (line)
 	{
-		if (line)
-			exec_cmd(line);
+		exec_cmd(line);
 		free(line);
 		line = readline(PROMPT);
 	}
