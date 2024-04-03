@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/04/01 23:06:02 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/04/03 18:31:10 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int	exec_cmd(char *cmd)
 }
 
 /*
- * Loops infinitely and reads user input using readline
+ * Loops until EOF is detected and reads user input using readline
  * and executes the command in a child process and finally
  * frees the user read line. 
  * NOTE: Readline causes still reachable memory leaks
@@ -43,12 +43,12 @@ int	main(void)
 {
 	char	*line;
 
-	while (1)
+	line = readline(PROMPT);
+	while (line)
 	{
-		line = readline(PROMPT);
 		exec_cmd(line);
-		if (line)
-			free(line);
+		free(line);
+		line = readline(PROMPT);
 	}
 	rl_clear_history();
 	return (0);
