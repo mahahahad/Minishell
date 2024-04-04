@@ -1,6 +1,12 @@
 NAME = minishell
-C_FLAGS = -Wall -Werror -Wextra
+C_FLAGS = -Wall -Werror -Wextra -I./includes
 ADDITIONAL_FLAGS = -lreadline -I/usr/include -g3
+
+B_GREEN = \033[1;32m
+B_YELLOW = \033[1;33m
+B_RED = \033[1;31m
+BG_GREEN = \033[0;102m
+RESET = \033[0m
 
 SRCS = main.c
 OBJS_DIR = objs/
@@ -10,7 +16,7 @@ all: $(NAME)
 
 $(NAME): $(OBJS)
 	@cc $(C_FLAGS) $(OBJS) $(ADDITIONAL_FLAGS) -o $(NAME)
-	@echo "Made $(NAME)"
+	@printf "$(B_GREEN)Compiled $(NAME)$(RESET)"
 
 $(OBJS_DIR)%.o: %.c
 	@mkdir -p $(OBJS_DIR)
