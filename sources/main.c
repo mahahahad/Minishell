@@ -6,11 +6,17 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/04/28 23:18:13 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/05/03 00:57:34 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft.h"
 #include "minishell.h"
+#include <stdbool.h>
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
+#include <unistd.h>
 
 int		g_status_code;
 
@@ -158,27 +164,117 @@ int	count_quotations(char *line)
 	count = 0;
 	while (line[i])
 	{
-		i++;
 		if (line[i] == '"')
 			count++;
+		i++;
 	}
 	return (count);
 }
 
-char	*parse_quotations(char *line)
+/**
+ * @brief Counts how many tokens there are in the provided input string
+ * Uses spaces as a delimiter but ignores them in quoted strings
+ */
+int	count_tokens(char *input)
 {
-	char	**tokens;
+	int		i;
+	int		j;
+	bool	space_found;
+	bool	quotes_found;
 
-	if (count_quotations(line) % 2 != 0)
-		return (fprintf(stderr,
-				RED "Open quotes detected. Command rejected.\n" RESET), NULL);
-	tokens = ft_split(line, '"');
-	return (ft_join(tokens));
+	i = 0;
+	j = 0;
+	quotes_found = false;
+	space_found = false;
+	while (input[i])
+	{
+		if (input[i] == '"' || input[i] == '\'')
+			quotes_found = !quotes_found;
+		if (!quotes_found && !space_found && input[i] == ' ')
+		{
+			if (input[i + 1] && input[i + 1] != ' ')
+			{
+				j++;
+				space_found = true;
+			}
+		}
+		if (!quotes_found && input[i] != ' ')	
+			space_found = false;
+		i++;
+	}
+	if (i > 0)
+		j++;
+	return (j);
 }
 
-char	*parse_line(char *line)
+/*
+ * Reference input:
+ * "a b c"
+ *
+ * Calling get_token on this should return:
+ * "a b c\0"
+ */
+char	*get_token(char	*input)
 {
-	return (parse_quotations(line));
+	int	i;
+	char	*token;
+	bool	quotes_found;
+	bool	space_found;
+
+	i = 0;
+	quotes_found = false;
+	space_found = false;
+	// puts(input);
+	while (input[i])
+	{
+		if (input[i] == '"' || input[i] == '\'')
+			quotes_found = !quotes_found;
+		if (!quotes_found && !space_found && i > 0 && input[i] == ' ')
+		{
+			space_found = true;
+			break ;
+			// if (input[i + 1] && input[i + 1] != ' ') { }
+		}
+		if (!quotes_found && input[i] != ' ')	
+			space_found = false;
+		i++;
+	}
+	token = malloc((i));
+	if (!token)
+		return (NULL);
+	strncpy(token, input, i);
+	token[i] = '\0';
+	return (token);
+}
+
+char	**tokenize(char *input)
+{
+	char	**tokens;
+	int	i;
+	int	token_count;
+	int	token_length;
+
+	i = 0;
+	token_length = 0;
+	token_count = count_tokens(input);
+	tokens = malloc(token_count + 1);
+	while (i < token_count)
+	{
+		tokens[i] = get_token(input + token_length);
+		// puts(tokens[i]);
+		token_length += ft_strlen(tokens[i]) + 1;
+		i++;
+	}
+	tokens[i] = NULL;
+	return (tokens);
+}
+
+void	parse(t_minishell *minishell, char *line)
+{
+	if (count_quotations(line) % 2 != 0)
+		fprintf(stderr, RED "Open quotes detected, command rejected.\n" RESET);
+	minishell->tokens = tokenize(line);
+	ft_printarr(minishell->tokens);
 }
 
 bool	is_builtin(char *str)
@@ -252,8 +348,9 @@ int	main(int argc, char *argv[] __attribute__((unused)), char **env)
 {
 	char	*line;
 	char	*prompt;
-	char	**tokens;
+	t_minishell minishell;
 
+	(void)env;
 	if (argc != 1)
 		return (puts("Minishell can not run external files."), 1);
 	g_status_code = 0;
@@ -262,19 +359,15 @@ int	main(int argc, char *argv[] __attribute__((unused)), char **env)
 	line = readline(prompt);
 	while (line)
 	{
-		if (!parse_line(line))
-		{
-			line = readline(prompt);
-			continue ;
-		}
 		add_history(line);
-		line = parse_line(line);
-		tokens = ft_split(line, ' ');
-		if (is_builtin(tokens[0]))
-			exec_builtin(tokens);
-		else
-			exec_cmd(tokens, env);
+		parse(&minishell, line);
+		// tokens = ft_split(line, ' ');
+		// if (is_builtin(tokens[0]))
+		// 	exec_builtin(tokens);
+		// else
+		// 	exec_cmd(tokens, env);
 		free(line);
+		ft_free_2d_arr(minishell.tokens);
 		prompt = update_prompt();
 		line = readline(prompt);
 	}

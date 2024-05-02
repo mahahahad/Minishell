@@ -13,6 +13,7 @@ int		ft_strncmp(const char *s1, const char *s2, size_t n);
 char	*ft_strjoin(char const *s1, char const *s2);
 void	ft_strcpy(char *dest, char const *src);
 char	*ft_join(char **tab);
-char	*ft_strchr(const char *s, int c);
+__attribute__((pure)) char	*ft_strchr(const char *s, int c);
+void	ft_free_2d_arr(char **arr);
 
 #endif

@@ -9,15 +9,20 @@
 # define B_YELLOW "\033[33;1m"
 # define RESET "\033[0m"
 
+# include "libft.h"
 # include <readline/history.h>
 # include <readline/readline.h>
 # include <signal.h>
+# include <stdbool.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <sys/wait.h>
-# include <unistd.h>
 # include <termios.h>
-# include <stdbool.h>
-# include "libft.h"
+# include <unistd.h>
+
+typedef struct s_minishell
+{
+	char	**tokens;
+}			t_minishell;
 
 #endif
