@@ -45,4 +45,7 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+debug: re
+	@$(CC) $(CFLAGS) $(SRCS) $(ADDITIONAL_FLAGS) -g3 -fsanitize=address -o $(NAME)
+
+.PHONY: all clean fclean re debug
