@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/03 11:57:35 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/05/03 23:51:54 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,8 +119,12 @@ void	handle_sigint(int signum)
 	g_status_code = 130;
 }
 
-// store output from whoami and uname -n
-// instead of envariables
+/**
+ * @brief Return a prompt with the shells name and the users location
+ *
+ * TODO: Use the minishell data structure as input to keep track of previous
+ * location
+ */
 char	*update_prompt(void)
 {
 	int		i;
@@ -246,17 +250,51 @@ int	count_tokens(char *input)
 	return (j);
 }
 
-/*
- * Reference input:
- * echo
+int	get_token_type(char *content)
+{
+	if (!content[1])
+	{
+		if (content[0] == '|')
+			return (PIPE);
+		if (content[0] == '>')
+			return (GREAT);
+		if (content[0] == '<')
+			return (LESS);
+	}
+	else if (!content[2])
+	{
+		if (content[0] == '>' && content[1] == '>')
+			return (DBL_GREAT);
+		if (content[0] == '<' && content[1] == '<')
+			return (DBL_LESS);
+	}
+	return (WORD);
+}
+
+/**
+ * @brief Skip the leading whitespace characters by moving the pointer to the
+ * head of the string ahead.
+ * Move the pointer to the head of the string to the start of the next token
+ * or '\0' if there isn't one and return this token.
  *
- * Calling get_token on this should return:
- * echo\0
+ * @usage
+ *
+ * Calling the function with the input:
+ * - '       This token '
+ *
+ * will result in the function returning "This" and input pointing to 't' in
+ * 'token'.
+ *
+ * Calling the function with the input:
+ * - 'token'
+ *
+ * will result in the function returning "token" and input pointing to '\0'.
  */
-char	*get_token(char	*input)
+char	*get_token(char	**input)
 {
 	int	i;
 	char	*token;
+	char	*string;
 	char	quotes_found;
 	bool	space_found;
 
@@ -264,58 +302,95 @@ char	*get_token(char	*input)
 	quotes_found = '\0';
 	space_found = false;
 	token = NULL;
-	while (input[i])
+	string = *input;
+	while (*string == ' ')
+		string++;
+	while (string[i])
 	{
-		if (input[i] == '"')
+		// TODO: Move quote checking to a dedicated separate function
+		if (string[i] == '"')
 		{
 			if (!quotes_found)
 				quotes_found = '"';
 			else if (quotes_found == '"')
 				quotes_found = '\0';
 		}
-		if (input[i] == '\'')
+		if (string[i] == '\'')
 		{
 			if (!quotes_found)
 				quotes_found = '\'';
 			else if (quotes_found == '\'')
 				quotes_found = '\0';
 		}
-		if (!quotes_found && !space_found && i > 0 && input[i] == ' ')
+		// TODO: Change from space only to is_whitespace function
+		if (!quotes_found && !space_found && i > 0 && string[i] == ' ')
 		{
 			space_found = true;
 			break ;
 		}
-		if (space_found && !quotes_found && input[i] != ' ')	
+		if (space_found && !quotes_found && string[i] != ' ')	
 			space_found = false;
 		i++;
 	}
 	token = malloc(i + 1);
 	if (!token)
 		return (NULL);
-	strncpy(token, input, i);
-	token[i] = '\0';
+	ft_strlcpy(token, string, i + 1);
+	// token[i] = '\0';
+	string += i;
+	while (*string == ' ')
+		string++;
+	*input = string;
 	return (token);
 }
 
-char	**tokenize(char *input)
+// TODO: Remove debug function
+void	print_token(t_token token)
 {
-	char	**tokens;
+	char	*type;
+
+	switch (token.type) {
+		case PIPE:
+			type = "|";
+			break ;
+		case LESS:
+			type = "<";
+			break ;
+		case DBL_LESS:
+			type = "<<";
+			break ;
+		case GREAT:
+			type = ">";
+			break ;
+		case DBL_GREAT:
+			type = ">>";
+			break ;
+		default:
+			type = "Word";
+			break ;
+	}
+	puts("{");
+	printf("\tContent: %s,\n\tType: %s\n", token.content, type);
+	puts("}");
+}
+
+t_token	*tokenize(char *input)
+{
+	t_token	*tokens;
 	int	i;
 	int	token_count;
-	int	token_length;
 
 	i = 0;
-	token_length = 0;
 	token_count = count_tokens(input);
-	tokens = malloc((token_count + 1) * sizeof(char *));
+	tokens = malloc((token_count + 1) * sizeof(t_token));
 	while (i < token_count)
 	{
-		tokens[i] = get_token(input + token_length);
-		// puts(tokens[i]);
-		token_length += ft_strlen(tokens[i]) + 1;
+		tokens[i].content = get_token(&input);
+		tokens[i].type = get_token_type(tokens[i].content);
+		print_token(tokens[i]);
 		i++;
 	}
-	tokens[i] = NULL;
+	tokens[i].content = NULL;
 	return (tokens);
 }
 
@@ -324,7 +399,6 @@ void	parse(t_minishell *minishell, char *line)
 	if (count_quotations(line) % 2 != 0)
 		fprintf(stderr, RED "Open quotes detected, command rejected.\n" RESET);
 	minishell->tokens = tokenize(line);
-	ft_printarr(minishell->tokens);
 }
 
 bool	is_builtin(char *str)
@@ -350,7 +424,7 @@ bool	is_builtin(char *str)
 	return (false);
 }
 
-// TODO: FIX THIS TEMPORARY SOLUTION
+// TODO: Fix this temporary solution
 void	echo(char **cmd)
 {
 	int		i;
@@ -388,6 +462,19 @@ void	exec_builtin(char **cmd)
 		g_status_code = cd(cmd + 1);
 }
 
+void	free_tokens(t_minishell *minishell)
+{
+	int	i;
+
+	i = 0;
+	while (minishell->tokens[i].content)
+	{
+		free(minishell->tokens[i].content);
+		i++;
+	}
+	free(minishell->tokens);
+}
+
 /*
  * Loops until EOF is detected and reads user input using readline
  * and executes the command in a child process and finally
@@ -417,10 +504,12 @@ int	main(int argc, char *argv[] __attribute__((unused)), char **env)
 		// else
 		// 	exec_cmd(tokens, env);
 		free(line);
-		ft_free_2d_arr(minishell.tokens);
+		free_tokens(&minishell);
+		free(prompt);
 		prompt = update_prompt();
 		line = readline(prompt);
 	}
+	free(prompt);
 	puts("exit");
 	return (g_status_code);
 }

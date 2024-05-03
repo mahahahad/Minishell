@@ -22,6 +22,9 @@ GREEN := \033[38;2;170;255;0;48;2;25;25;25;1m
 RESET := \033[0m
 
 # Rules
+debug: re
+	@$(CC) $(CFLAGS) $(SRCS) $(ADDITIONAL_FLAGS) -g3 -fsanitize=address -o $(NAME)
+
 all: $(NAME)
 
 $(NAME): $(OBJS)
@@ -44,8 +47,5 @@ fclean: clean
 	@echo "$(YELLOW)Removed executable$(RESET)"
 
 re: fclean all
-
-debug: re
-	@$(CC) $(CFLAGS) $(SRCS) $(ADDITIONAL_FLAGS) -g3 -fsanitize=address -o $(NAME)
 
 .PHONY: all clean fclean re debug

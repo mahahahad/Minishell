@@ -15,5 +15,7 @@ void	ft_strcpy(char *dest, char const *src);
 char	*ft_join(char **tab);
 __attribute__((pure)) char	*ft_strchr(const char *s, int c);
 void	ft_free_2d_arr(char **arr);
+char	*ft_strdup(const char *src);
+size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize);
 
 #endif
