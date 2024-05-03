@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/03 00:57:34 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/05/03 11:57:35 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,14 +159,41 @@ int	count_quotations(char *line)
 {
 	int	count;
 	int	i;
+	char	quotes_found;
 
-	i = 0;
+	i = -1;
 	count = 0;
-	while (line[i])
+	quotes_found = '\0';
+	while (line[++i])
 	{
 		if (line[i] == '"')
-			count++;
-		i++;
+		{
+			if (!quotes_found)
+			{
+				quotes_found = '"';
+				count++;
+			}
+			else if (quotes_found == '"')
+			{
+				quotes_found = '\0';
+				count++;
+			}
+			continue ;
+		}
+		if (line[i] == '\'')
+		{
+			if (!quotes_found)
+			{
+				quotes_found = '\'';
+				count++;
+			}
+			else if (quotes_found == '\'')
+			{
+				quotes_found = '\0';
+				count++;
+			}
+			continue ;
+		}
 	}
 	return (count);
 }
@@ -180,16 +207,28 @@ int	count_tokens(char *input)
 	int		i;
 	int		j;
 	bool	space_found;
-	bool	quotes_found;
+	char	quotes_found;
 
 	i = 0;
 	j = 0;
-	quotes_found = false;
+	quotes_found = '\0';
 	space_found = false;
 	while (input[i])
 	{
-		if (input[i] == '"' || input[i] == '\'')
-			quotes_found = !quotes_found;
+		if (input[i] == '"')
+		{
+			if (!quotes_found)
+				quotes_found = '"';
+			else if (quotes_found == '"')
+				quotes_found = '\0';
+		}
+		if (input[i] == '\'')
+		{
+			if (!quotes_found)
+				quotes_found = '\'';
+			else if (quotes_found == '\'')
+				quotes_found = '\0';
+		}
 		if (!quotes_found && !space_found && input[i] == ' ')
 		{
 			if (input[i + 1] && input[i + 1] != ' ')
@@ -209,37 +248,48 @@ int	count_tokens(char *input)
 
 /*
  * Reference input:
- * "a b c"
+ * echo
  *
  * Calling get_token on this should return:
- * "a b c\0"
+ * echo\0
  */
 char	*get_token(char	*input)
 {
 	int	i;
 	char	*token;
-	bool	quotes_found;
+	char	quotes_found;
 	bool	space_found;
 
 	i = 0;
-	quotes_found = false;
+	quotes_found = '\0';
 	space_found = false;
-	// puts(input);
+	token = NULL;
 	while (input[i])
 	{
-		if (input[i] == '"' || input[i] == '\'')
-			quotes_found = !quotes_found;
+		if (input[i] == '"')
+		{
+			if (!quotes_found)
+				quotes_found = '"';
+			else if (quotes_found == '"')
+				quotes_found = '\0';
+		}
+		if (input[i] == '\'')
+		{
+			if (!quotes_found)
+				quotes_found = '\'';
+			else if (quotes_found == '\'')
+				quotes_found = '\0';
+		}
 		if (!quotes_found && !space_found && i > 0 && input[i] == ' ')
 		{
 			space_found = true;
 			break ;
-			// if (input[i + 1] && input[i + 1] != ' ') { }
 		}
-		if (!quotes_found && input[i] != ' ')	
+		if (space_found && !quotes_found && input[i] != ' ')	
 			space_found = false;
 		i++;
 	}
-	token = malloc((i));
+	token = malloc(i + 1);
 	if (!token)
 		return (NULL);
 	strncpy(token, input, i);
@@ -257,7 +307,7 @@ char	**tokenize(char *input)
 	i = 0;
 	token_length = 0;
 	token_count = count_tokens(input);
-	tokens = malloc(token_count + 1);
+	tokens = malloc((token_count + 1) * sizeof(char *));
 	while (i < token_count)
 	{
 		tokens[i] = get_token(input + token_length);
