@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/04 13:08:59 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/05/04 14:29:42 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -290,32 +290,18 @@ char	*get_token(char	**input)
 	space_found = false;
 	token = NULL;
 	string = *input;
-	while (*string == ' ')
+	while (ft_isspace(*string))
 		string++;
 	while (string[i])
 	{
-		// TODO: Move quote checking to a dedicated separate function
-		if (string[i] == '"')
-		{
-			if (!quotes_found)
-				quotes_found = '"';
-			else if (quotes_found == '"')
-				quotes_found = '\0';
-		}
-		if (string[i] == '\'')
-		{
-			if (!quotes_found)
-				quotes_found = '\'';
-			else if (quotes_found == '\'')
-				quotes_found = '\0';
-		}
+		quotes_found = ft_is_quotation(string[i], quotes_found);
 		// TODO: Change from space only to is_whitespace function
-		if (!quotes_found && !space_found && i > 0 && string[i] == ' ')
+		if (!quotes_found && !space_found && i > 0 && ft_isspace(string[i]))
 		{
 			space_found = true;
 			break ;
 		}
-		if (space_found && !quotes_found && string[i] != ' ')	
+		if (space_found && !quotes_found && !ft_isspace(string[i]))	
 			space_found = false;
 		i++;
 	}
@@ -323,9 +309,8 @@ char	*get_token(char	**input)
 	if (!token)
 		return (NULL);
 	ft_strlcpy(token, string, i + 1);
-	// token[i] = '\0';
 	string += i;
-	while (*string == ' ')
+	while (ft_isspace(*string))
 		string++;
 	*input = string;
 	return (token);
@@ -374,9 +359,7 @@ t_token	*tokenize(t_minishell *minishell, char *input)
 	while (i < token_count)
 	{
 		tokens[i].content = get_token(&input);
-		// puts(tokens[i].content);
 		tokens[i].type = get_token_type(tokens[i].content);
-		// print_token(tokens[i]);
 		i++;
 	}
 	tokens[i].content = NULL;

@@ -4,6 +4,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
+# include <stdbool.h>
 
 int		ft_printarr(char **tab);
 char	**ft_split(char const *s, char c);
@@ -18,5 +19,7 @@ void	ft_free_2d_arr(char **arr);
 char	*ft_strdup(const char *src);
 size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize);
 char	*ft_char_strjoin(char const *s1, char const *s2, char const c);
+char	ft_is_quotation(char c, char quote);
+bool	ft_isspace(char c);
 
 #endif
