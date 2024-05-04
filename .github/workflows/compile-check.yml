@@ -1,6 +1,7 @@
 name: Compilation Check
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - '**'
