@@ -20,7 +20,7 @@
 # include <termios.h>
 # include <unistd.h>
 
-enum	e_token_types
+enum		e_token_types
 {
 	PIPE,
 	LESS,
@@ -30,19 +30,38 @@ enum	e_token_types
 	WORD
 };
 
+enum	e_cmd_types
+{
+	CMD_EXEC
+};
+
 typedef struct s_token
 {
-	int	type;
+	int		type;
 	char	*content;
-} t_token;
+}			t_token;
 
 typedef struct s_minishell
 {
 	t_token	*tokens;
+	int	token_count;
 }			t_minishell;
 
+/*
+ * General command structure.
+ *
+ * Every parse function returns this and can be casted to another cmd type
+ * because they all share the type variable
+ * */
 typedef struct s_cmd
 {
-} t_cmd;
+	int	type;
+}	t_cmd;
+
+typedef struct s_cmd_exec
+{
+	int	type;
+	char	**tokens;
+}			t_cmd_exec;
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/03 23:51:54 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/05/04 13:00:24 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,29 +20,8 @@
 
 int		g_status_code;
 
-char	*ft_char_strjoin(char const *s1, char const *s2, char const c)
-{
-	char	*final_str;
-	int		i;
-	int		j;
-
-	i = -1;
-	j = 0;
-	if (!s1 || !s2)
-		return (NULL);
-	final_str = malloc(ft_strlen(s1) + ft_strlen(s2) + 2);
-	if (!final_str)
-		return (NULL);
-	while (s1[++i])
-		final_str[i] = s1[i];
-	final_str[i++] = c;
-	while (s2[j])
-		final_str[i++] = s2[j++];
-	final_str[i] = '\0';
-	return (final_str);
-}
-
 // Mallocs the full path to a command
+// or returns NULL if no command was found
 char	*find_cmd(char *cmd)
 {
 	char	*final_cmd;
@@ -61,9 +40,11 @@ char	*find_cmd(char *cmd)
 		final_cmd = ft_char_strjoin(dirs[j], cmd, '/');
 		if (access(final_cmd, X_OK) == 0)
 			break ;
-		// free(final_cmd);
+		free(final_cmd);
+		final_cmd = NULL;
 		j++;
 	}
+	ft_free_2d_arr(dirs);
 	return (final_cmd);
 }
 
@@ -84,6 +65,8 @@ int	exec_cmd(char **cmd, char **env)
 	if (!ft_strchr(cmd[0], '/'))
 	{
 		absolute_cmd = find_cmd(cmd[0]);
+		if (!absolute_cmd)
+			return (fprintf(stderr, "%s: command not found\n", cmd_original), 127);
 		cmd[0] = absolute_cmd;
 	}
 	else
@@ -105,7 +88,7 @@ int	exec_cmd(char **cmd, char **env)
 	}
 	waitpid(pid, &status, 0);
 	free(cmd_original);
-	free(absolute_cmd);
+	// free(absolute_cmd);
 	return (status);
 }
 
@@ -374,7 +357,7 @@ void	print_token(t_token token)
 	puts("}");
 }
 
-t_token	*tokenize(char *input)
+t_token	*tokenize(t_minishell *minishell, char *input)
 {
 	t_token	*tokens;
 	int	i;
@@ -382,23 +365,45 @@ t_token	*tokenize(char *input)
 
 	i = 0;
 	token_count = count_tokens(input);
+	minishell->token_count = token_count;
 	tokens = malloc((token_count + 1) * sizeof(t_token));
 	while (i < token_count)
 	{
 		tokens[i].content = get_token(&input);
 		tokens[i].type = get_token_type(tokens[i].content);
-		print_token(tokens[i]);
+		// print_token(tokens[i]);
 		i++;
 	}
 	tokens[i].content = NULL;
 	return (tokens);
 }
 
+t_cmd	*create_exec_cmd(t_minishell *minishell)
+{
+	t_cmd_exec	*exec_cmd;
+	t_token	*tokens;
+	int	i;
+
+	i = 0;
+	exec_cmd = malloc(sizeof(t_cmd_exec));
+	exec_cmd->type = CMD_EXEC;
+	exec_cmd->tokens = malloc((minishell->token_count + 1) * sizeof(char *));
+	tokens = minishell->tokens;
+	while (tokens[i].content)
+	{
+		exec_cmd->tokens[i] = ft_strdup(tokens[i].content);
+		i++;
+	}
+	exec_cmd->tokens[i] = NULL;
+	// ft_printarr(exec_cmd->tokens);
+	return ((t_cmd *) exec_cmd);
+}
+
 void	parse(t_minishell *minishell, char *line)
 {
 	if (count_quotations(line) % 2 != 0)
 		fprintf(stderr, RED "Open quotes detected, command rejected.\n" RESET);
-	minishell->tokens = tokenize(line);
+	minishell->tokens = tokenize(minishell, line);
 }
 
 bool	is_builtin(char *str)
@@ -475,6 +480,36 @@ void	free_tokens(t_minishell *minishell)
 	free(minishell->tokens);
 }
 
+void	run_cmd(t_cmd *cmd, char **env)
+{
+	t_cmd_exec	*cmd_exec;
+
+	if (cmd->type == CMD_EXEC)
+	{
+		cmd_exec = (t_cmd_exec *) cmd;
+		exec_cmd(cmd_exec->tokens, env);
+	}
+}
+
+void	free_cmd(t_cmd *cmd)
+{
+	t_cmd_exec	*cmd_exec;
+	int	i;
+
+	i = 0;
+	if (cmd->type == CMD_EXEC)
+	{
+		cmd_exec = (t_cmd_exec *) cmd;
+		while (cmd_exec->tokens[i])
+		{
+			free(cmd_exec->tokens[i]);
+			i++;
+		}
+		free(cmd_exec->tokens);
+		free(cmd_exec);
+	}
+}
+
 /*
  * Loops until EOF is detected and reads user input using readline
  * and executes the command in a child process and finally
@@ -486,8 +521,9 @@ int	main(int argc, char *argv[] __attribute__((unused)), char **env)
 	char	*line;
 	char	*prompt;
 	t_minishell minishell;
+	t_cmd	*cmd;
 
-	(void)env;
+	// (void)env;
 	if (argc != 1)
 		return (puts("Minishell can not run external files."), 1);
 	g_status_code = 0;
@@ -503,6 +539,9 @@ int	main(int argc, char *argv[] __attribute__((unused)), char **env)
 		// 	exec_builtin(tokens);
 		// else
 		// 	exec_cmd(tokens, env);
+		cmd = create_exec_cmd(&minishell);
+		run_cmd(cmd, env);
+		free_cmd(cmd);
 		free(line);
 		free_tokens(&minishell);
 		free(prompt);

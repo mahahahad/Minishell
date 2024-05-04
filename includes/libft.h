@@ -17,5 +17,6 @@ __attribute__((pure)) char	*ft_strchr(const char *s, int c);
 void	ft_free_2d_arr(char **arr);
 char	*ft_strdup(const char *src);
 size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize);
+char	*ft_char_strjoin(char const *s1, char const *s2, char const c);
 
 #endif
