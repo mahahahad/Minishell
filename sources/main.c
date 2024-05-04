@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/04 13:00:24 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/05/04 13:08:59 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,6 +200,8 @@ int	count_tokens(char *input)
 	j = 0;
 	quotes_found = '\0';
 	space_found = false;
+	while (*input == ' ')
+		input++;
 	while (input[i])
 	{
 		if (input[i] == '"')
@@ -235,6 +237,8 @@ int	count_tokens(char *input)
 
 int	get_token_type(char *content)
 {
+	if (!content || !content[0])
+		return (ERR);
 	if (!content[1])
 	{
 		if (content[0] == '|')
@@ -370,6 +374,7 @@ t_token	*tokenize(t_minishell *minishell, char *input)
 	while (i < token_count)
 	{
 		tokens[i].content = get_token(&input);
+		// puts(tokens[i].content);
 		tokens[i].type = get_token_type(tokens[i].content);
 		// print_token(tokens[i]);
 		i++;

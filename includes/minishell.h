@@ -27,7 +27,8 @@ enum		e_token_types
 	DBL_LESS,
 	GREAT,
 	DBL_GREAT,
-	WORD
+	WORD,
+	ERR
 };
 
 enum	e_cmd_types
