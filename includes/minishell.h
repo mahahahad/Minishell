@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: maabdull <maabdull@student.42abudhabi.ae>  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
+/*   Updated: 2024/05/04 23:43:43 by maabdull         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -16,10 +28,13 @@
 # include <stdbool.h>
 # include <stdio.h>
 # include <stdlib.h>
+# include <string.h>
 # include <sys/wait.h>
 # include <termios.h>
+# include <time.h>
 # include <unistd.h>
 
+/** STRUCTURES **/
 enum		e_token_types
 {
 	PIPE,
@@ -31,7 +46,7 @@ enum		e_token_types
 	ERR
 };
 
-enum	e_cmd_types
+enum		e_cmd_types
 {
 	CMD_EXEC
 };
@@ -42,10 +57,17 @@ typedef struct s_token
 	char	*content;
 }			t_token;
 
+typedef struct s_prompt
+{
+	char	*previous;
+	char	*current;
+} t_prompt;
+
 typedef struct s_minishell
 {
 	t_token	*tokens;
-	int	token_count;
+	int		token_count;
+	t_prompt	*prompt;
 }			t_minishell;
 
 /*
@@ -56,13 +78,39 @@ typedef struct s_minishell
  * */
 typedef struct s_cmd
 {
-	int	type;
-}	t_cmd;
+	int		type;
+}			t_cmd;
 
 typedef struct s_cmd_exec
 {
-	int	type;
+	int		type;
 	char	**tokens;
 }			t_cmd_exec;
+
+/** GLOBAL VARIABLE **/
+extern int	g_status_code;
+
+/** FUNCTIONS **/
+// Parsing
+void		parse(t_minishell *minishell, char *line);
+t_cmd		*create_exec_cmd(t_minishell *minishell);
+
+// Execution
+int			exec_cmd(char **cmd, char **env);
+void		exec_builtin(char **cmd);
+void		run_cmd(t_cmd *cmd, char **env);
+
+// Built-ins
+bool		is_builtin(char *str);
+void		echo(char **cmd);
+int			cd(char **cmd);
+
+// Cleanup
+void		free_tokens(t_minishell *minishell);
+void		free_cmd(t_cmd *cmd);
+
+// General
+t_prompt	*init_prompt(void);
+void	update_prompt(t_prompt *prompt);
 
 #endif

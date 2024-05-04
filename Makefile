@@ -4,14 +4,19 @@ CFLAGS := -Wall -Werror -Wextra -Iincludes
 ADDITIONAL_FLAGS := -lreadline -I/usr/include -g3
 
 # Directories
-SRCS_DIR = sources
+SRCS_DIR := sources
 OBJS_DIR := objects
 SUB_DIRS := $(shell find $(SRCS_DIR) -type d -print)
 UTILS_DIR := $(SRCS_DIR)/utils
-MODULES := $(UTILS_DIR)
+PARSER_DIR := $(SRCS_DIR)/parsing
+EXEC_DIR := $(SRCS_DIR)/execution
+BUILTIN_DIR := $(SRCS_DIR)/builtins
+SETUP_DIR := $(SRCS_DIR)/setup
+CLEANUP_DIR := $(SRCS_DIR)/cleanup
+MODULES := $(UTILS_DIR) $(PARSER_DIR) $(EXEC_DIR) $(BUILTIN_DIR) $(SETUP_DIR) $(CLEANUP_DIR)
 
 # Files
-SRCS := $(SRCS_DIR)/main.c
+SRCS := $(addprefix $(SRCS_DIR)/, main.c)
 # Include the files needed by all the modules and append them to the SRCS variable
 include $(patsubst %, %/module.mk, $(MODULES))
 OBJS := $(SRCS:$(SRCS_DIR)%.c=$(OBJS_DIR)%.o)
@@ -22,9 +27,6 @@ GREEN := \033[38;2;170;255;0;48;2;25;25;25;1m
 RESET := \033[0m
 
 # Rules
-debug: re
-	@$(CC) $(CFLAGS) $(SRCS) $(ADDITIONAL_FLAGS) -g3 -fsanitize=address -o $(NAME)
-
 all: $(NAME)
 
 $(NAME): $(OBJS)
@@ -47,5 +49,8 @@ fclean: clean
 	@echo "$(YELLOW)Removed executable$(RESET)"
 
 re: fclean all
+
+debug: re
+	@$(CC) $(CFLAGS) $(SRCS) $(ADDITIONAL_FLAGS) -g3 -fsanitize=address -o $(NAME)
 
 .PHONY: all clean fclean re debug
