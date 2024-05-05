@@ -28,6 +28,7 @@ RESET := \033[0m
 
 ifeq ($(shell uname -s), Darwin)
 	ADDITIONAL_FLAGS += -I/usr/local/opt/readline/include -L/usr/local/opt/readline/lib
+	ADDITIONAL_FLAGS += -I/opt/homebrew/opt/readline/include -L/opt/homebrew/opt/readline/lib
 endif
 
 # Rules
