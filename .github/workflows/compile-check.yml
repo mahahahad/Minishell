@@ -31,5 +31,10 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    - name: Set up Homebrew
+      uses: Homebrew/actions/setup-homebrew@master
+    - name: Install readline library
+      run: brew install readline
+
     - name: Build project
       run: make
