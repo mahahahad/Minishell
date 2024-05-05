@@ -27,12 +27,17 @@ GREEN := \033[38;2;170;255;0;48;2;25;25;25;1m
 RESET := \033[0m
 
 ifeq ($(shell uname -s), Darwin)
-	ADDITIONAL_FLAGS += -I/usr/local/opt/readline/include -L/usr/local/opt/readline/lib
-	ADDITIONAL_FLAGS += -I/opt/homebrew/opt/readline/include -L/opt/homebrew/opt/readline/lib
+	# Ultimate solution to finding the readline library on macos
+	MACOS_INCLUDE_PATHS := /usr/local/opt/readline/ /opt/local/ /usr/local/ /usr/
+	ADDITIONAL_FLAGS += $(patsubst %, -I%include, $(MACOS_INCLUDE_PATHS))
+	ADDITIONAL_FLAGS += $(patsubst %, -L%lib, $(MACOS_INCLUDE_PATHS))
+	# ADDITIONAL_FLAGS += -I/usr/local/opt/readline/include -L/usr/local/opt/readline/lib
+	# ADDITIONAL_FLAGS += -I/opt/homebrew/opt/readline/include -L/opt/homebrew/opt/readline/lib
 endif
 
 # Rules
 all: $(NAME)
+	@echo $(ADDITIONAL_FLAGS)
 
 $(NAME): $(OBJS)
 	@$(CC) $(CFLAGS) $(OBJS) $(ADDITIONAL_FLAGS) -o $(NAME)
