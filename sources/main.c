@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/04 23:50:46 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/05/05 12:46:19 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,15 @@
 
 int	g_status_code;
 
-void	handle_sigint(int signum)
-{
-	(void)signum;
-	puts("");
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_redisplay();
-	g_status_code = 130;
-}
+// void	handle_sigint(int signum)
+// {
+// 	(void)signum;
+// 	puts("");
+// 	rl_on_new_line();
+// 	rl_replace_line("", 0);
+// 	rl_redisplay();
+// 	g_status_code = 130;
+// }
 
 // TODO: Remove debug function
 void	print_token(t_token token)
@@ -69,7 +69,7 @@ int	main(int argc, char *argv[] __attribute__((unused)), char **env)
 	if (argc != 1)
 		return (puts("Minishell can not run external files."), 1);
 	g_status_code = 0;
-	signal(SIGINT, handle_sigint);
+	// signal(SIGINT, handle_sigint);
 	minishell.prompt = init_prompt();
 	line = readline(minishell.prompt->current);
 	while (line)
