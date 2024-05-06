@@ -1,0 +1,162 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-Iincludes",
+      "-c",
+      "-o",
+      "objects/main.o",
+      "sources/main.c"
+    ],
+    "directory": "/home/mahadabd/Minishell",
+    "file": "/home/mahadabd/Minishell/sources/main.c",
+    "output": "/home/mahadabd/Minishell/objects/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-Iincludes",
+      "-c",
+      "-o",
+      "objects/utils/ft_join.o",
+      "sources/utils/ft_join.c"
+    ],
+    "directory": "/home/mahadabd/Minishell",
+    "file": "/home/mahadabd/Minishell/sources/utils/ft_join.c",
+    "output": "/home/mahadabd/Minishell/objects/utils/ft_join.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-Iincludes",
+      "-c",
+      "-o",
+      "objects/utils/ft_printarr.o",
+      "sources/utils/ft_printarr.c"
+    ],
+    "directory": "/home/mahadabd/Minishell",
+    "file": "/home/mahadabd/Minishell/sources/utils/ft_printarr.c",
+    "output": "/home/mahadabd/Minishell/objects/utils/ft_printarr.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-Iincludes",
+      "-c",
+      "-o",
+      "objects/utils/ft_split.o",
+      "sources/utils/ft_split.c"
+    ],
+    "directory": "/home/mahadabd/Minishell",
+    "file": "/home/mahadabd/Minishell/sources/utils/ft_split.c",
+    "output": "/home/mahadabd/Minishell/objects/utils/ft_split.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-Iincludes",
+      "-c",
+      "-o",
+      "objects/utils/ft_strchr.o",
+      "sources/utils/ft_strchr.c"
+    ],
+    "directory": "/home/mahadabd/Minishell",
+    "file": "/home/mahadabd/Minishell/sources/utils/ft_strchr.c",
+    "output": "/home/mahadabd/Minishell/objects/utils/ft_strchr.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-Iincludes",
+      "-c",
+      "-o",
+      "objects/utils/ft_strcpy.o",
+      "sources/utils/ft_strcpy.c"
+    ],
+    "directory": "/home/mahadabd/Minishell",
+    "file": "/home/mahadabd/Minishell/sources/utils/ft_strcpy.c",
+    "output": "/home/mahadabd/Minishell/objects/utils/ft_strcpy.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-Iincludes",
+      "-c",
+      "-o",
+      "objects/utils/ft_strjoin.o",
+      "sources/utils/ft_strjoin.c"
+    ],
+    "directory": "/home/mahadabd/Minishell",
+    "file": "/home/mahadabd/Minishell/sources/utils/ft_strjoin.c",
+    "output": "/home/mahadabd/Minishell/objects/utils/ft_strjoin.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-Iincludes",
+      "-c",
+      "-o",
+      "objects/utils/ft_strlen.o",
+      "sources/utils/ft_strlen.c"
+    ],
+    "directory": "/home/mahadabd/Minishell",
+    "file": "/home/mahadabd/Minishell/sources/utils/ft_strlen.c",
+    "output": "/home/mahadabd/Minishell/objects/utils/ft_strlen.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-Iincludes",
+      "-c",
+      "-o",
+      "objects/utils/ft_strncmp.o",
+      "sources/utils/ft_strncmp.c"
+    ],
+    "directory": "/home/mahadabd/Minishell",
+    "file": "/home/mahadabd/Minishell/sources/utils/ft_strncmp.c",
+    "output": "/home/mahadabd/Minishell/objects/utils/ft_strncmp.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-Iincludes",
+      "-c",
+      "-o",
+      "objects/utils/ft_substr.o",
+      "sources/utils/ft_substr.c"
+    ],
+    "directory": "/home/mahadabd/Minishell",
+    "file": "/home/mahadabd/Minishell/sources/utils/ft_substr.c",
+    "output": "/home/mahadabd/Minishell/objects/utils/ft_substr.o"
+  }
+]
