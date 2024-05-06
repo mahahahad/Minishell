@@ -15,11 +15,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@main
 
-    # - name: Set up environment
-    #   uses: egor-tensin/setup-gcc@v1.3
-    #   with:
-    #     compiler: gcc
-
     - name: Build project
       run: make
 
@@ -30,13 +25,6 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@main
-
-    - name: Set up Homebrew
-      uses: Homebrew/actions/setup-homebrew@master
-    - name: Install readline library
-      run: |
-            brew install readline
-            brew link --force readline
 
     - name: Build project
       run: make

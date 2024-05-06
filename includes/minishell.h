@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.ae>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/04 23:43:43 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/05/06 19:15:16 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,5 +112,11 @@ void		free_cmd(t_cmd *cmd);
 // General
 t_prompt	*init_prompt(void);
 void	update_prompt(t_prompt *prompt);
+
+#include <readline/readline.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/wait.h>
 
 #endif

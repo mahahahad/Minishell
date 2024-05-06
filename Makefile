@@ -50,11 +50,15 @@ $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c | $(OBJS_DIR)
 $(OBJS_DIR):
 	@mkdir -p $(patsubst $(SRCS_DIR)%, $(OBJS_DIR)%, $(SUB_DIRS))
 
+$(UTILS): 
+	@make -C $(UTILS_DIR)
+
 clean:
 	@rm -rf $(OBJS_DIR) $(OBJS)
 	@echo "$(YELLOW)Removed object files$(RESET)"
 
 fclean: clean
+	@make -C $(UTILS_DIR) fclean
 	@rm -rf $(NAME)
 	@echo "$(YELLOW)Removed executable$(RESET)"
 
