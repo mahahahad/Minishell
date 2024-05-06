@@ -37,7 +37,6 @@ endif
 
 # Rules
 all: $(NAME)
-	@echo $(ADDITIONAL_FLAGS)
 
 $(NAME): $(OBJS)
 	@$(CC) $(CFLAGS) $(OBJS) $(ADDITIONAL_FLAGS) -o $(NAME)
@@ -58,7 +57,6 @@ clean:
 	@echo "$(YELLOW)Removed object files$(RESET)"
 
 fclean: clean
-	@make -C $(UTILS_DIR) fclean
 	@rm -rf $(NAME)
 	@echo "$(YELLOW)Removed executable$(RESET)"
 
