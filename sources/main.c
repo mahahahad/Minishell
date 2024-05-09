@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/05 12:46:19 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/05/09 18:07:30 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ void	print_token(t_token token)
 			break ;
 	}
 	puts("{");
-	printf("\tContent: %s,\n\tType: %s\n", token.content, type);
+	printf("\tContent: %s\n\tType: %s\n", token.content, type);
 	puts("}");
 }
 
@@ -60,11 +60,11 @@ void	print_token(t_token token)
  * frees the user read line.
  * NOTE: Readline causes still reachable memory leaks
  */
-int	main(int argc, char *argv[] __attribute__((unused)), char **env)
+int	main(int argc, char *argv[] __attribute__((unused)), char **env __attribute__((unused)))
 {
 	char	*line;
 	t_minishell minishell;
-	t_cmd	*cmd;
+	// t_cmd	*cmd;
 
 	if (argc != 1)
 		return (puts("Minishell can not run external files."), 1);
@@ -76,10 +76,13 @@ int	main(int argc, char *argv[] __attribute__((unused)), char **env)
 	{
 		add_history(line);
 		parse(&minishell, line);
-		cmd = create_exec_cmd(&minishell);
-		run_cmd(cmd, env);
-		free_cmd(cmd);
+		// cmd = create_exec_cmd(&minishell);
+		// run_cmd(cmd, env);
+		// free_cmd(cmd);
 		free(line);
+		for (int i = 0; i < minishell.token_count; i++){
+			print_token(minishell.tokens[i]);
+		}
 		free_tokens(&minishell);
 		update_prompt(minishell.prompt);
 		line = readline(minishell.prompt->current);
