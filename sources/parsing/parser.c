@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.ae>  +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/04 14:43:00 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/05/09 16:57:50 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,34 +25,20 @@ int	count_quotations(char *line)
 	{
 		if (line[i] == '"')
 		{
-			if (!quotes_found)
-			{
+			if (!quotes_found && ++count)
 				quotes_found = '"';
-				count++;
-			}
-			else if (quotes_found == '"')
-			{
+			else if (quotes_found == '"' && ++count)
 				quotes_found = '\0';
-				count++;
-			}
-			continue ;
 		}
 		if (line[i] == '\'')
 		{
-			if (!quotes_found)
-			{
+			if (!quotes_found && ++count)
 				quotes_found = '\'';
-				count++;
-			}
-			else if (quotes_found == '\'')
-			{
+			else if (quotes_found == '\'' && ++count)
 				quotes_found = '\0';
-				count++;
-			}
-			continue ;
 		}
 	}
-	return (count);
+	return (count % 2);
 }
 
 /**
@@ -207,7 +193,7 @@ t_token	*tokenize(t_minishell *minishell, char *input)
 
 void	parse(t_minishell *minishell, char *line)
 {
-	if (count_quotations(line) % 2 != 0)
-		fprintf(stderr, RED "Open quotes detected, command rejected.\n" RESET);
+	if (count_quotations(line))
+		write(2, RED "Open quotes detected, command rejected.\n" RESET, 50);
 	minishell->tokens = tokenize(minishell, line);
 }
