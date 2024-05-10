@@ -1,6 +1,6 @@
 NAME := minishell
 CC := cc
-CFLAGS := -Wall -Werror -Wextra -Iincludes -g3 -fsanitize=address
+CFLAGS := -Wall -Werror -Wextra -Iincludes
 ADDITIONAL_FLAGS := -lreadline -I/usr/include 
 
 # Directories
