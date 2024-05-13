@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/09 18:07:30 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/13 19:06:37 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	print_token(t_token token)
 {
 	char	*type;
 
-	switch (token.type) {
+	switch (token.type){
 		case PIPE:
 			type = "|";
 			break ;
@@ -45,13 +45,42 @@ void	print_token(t_token token)
 		case DBL_GREAT:
 			type = ">>";
 			break ;
-		default:
+		default :
 			type = "Word";
-			break ;
 	}
 	puts("{");
 	printf("\tContent: %s\n\tType: %s\n", token.content, type);
 	puts("}");
+}
+
+// We still need to come up with a proper cleanup.
+void	setup_environment(t_minishell *minishell, char **env)
+{
+	int			len;
+	t_env_node	*var;
+
+	while (*env)
+	{
+		var = malloc(sizeof(t_env_node));
+		if (!var)
+			write(2, "Malloc failed while setting up the env variables\n", 49);
+		len = ft_strchr(*env, '=') - *env;
+		var->env_name = ft_substr(*env, 0, len);
+		if (!var->env_name)
+			write(2, "Malloc failed while setting up the env variables\n", 49);
+		var->env_content = ft_substr(*env, len + 1, ft_strlen(*env) - len - 1);
+		if (!var->env_content)
+			write(2, "Malloc failed while setting up the env variables\n", 49);
+		var->env_print = true;
+		ft_lstadd_back(&minishell->env_variables, var);
+		env++;
+	}
+	// for (t_env_node *i = minishell->env_variables; i; i = i->next){
+	// 	puts("{");
+	// 	printf("\tType: %s\n\tContent: %s\n", "NAME", i->env_name);
+	// 	printf("\tType: %s\n\tContent: %s\n", "VALUE", i->env_content);
+	// 	puts("}\n");
+	// }
 }
 
 /*
@@ -60,16 +89,18 @@ void	print_token(t_token token)
  * frees the user read line.
  * NOTE: Readline causes still reachable memory leaks
  */
-int	main(int argc, char *argv[] __attribute__((unused)), char **env __attribute__((unused)))
+int	main(int argc, char *argv[] __attribute__((unused)), char **env)
 {
-	char	*line;
-	t_minishell minishell;
+	char		*line;
+	t_minishell	minishell;
 	// t_cmd	*cmd;
 
 	if (argc != 1)
 		return (puts("Minishell can not run external files."), 1);
 	g_status_code = 0;
 	// signal(SIGINT, handle_sigint);
+	ft_memset(&minishell, 0, sizeof(minishell));
+	setup_environment(&minishell, env);
 	minishell.prompt = init_prompt();
 	line = readline(minishell.prompt->current);
 	while (line)
@@ -81,7 +112,7 @@ int	main(int argc, char *argv[] __attribute__((unused)), char **env __attribute_
 		// free_cmd(cmd);
 		free(line);
 		for (int i = 0; i < minishell.token_count; i++){
-			print_token(minishell.tokens[i]);
+				print_token(minishell.tokens[i]);
 		}
 		free_tokens(&minishell);
 		update_prompt(minishell.prompt);
