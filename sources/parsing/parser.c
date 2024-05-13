@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/09 16:57:50 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/13 16:24:10 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 int	count_quotations(char *line)
 {
-	int	count;
-	int	i;
+	int		count;
+	int		i;
 	char	quotes_found;
 
 	i = -1;
@@ -62,7 +62,7 @@ int	count_quotations(char *line)
  */
 char	*get_token(char	**input)
 {
-	int	i;
+	int		i;
 	char	*token;
 	char	*string;
 	char	quotes_found;
@@ -83,7 +83,7 @@ char	*get_token(char	**input)
 			space_found = true;
 			break ;
 		}
-		if (space_found && !quotes_found && !ft_isspace(string[i]))	
+		if (space_found && !quotes_found && !ft_isspace(string[i]))
 			space_found = false;
 		i++;
 	}
@@ -162,7 +162,7 @@ int	count_tokens(char *input)
 				space_found = true;
 			}
 		}
-		if (!quotes_found && input[i] != ' ')	
+		if (!quotes_found && input[i] != ' ')
 			space_found = false;
 		i++;
 	}
@@ -174,8 +174,8 @@ int	count_tokens(char *input)
 t_token	*tokenize(t_minishell *minishell, char *input)
 {
 	t_token	*tokens;
-	int	i;
-	int	token_count;
+	int		i;
+	int		token_count;
 
 	i = 0;
 	token_count = count_tokens(input);

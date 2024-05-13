@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   prompt.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.ae>  +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:28:38 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/04 23:52:33 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/05/13 15:34:44 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,4 +69,3 @@ void	update_prompt(t_prompt *prompt)
 	prompt->current = prompt_str;
 	return ;
 }
-
