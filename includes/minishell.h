@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/13 15:29:56 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/13 18:59:37 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,14 @@
 # include <unistd.h>
 
 /** STRUCTURES **/
+
+typedef struct s_cmd t_cmd;
+typedef struct s_cmd_exec t_cmd_exec;
+typedef struct s_env_node t_env_node;
+typedef struct s_minishell t_minishell;
+typedef struct s_prompt t_prompt;
+typedef struct s_token t_token;
+
 enum e_token_types
 {
 	PIPE,
@@ -51,24 +59,33 @@ enum e_cmd_types
 	CMD_EXEC
 };
 
-typedef struct s_token
+struct s_token
 {
 	int			type;
 	char		*content;
-}				t_token;
+};
 
-typedef struct s_prompt
+struct s_prompt
 {
 	char		*previous;
 	char		*current;
-}				t_prompt;
+};
 
-typedef struct s_minishell
+struct s_env_node
 {
-	t_token		*tokens;
+	char		*env_name;
+	char		*env_content;
+	bool		env_print;
+	t_env_node	*next;
+};
+
+struct s_minishell
+{
 	int			token_count;
+	t_token		*tokens;
 	t_prompt	*prompt;
-}				t_minishell;
+	t_env_node	*env_variables;
+};
 
 /*
  * General command structure.
@@ -76,16 +93,16 @@ typedef struct s_minishell
  * Every parse function returns this and can be casted to another cmd type
  * because they all share the type variable
  * */
-typedef struct s_cmd
+struct s_cmd
 {
 	int			type;
-}				t_cmd;
+};
 
-typedef struct s_cmd_exec
+struct s_cmd_exec
 {
 	int			type;
 	char		**tokens;
-}				t_cmd_exec;
+};
 
 /** GLOBAL VARIABLE **/
 extern int		g_status_code;
@@ -112,5 +129,8 @@ void			free_tokens(t_minishell *minishell);
 // General
 t_prompt		*init_prompt(void);
 void			update_prompt(t_prompt *prompt);
+
+// Miscellaneous
+void	ft_lstadd_back(t_env_node **list, t_env_node *new_node);
 
 #endif
