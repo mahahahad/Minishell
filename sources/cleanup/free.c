@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.ae>  +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:38:52 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/04 17:39:35 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/05/13 15:31:15 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void	free_tokens(t_minishell *minishell)
 void	free_cmd(t_cmd *cmd)
 {
 	t_cmd_exec	*cmd_exec;
-	int	i;
+	int			i;
 
 	i = 0;
 	if (cmd->type == CMD_EXEC)
@@ -43,5 +43,3 @@ void	free_cmd(t_cmd *cmd)
 		free(cmd_exec);
 	}
 }
-
-

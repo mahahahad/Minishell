@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.ae>  +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/04 17:27:01 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/05/13 15:30:52 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ bool	is_builtin(char *str)
 	}
 	return (false);
 }
-
 
 // TODO: Fix this temporary solution
 void	echo(char **cmd)
@@ -65,4 +64,3 @@ int	cd(char **cmd)
 	chdir(cmd[0]);
 	return (0);
 }
-
