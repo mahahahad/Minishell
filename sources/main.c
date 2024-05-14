@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/13 19:06:37 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/14 16:00:06 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ void	print_token(t_token token)
 }
 
 // We still need to come up with a proper cleanup.
+// The cleanup will require a listclear function as well.
 void	setup_environment(t_minishell *minishell, char **env)
 {
 	int			len;
