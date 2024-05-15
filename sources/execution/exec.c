@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/13 15:31:32 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/15 14:50:18 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,8 +103,8 @@ int	exec_cmd(char **cmd, char **env)
 
 void	exec_builtin(char **cmd)
 {
-	if (ft_strncmp(cmd[0], "echo", 4) == 0)
-		echo(cmd + 1);
-	if (ft_strncmp(cmd[0], "cd", 2) == 0)
-		g_status_code = cd(cmd + 1);
+	if (ft_strncmp(cmd[0], "echo", 5) == 0)
+		ft_echo(cmd + 1);
+	if (ft_strncmp(cmd[0], "cd", 3) == 0)
+		g_status_code = ft_cd(cmd + 1);
 }

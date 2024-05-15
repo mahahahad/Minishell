@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/15 10:16:53 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/15 15:11:12 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,8 +120,9 @@ int				exec_cmd(char **cmd, char **env);
 void			run_cmd(t_cmd *cmd, char **env);
 
 // Built-ins
-int				cd(char **cmd);
-void			echo(char **cmd);
+int				ft_cd(char **cmd);
+void			ft_echo(char **cmd);
+void			ft_env(char **envp);
 bool			is_builtin(char *str);
 
 // Cleanup
