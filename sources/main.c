@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/14 16:00:06 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/15 13:41:57 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,37 +53,6 @@ void	print_token(t_token token)
 	puts("}");
 }
 
-// We still need to come up with a proper cleanup.
-// The cleanup will require a listclear function as well.
-void	setup_environment(t_minishell *minishell, char **env)
-{
-	int			len;
-	t_env_node	*var;
-
-	while (*env)
-	{
-		var = malloc(sizeof(t_env_node));
-		if (!var)
-			write(2, "Malloc failed while setting up the env variables\n", 49);
-		len = ft_strchr(*env, '=') - *env;
-		var->env_name = ft_substr(*env, 0, len);
-		if (!var->env_name)
-			write(2, "Malloc failed while setting up the env variables\n", 49);
-		var->env_content = ft_substr(*env, len + 1, ft_strlen(*env) - len - 1);
-		if (!var->env_content)
-			write(2, "Malloc failed while setting up the env variables\n", 49);
-		var->env_print = true;
-		ft_lstadd_back(&minishell->env_variables, var);
-		env++;
-	}
-	// for (t_env_node *i = minishell->env_variables; i; i = i->next){
-	// 	puts("{");
-	// 	printf("\tType: %s\n\tContent: %s\n", "NAME", i->env_name);
-	// 	printf("\tType: %s\n\tContent: %s\n", "VALUE", i->env_content);
-	// 	puts("}\n");
-	// }
-}
-
 /*
  * Loops until EOF is detected and reads user input using readline
  * and executes the command in a child process and finally
@@ -97,7 +66,7 @@ int	main(int argc, char *argv[] __attribute__((unused)), char **env)
 	// t_cmd	*cmd;
 
 	if (argc != 1)
-		return (puts("Minishell can not run external files."), 1);
+		return (write(2, "Minishell can not run external files.\n", 38) - 37);
 	g_status_code = 0;
 	// signal(SIGINT, handle_sigint);
 	ft_memset(&minishell, 0, sizeof(minishell));

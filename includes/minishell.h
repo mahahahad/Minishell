@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/13 18:59:37 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/15 10:16:53 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,8 @@ struct s_env_node
 struct s_minishell
 {
 	int			token_count;
+	int			envp_count;
+	char		**envp;
 	t_token		*tokens;
 	t_prompt	*prompt;
 	t_env_node	*env_variables;
@@ -129,8 +131,9 @@ void			free_tokens(t_minishell *minishell);
 // General
 t_prompt		*init_prompt(void);
 void			update_prompt(t_prompt *prompt);
+void			setup_environment(t_minishell *minishell, char **env);
 
 // Miscellaneous
-void	ft_lstadd_back(t_env_node **list, t_env_node *new_node);
+void			ft_lstadd_back(t_env_node **list, t_env_node *new_node);
 
 #endif
