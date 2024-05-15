@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 10:07:41 by mdanish           #+#    #+#             */
-/*   Updated: 2024/05/15 13:34:32 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/15 15:23:40 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void	create_matrix(t_minishell *minishell, char **env)
 {
 	int	i;
 
-	while ((env + minishell->envp_count))
+	while (env[minishell->envp_count])
 		minishell->envp_count++;
 	minishell->envp = malloc((sizeof(char *) * minishell->envp_count) + 1);
 	if (!minishell->envp)
@@ -25,11 +25,11 @@ void	create_matrix(t_minishell *minishell, char **env)
 	i = -1;
 	while (++i < minishell->envp_count)
 	{
-		*(minishell->envp + i) = ft_strdup(*(env + i));
-		if (!*(minishell->envp + i))
+		minishell->envp[i] = ft_strdup(env[i]);
+		if (!minishell->envp[i])
 			write(2, "Malloc failed while setting up the env variables\n", 49);
 	}
-	*(minishell->envp + minishell->envp_count) = NULL;
+	minishell->envp[minishell->envp_count] = NULL;
 }
 
 char	**sort_environment_variables(char **env, int env_count)
@@ -44,11 +44,11 @@ char	**sort_environment_variables(char **env, int env_count)
 		j = i;
 		while (++j < env_count)
 		{
-			if (ft_strncmp(*(env + i), *(env + j), 100) > 0)
+			if (ft_strncmp(env[i], env[j], 100) > 0)
 			{
-				store = *(env + j);
-				*(env + j) = *(env + i);
-				*(env + i) = store;
+				store = env[j];
+				env[j] = env[i];
+				env[i] = store;
 			}
 		}
 	}
