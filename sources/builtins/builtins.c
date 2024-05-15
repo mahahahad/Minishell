@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/13 15:30:52 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/15 15:17:59 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,15 @@ bool	is_builtin(char *str)
 	return (false);
 }
 
+void	ft_env(char **envp)
+{
+	while (*envp)
+		printf("%s\n", *envp++);
+	g_status_code = 0;
+}
+
 // TODO: Fix this temporary solution
-void	echo(char **cmd)
+void		ft_echo(char **cmd)
 {
 	int		i;
 	bool	display_newline;
@@ -57,7 +64,7 @@ void	echo(char **cmd)
 		puts("");
 }
 
-int	cd(char **cmd)
+int	ft_cd(char **cmd)
 {
 	if (cmd[1])
 		return (fprintf(stderr, "cd: too many arguments\n"), 1);
