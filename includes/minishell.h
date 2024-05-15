@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/15 15:11:12 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/15 16:41:55 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,6 +123,7 @@ void			run_cmd(t_cmd *cmd, char **env);
 int				ft_cd(char **cmd);
 void			ft_echo(char **cmd);
 void			ft_env(char **envp);
+void			ft_unset(t_minishell *minishell, char *variable);
 bool			is_builtin(char *str);
 
 // Cleanup
