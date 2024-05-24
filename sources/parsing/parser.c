@@ -6,11 +6,13 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/13 16:24:10 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/23 10:21:21 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft.h"
 #include "minishell.h"
+#include <stdbool.h>
 
 int	count_quotations(char *line)
 {
@@ -42,6 +44,25 @@ int	count_quotations(char *line)
 }
 
 /**
+ * @brief Check if the provided character is in the list of special characters
+ * - [ | ]
+ * - [ ( ]
+ * - [ ) ]
+ * - [ < ]
+ * - [ > ]
+ * - [ || ]
+ * - [ << ]
+ * - [ >> ]
+ * - [ && ]
+ */
+bool	is_special_char(char c)
+{
+	if (ft_strchr("|<>()&", c))
+		return (true);
+	return (false);
+}
+
+/**
  * @brief Skip the leading whitespace characters by moving the pointer to the
  * head of the string ahead.
  * Move the pointer to the head of the string to the start of the next token
@@ -50,10 +71,9 @@ int	count_quotations(char *line)
  * @usage
  *
  * Calling the function with the input:
- * - '       This token '
+ * - '       This|token '
  *
- * will result in the function returning "This" and input pointing to 't' in
- * 'token'.
+ * will result in the function returning "This" and input pointing to '|'
  *
  * Calling the function with the input:
  * - 'token'
@@ -78,13 +98,18 @@ char	*get_token(char	**input)
 	while (string[i])
 	{
 		quotes_found = ft_is_quotation(string[i], quotes_found);
-		if (!quotes_found && !space_found && i > 0 && ft_isspace(string[i]))
+		if (!quotes_found)
 		{
-			space_found = true;
-			break ;
+			if (is_special_char(string[i]))
+				break ;
+			if (!space_found && i > 0 && ft_isspace(string[i]))
+			{
+				space_found = true;
+				break ;
+			}
+			if (space_found && !ft_isspace(string[i]))	
+				space_found = false;
 		}
-		if (space_found && !quotes_found && !ft_isspace(string[i]))
-			space_found = false;
 		i++;
 	}
 	token = malloc(i + 1);
@@ -95,6 +120,7 @@ char	*get_token(char	**input)
 	while (ft_isspace(*string))
 		string++;
 	*input = string;
+	puts(string);
 	return (token);
 }
 

@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:28:38 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/13 15:34:44 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/23 23:41:10 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ t_prompt	*init_prompt(void)
 	t_prompt	*prompt;
 
 	prompt = malloc(sizeof(t_prompt));
+	prompt->previous = NULL;
+	prompt->current = NULL;
 	update_prompt(prompt);
 	return (prompt);
 }
@@ -27,9 +29,6 @@ t_prompt	*init_prompt(void)
 /**
  * @brief Update the provided prompt with the users current location
  * If current directory doesn't exist, return the previous prompt
- *
- * TODO: Use the minishell data structure as input to keep track of previous
- * location
  */
 void	update_prompt(t_prompt *prompt)
 {
