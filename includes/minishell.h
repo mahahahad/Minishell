@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/15 16:41:55 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/24 11:52:43 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,8 @@ enum e_token_types
 	DBL_LESS,
 	GREAT,
 	DBL_GREAT,
+	OR,
+	AND,
 	WORD,
 	ERR
 };
