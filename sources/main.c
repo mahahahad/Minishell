@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/15 13:41:57 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/24 12:14:09 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,12 @@ void	print_token(t_token token)
 			break ;
 		case DBL_GREAT:
 			type = ">>";
+			break ;
+		case OR:
+			type = "OR";
+			break ;
+		case AND:
+			type = "AND";
 			break ;
 		default :
 			type = "Word";
