@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/24 11:56:16 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/05/26 09:54:28 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,7 +208,7 @@ int	count_tokens(char *input)
 		}
 		if (is_delimiter(input[i]))
 		{
-			if (input[i - 1] && !ft_isspace(input[i - 1]))
+			if (i > 0 && !ft_isspace(input[i - 1]))
 				token_count++;
 			token_count++;
 			if (is_repeatable_char(input[i], input[i + 1]))
