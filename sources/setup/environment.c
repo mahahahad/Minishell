@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 10:07:41 by mdanish           #+#    #+#             */
-/*   Updated: 2024/05/24 12:07:31 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/05/27 20:43:31 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,14 +20,14 @@ void	create_matrix(t_minishell *minishell, char **env)
 		minishell->envp_count++;
 	minishell->envp = malloc((sizeof(char *) * (minishell->envp_count + 1)));
 	if (!minishell->envp)
-		write(2, "Malloc failed while setting up the env variables\n", 49);
+		write(2, "Malloc failed while setting up the env variables\n", 49);	// exit required
 	ft_memset(minishell->envp, 0, sizeof(char **));
 	i = -1;
 	while (++i < minishell->envp_count)
 	{
 		minishell->envp[i] = ft_strdup(env[i]);
 		if (!minishell->envp[i])
-			write(2, "Malloc failed while setting up the env variables\n", 49);
+			write(2, "Malloc failed while setting up the env variables\n", 49);	// exit required
 	}
 	minishell->envp[minishell->envp_count] = NULL;
 }
@@ -68,17 +68,15 @@ void	setup_environment(t_minishell *minishell, char **env)
 	{
 		var = malloc(sizeof(t_env_node));
 		if (!var)
-			write(2, "Malloc failed while setting up the env variables\n", 49);
-		ft_memset(var, 0, sizeof(t_env_node *));
+			write(2, "Malloc failed while setting up the env variables\n", 49);	// exit required
+		ft_memset(var, 0, sizeof(t_env_node));
 		len = ft_strchr(*env, '=') - *env;
 		var->env_name = ft_substr(*env, 0, len);
 		if (!var->env_name)
-			write(2, "Malloc failed while setting up the env variables\n", 49);
+			write(2, "Malloc failed while setting up the env variables\n", 49);	// exit required
 		var->env_content = ft_substr(*env, len + 1, ft_strlen(*env) - len - 1);
 		if (!var->env_content)
-			write(2, "Malloc failed while setting up the env variables\n", 49);
-		var->env_print = true;
-		var->next = NULL;
+			write(2, "Malloc failed while setting up the env variables\n", 49);	// exit required
 		ft_lstadd_back(&minishell->env_variables, var);
 		env++;
 	}
