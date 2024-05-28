@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/26 09:54:28 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/05/28 11:34:45 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -246,6 +246,9 @@ t_token	*tokenize(t_minishell *minishell, char *input)
 void	parse(t_minishell *minishell, char *line)
 {
 	if (count_quotations(line))
+	{
 		write(2, RED "Open quotes detected, command rejected.\n" RESET, 50);
+		return ;
+	}
 	minishell->tokens = tokenize(minishell, line);
 }
