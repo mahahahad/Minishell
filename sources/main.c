@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/24 12:14:09 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/05/28 11:37:49 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,15 @@
 
 int	g_status_code;
 
-// void	handle_sigint(int signum)
-// {
-// 	(void)signum;
-// 	puts("");
-// 	rl_on_new_line();
-// 	rl_replace_line("", 0);
-// 	rl_redisplay();
-// 	g_status_code = 130;
-// }
+void	handle_sigint(int signum)
+{
+	(void)signum;
+	puts("");
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
+	g_status_code = 130;
+}
 
 // TODO: Remove debug function
 void	print_token(t_token token)
@@ -74,7 +74,7 @@ int	main(int argc, char *argv[] __attribute__((unused)), char **env)
 	if (argc != 1)
 		return (write(2, "Minishell can not run external files.\n", 38) - 37);
 	g_status_code = 0;
-	// signal(SIGINT, handle_sigint);
+	signal(SIGINT, handle_sigint);
 	ft_memset(&minishell, 0, sizeof(minishell));
 	setup_environment(&minishell, env);
 	minishell.prompt = init_prompt();
@@ -87,10 +87,13 @@ int	main(int argc, char *argv[] __attribute__((unused)), char **env)
 		// run_cmd(cmd, env);
 		// free_cmd(cmd);
 		free(line);
-		for (int i = 0; i < minishell.token_count; i++){
-				print_token(minishell.tokens[i]);
+		if (minishell.token_count)
+		{
+			for (int i = 0; i < minishell.token_count; i++){
+					print_token(minishell.tokens[i]);
+			}
+			free_tokens(&minishell);
 		}
-		free_tokens(&minishell);
 		update_prompt(minishell.prompt);
 		line = readline(minishell.prompt->current);
 	}
