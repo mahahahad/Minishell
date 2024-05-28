@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 20:21:11 by mdanish           #+#    #+#             */
-/*   Updated: 2024/05/28 17:43:20 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/28 23:55:13 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,15 +81,15 @@ bool	is_argument_valid(const char *string)
 	{
 		if (string[index] == '_')
 			continue ;
-		else if (string[index] > 47 && string[index] < 58)
+		else if (string[index] >= '0' && string[index] <= '9')
 			continue ;
-		else if ((string[index] > 64 && string[index] < 91) || \
-			(string[index] > 96 && string[index] < 123))
+		else if ((string[index] >= 'A' && string[index] <= 'Z') || \
+			(string[index] >= 'a' && string[index] <= 'z'))
 			continue ;
 		else
 			break ;
 	}
-	if ((string[0] > 47 && string[0] < 58) || !string[0] || \
+	if ((string[0] >= '0' && string[0] <= '9') || !string[0] || \
 		(string[index] && string[index] != '='))
 	{
 		write(2, "Invalid identifier detected in the arguments.\n", 46);

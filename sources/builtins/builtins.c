@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/28 19:05:38 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/28 23:46:37 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ bool	is_builtin(char *str)
 	builtins[7] = NULL;
 	while (builtins[i])
 	{
-		if (ft_strncmp(str, builtins[i], ft_strlen(builtins[i])) == 0)
+		if (!ft_strncmp(str, builtins[i], ft_strlen(builtins[i]) + 1))
 			return (true);
 		i++;
 	}
