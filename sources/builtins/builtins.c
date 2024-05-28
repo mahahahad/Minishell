@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/15 16:56:05 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/28 16:22:41 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,20 @@ bool	is_builtin(char *str)
 		i++;
 	}
 	return (false);
+}
+
+void	ft_pwd(char **args)
+{
+	char	*current_working_directory;
+	if (args && *args && **args)
+	{
+		write(2, "pwd does not accecpt options or arguments.\n", 43);
+		return ;
+	}
+	current_working_directory = getcwd(NULL, 0);
+	printf("%s\n", current_working_directory);
+	free(current_working_directory);
+	g_status_code = 0;
 }
 
 void	ft_env(char **envp)

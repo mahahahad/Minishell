@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/27 20:40:00 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/28 16:23:51 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,6 +133,7 @@ bool			is_argument_valid(const char *string);
 int				ft_cd(char **cmd);
 void			ft_echo(char **cmd);
 void			ft_env(char **envp);
+void			ft_pwd(char **args);
 void			ft_unset(t_minishell *minishell, char *variable);
 bool			is_builtin(char *str);
 
