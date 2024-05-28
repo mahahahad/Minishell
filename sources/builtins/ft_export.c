@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 19:45:08 by mdanish           #+#    #+#             */
-/*   Updated: 2024/05/27 20:20:59 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/28 17:44:00 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,9 @@ static void	add_to_list(t_minishell *minishell, t_env_node *var, int len)
 	list = minishell->env_variables;
 	while (list->next)
 	{
-		if (check_for_existing_value(list, var, len))
+		if (check_for_existing_value(list, var, len + 1))
 			return ;
-		if (ft_strncmp(list->env_name, var->env_name, len) > 0)
+		if (ft_strncmp(list->env_name, var->env_name, len + 1) > 0)
 		{
 			var->next = list;
 			if (list == minishell->env_variables)

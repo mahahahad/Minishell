@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/28 16:22:41 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/28 17:41:25 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ void	ft_unset(t_minishell *minishell, char *variable)
 	int			index;
 
 	index = -1;
-	var_len = ft_strlen(variable);
+	var_len = ft_strlen(variable) + 1;
 	while (++index != minishell->envp_count)
 		if (!ft_strncmp(variable, minishell->envp[index], var_len))
 			break ;
@@ -115,7 +115,7 @@ void		ft_echo(char **cmd)
 
 	i = 0;
 	display_newline = true;
-	if (ft_strncmp(cmd[i], "-n", 2) == 0)
+	if (ft_strncmp(cmd[i], "-n", 3) == 0)
 	{
 		i++;
 		display_newline = false;

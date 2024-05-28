@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 20:21:11 by mdanish           #+#    #+#             */
-/*   Updated: 2024/05/27 20:22:07 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/28 17:43:20 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ void	create_new_variable(t_env_node *new_var, int *length, char *string)
 	else
 	{
 		*length = ft_strchr(string, '=') - string;
-		new_var->env_name = ft_substr(string, 0, (*length));
+		new_var->env_name = ft_substr(string, 0, *length);
 		if (!new_var->env_name)
 			write(2, "Malloc failed while exporting a variable.\n", 42);	// exit required
 		new_var->env_content = ft_substr(string, *length + 1, \
