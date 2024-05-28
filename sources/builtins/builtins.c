@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/28 17:41:25 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/28 19:05:38 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,26 +107,22 @@ void	ft_unset(t_minishell *minishell, char *variable)
 	g_status_code = 0;
 }
 
-// TODO: Fix this temporary solution
-void		ft_echo(char **cmd)
+void	ft_echo(char **cmd)
 {
-	int		i;
-	bool	display_newline;
+	int	index;
 
-	i = 0;
-	display_newline = true;
-	if (ft_strncmp(cmd[i], "-n", 3) == 0)
+	index = 1;
+	if (!ft_strncmp(cmd[1], "-n", 3))
+		index++;
+	while (cmd[index])
 	{
-		i++;
-		display_newline = false;
+		write(1, cmd[index], ft_strlen(cmd[index]));
+		if (cmd[++index])
+			write(1, " ", 1);
 	}
-	while (cmd[i])
-	{
-		printf("%s ", cmd[i]);
-		i++;
-	}
-	if (display_newline)
-		puts("");
+	if (ft_strncmp(cmd[1], "-n", 3))
+		write(1, "\n", 1);
+	g_status_code = 0;
 }
 
 int	ft_cd(char **cmd)
