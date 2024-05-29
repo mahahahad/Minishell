@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 20:21:11 by mdanish           #+#    #+#             */
-/*   Updated: 2024/05/28 23:55:13 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/29 12:41:38 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ bool	update_the_matrix(t_minishell *minishell, char *new_var)
 		free( minishell->envp[index]);
 		minishell->envp[index] = malloc(ft_strlen(new_var) + 1);
 		if (!minishell->envp[index])
-			write(2, "Malloc failed while exporting a variable.\n", 42);	// exit required
+			ft_putendl_fd("Malloc failed while exporting a variable.", 2);	// exit required
 		ft_strlcpy(minishell->envp[index], new_var, ft_strlen(new_var) + 1);
 		return (true);
 	}
@@ -56,7 +56,7 @@ void	create_new_variable(t_env_node *new_var, int *length, char *string)
 	{
 		new_var->env_name = ft_strdup(string);
 		if (!new_var->env_name)
-			write(2, "Malloc failed while exporting a variable.\n", 42);	// exit required
+			ft_putendl_fd("Malloc failed while exporting a variable.", 2);	// exit required
 		*length = ft_strlen(new_var->env_name);
 	}
 	else
@@ -64,11 +64,11 @@ void	create_new_variable(t_env_node *new_var, int *length, char *string)
 		*length = ft_strchr(string, '=') - string;
 		new_var->env_name = ft_substr(string, 0, *length);
 		if (!new_var->env_name)
-			write(2, "Malloc failed while exporting a variable.\n", 42);	// exit required
+			ft_putendl_fd("Malloc failed while exporting a variable.", 2);	// exit required
 		new_var->env_content = ft_substr(string, *length + 1, \
 				ft_strlen(string) - (*length + 1));
 		if (!new_var->env_content)
-			write(2, "Malloc failed while exporting a variable.\n", 42);	// exit required
+			ft_putendl_fd("Malloc failed while exporting a variable.", 2);	// exit required
 	}
 }
 
@@ -92,7 +92,7 @@ bool	is_argument_valid(const char *string)
 	if ((string[0] >= '0' && string[0] <= '9') || !string[0] || \
 		(string[index] && string[index] != '='))
 	{
-		write(2, "Invalid identifier detected in the arguments.\n", 46);
+		ft_putendl_fd("Invalid identifier detected in the arguments.", 2);
 		g_status_code = 1;
 		return (false);
 	}

@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 15:29:04 by mdanish           #+#    #+#             */
-/*   Updated: 2024/05/28 23:51:18 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/29 12:17:27 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,15 @@
 # include <unistd.h>
 # include <stdbool.h>
 
+# define HEX_LOW "0123456789abcdef"
+# define HEX_UP "0123456789ABCDEF"
+# define DECIMAL "0123456789"
+
+void	ft_putchar_fd(char character, int fd);
+void	ft_putendl_fd(char *string, int fd);
+void	ft_putunbr_base_fd(long int number, int fd, char *base, int base_len);
+void	ft_putnbr_fd(long int number, int fd);
+void	ft_putstr_fd(char *string, int fd);
 char	*ft_char_strjoin(char const *s1, char const *s2, char const c);
 void	ft_free_2d_arr(char **arr);
 char	ft_is_quotation(char c);

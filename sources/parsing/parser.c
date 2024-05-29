@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/28 23:53:01 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/29 12:46:09 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -226,7 +226,9 @@ t_token	*tokenize(t_minishell *minishell, char *input)
 	token_count = count_tokens(input);
 	minishell->token_count = token_count;
 	tokens = malloc((token_count + 1) * sizeof(t_token));
-	printf("There are %d tokens in your input\n", token_count);
+	ft_putstr_fd("There are ", 1);
+	ft_putnbr_fd(token_count, 1);
+	ft_putendl_fd(" tokens in your input", 1);
 	while (i < token_count)
 	{
 		tokens[i].content = get_token(&input);
@@ -241,7 +243,7 @@ void	parse(t_minishell *minishell, char *line)
 {
 	if (count_quotations(line))
 	{
-		write(2, RED "Open quotes detected, command rejected.\n" RESET, 50);
+		ft_putstr_fd(RED "Open quotes detected, command rejected.\n" RESET, 2);
 		return ;
 	}
 	minishell->tokens = tokenize(minishell, line);

@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/28 23:46:37 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/29 12:40:31 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,11 +40,11 @@ void	ft_pwd(char **args)
 	char	*current_working_directory;
 	if (args && *args && **args)
 	{
-		write(2, "pwd does not accecpt options or arguments.\n", 43);
+		ft_putendl_fd("pwd does not accecpt options or arguments.", 2);
 		return ;
 	}
 	current_working_directory = getcwd(NULL, 0);
-	printf("%s\n", current_working_directory);
+	ft_putendl_fd(current_working_directory, 1);
 	free(current_working_directory);
 	g_status_code = 0;
 }
@@ -52,7 +52,10 @@ void	ft_pwd(char **args)
 void	ft_env(char **envp)
 {
 	while (*envp)
-		printf("%s\n", *envp++);
+	{
+		ft_putendl_fd(*envp, 1);
+		envp++;
+	}
 	g_status_code = 0;
 }
 
@@ -116,19 +119,19 @@ void	ft_echo(char **cmd)
 		index++;
 	while (cmd[index])
 	{
-		write(1, cmd[index], ft_strlen(cmd[index]));
+		ft_putstr_fd(cmd[index], 1);
 		if (cmd[++index])
-			write(1, " ", 1);
+			ft_putchar_fd(' ', 1);
 	}
 	if (ft_strncmp(cmd[1], "-n", 3))
-		write(1, "\n", 1);
+		ft_putchar_fd('\n', 1);
 	g_status_code = 0;
 }
 
 int	ft_cd(char **cmd)
 {
 	if (cmd[1])
-		return (fprintf(stderr, "cd: too many arguments\n"), 1);
+		return (ft_putendl_fd("cd: too many arguments", 2), 1);
 	chdir(cmd[0]);
 	return (0);
 }

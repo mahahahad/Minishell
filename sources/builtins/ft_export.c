@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 19:45:08 by mdanish           #+#    #+#             */
-/*   Updated: 2024/05/28 17:44:00 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/29 13:06:30 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,20 +22,20 @@ void add_to_matrix(t_minishell *minishell, char *new_var)
 	env_store = minishell->envp;
 	minishell->envp = malloc(sizeof(char *) * (minishell->envp_count + 2));
 	if (!minishell->envp)
-		write(2, "Malloc failed while exporting a variable.\n", 42);	// exit required
+		ft_putendl_fd("Malloc failed while exporting a variable.", 2);	// exit required
 	ft_memset(minishell->envp, 0, sizeof(char **));
 	index = -1;
 	while (++index < minishell->envp_count)
 	{
 		minishell->envp[index] = ft_strdup(env_store[index]);
 		if (!minishell->envp[index])
-			write(2, "Malloc failed while exporting a variable.\n", 42);	// exit required
+			ft_putendl_fd("Malloc failed while exporting a variable.", 2);	// exit required
 		free(env_store[index]);
 	}
 	free(env_store);
 	minishell->envp[minishell->envp_count] = ft_strdup(new_var);
 	if (!minishell->envp[index])
-		write(2, "Malloc failed while exporting a variable.\n", 42);	// exit required
+		ft_putendl_fd("Malloc failed while exporting a variable.", 2);	// exit required
 	minishell->envp[++minishell->envp_count] = NULL;
 }
 
@@ -68,10 +68,15 @@ static void	ft_print_export(t_env_node *env)
 {
 	while (env)
 	{
+		ft_putstr_fd("declare -x ", 1);
+		ft_putstr_fd(env->env_name, 1);
 		if (env->env_content)
-			printf("declare -x %s=\"%s\"\n", env->env_name, env->env_content);
-		else
-			printf("declare -x %s\n", env->env_name);
+		{
+			ft_putstr_fd("=\"", 1);
+			ft_putstr_fd(env->env_content, 1);
+			ft_putchar_fd('\"', 1);
+		}
+		ft_putchar_fd('\n', 1);
 		env = env->next;
 	}
 }
@@ -93,7 +98,7 @@ void	ft_export(t_minishell *minishell, char **new_variables)
 			continue ;
 		var = malloc(sizeof(t_env_node));
 		if (!var)
-			write(2, "Malloc failed while exporting a variable.\n", 42);	// exit required
+			ft_putendl_fd("Malloc failed while exporting a variable.", 2);	// exit required
 		ft_memset(var, 0, sizeof(t_env_node));
 		create_new_variable(var, &length, *new_variables);
 		add_to_list(minishell, var, length);

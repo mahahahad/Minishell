@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 10:07:41 by mdanish           #+#    #+#             */
-/*   Updated: 2024/05/27 20:43:31 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/29 12:46:47 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,14 +30,14 @@ static void	create_matrix(t_minishell *minishell, char **env)
 		minishell->envp_count++;
 	minishell->envp = malloc((sizeof(char *) * (minishell->envp_count + 1)));
 	if (!minishell->envp)
-		write(2, "Malloc failed while setting up the env variables\n", 49);	// exit required
+		ft_putendl_fd("Malloc failed while setting up the env variables", 2);	// exit required
 	ft_memset(minishell->envp, 0, sizeof(char **));
 	i = -1;
 	while (++i < minishell->envp_count)
 	{
 		minishell->envp[i] = ft_strdup(env[i]);
 		if (!minishell->envp[i])
-			write(2, "Malloc failed while setting up the env variables\n", 49);	// exit required
+			ft_putendl_fd("Malloc failed while setting up the env variables", 2);	// exit required
 	}
 	minishell->envp[minishell->envp_count] = NULL;
 }

@@ -1,30 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printarr.c                                      :+:      :+:    :+:   */
+/*   ft_putendl_fd.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/03 20:06:36 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/29 12:47:39 by mdanish          ###   ########.fr       */
+/*   Created: 2023/07/16 14:55:49 by mdanish           #+#    #+#             */
+/*   Updated: 2024/05/29 12:15:24 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-/* Prints the specified array of strings, separated by newlines */
-int	ft_printarr(char **tab)
+void	ft_putendl_fd(char *string, int fd)
 {
-	int	i;
-
-	i = 0;
-	while (tab[i])
+	if (fd >= 0)
 	{
-		ft_putstr_fd(tab[i], 1);
-		if (tab[i + 1])
-			ft_putstr_fd(", ", 1);
-		i++;
+		ft_putstr_fd(string, fd);
+		ft_putchar_fd('\n', fd);
 	}
-	ft_putchar_fd('\n', 1);
-	return (0);
 }
