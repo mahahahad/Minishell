@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/29 12:40:31 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/29 13:35:12 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,99 +33,6 @@ bool	is_builtin(char *str)
 		i++;
 	}
 	return (false);
-}
-
-void	ft_pwd(char **args)
-{
-	char	*current_working_directory;
-	if (args && *args && **args)
-	{
-		ft_putendl_fd("pwd does not accecpt options or arguments.", 2);
-		return ;
-	}
-	current_working_directory = getcwd(NULL, 0);
-	ft_putendl_fd(current_working_directory, 1);
-	free(current_working_directory);
-	g_status_code = 0;
-}
-
-void	ft_env(char **envp)
-{
-	while (*envp)
-	{
-		ft_putendl_fd(*envp, 1);
-		envp++;
-	}
-	g_status_code = 0;
-}
-
-void	ft_unset_from_list(t_minishell *minishell, char *variable, int var_len)
-{
-	t_env_node	*delnode;
-	t_env_node	*store;
-
-	delnode = minishell->env_variables;
-	if (!ft_strncmp(variable, delnode->env_name, var_len))
-		minishell->env_variables = minishell->env_variables->next;
-	else
-	{
-		store = minishell->env_variables;
-		while (delnode)
-		{
-			delnode = delnode->next;
-			if (delnode && !ft_strncmp(variable, delnode->env_name, var_len))
-				break ;
-			store = store->next;
-		}
-		if (!delnode)
-			return ;
-		store->next = delnode->next;
-	}
-	free(delnode->env_name);
-	free(delnode->env_content);
-	free(delnode);
-}
-
-void	ft_unset(t_minishell *minishell, char *variable)
-{
-	int			var_len;
-	int			index;
-
-	index = -1;
-	var_len = ft_strlen(variable) + 1;
-	while (++index != minishell->envp_count)
-		if (!ft_strncmp(variable, minishell->envp[index], var_len))
-			break ;
-	if (index != minishell->envp_count)
-	{
-		free(minishell->envp[index]);
-		minishell->envp_count--;
-		while (index <= minishell->envp_count)
-		{
-			minishell->envp[index] = minishell->envp[index + 1];
-			index++;
-		}
-	}
-	ft_unset_from_list(minishell, variable, var_len);
-	g_status_code = 0;
-}
-
-void	ft_echo(char **cmd)
-{
-	int	index;
-
-	index = 1;
-	if (!ft_strncmp(cmd[1], "-n", 3))
-		index++;
-	while (cmd[index])
-	{
-		ft_putstr_fd(cmd[index], 1);
-		if (cmd[++index])
-			ft_putchar_fd(' ', 1);
-	}
-	if (ft_strncmp(cmd[1], "-n", 3))
-		ft_putchar_fd('\n', 1);
-	g_status_code = 0;
 }
 
 int	ft_cd(char **cmd)

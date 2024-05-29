@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/28 16:23:51 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/29 15:48:49 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,8 +75,8 @@ struct s_prompt
 
 struct s_env_node
 {
-	char		*env_name;
-	char		*env_content;
+	char		*key;
+	char		*value;
 	t_env_node	*next;
 };
 
@@ -123,18 +123,17 @@ void			run_cmd(t_cmd *cmd, char **env);
 // Built-ins
 
 // Export
+void			add_to_matrix(t_minishell *minishell, char *new_var);
 void			ft_export(t_minishell *minishell, char **new_variable);
-bool			update_the_matrix(t_minishell *minishell, char *new_var);
-bool			check_for_existing_value(t_env_node *list, t_env_node *var, int len);
 void			create_new_variable(t_env_node *new_var, int *length, char *string);
 bool			is_argument_valid(const char *string);
 
 // Other		(Update the name later)
 int				ft_cd(char **cmd);
 void			ft_echo(char **cmd);
-void			ft_env(char **envp);
+void			ft_env(char **args, char **envp);
 void			ft_pwd(char **args);
-void			ft_unset(t_minishell *minishell, char *variable);
+void			ft_unset(t_minishell *minishell, char **variable);
 bool			is_builtin(char *str);
 
 // Cleanup

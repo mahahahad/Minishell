@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 10:07:41 by mdanish           #+#    #+#             */
-/*   Updated: 2024/05/29 12:46:47 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/05/29 15:48:49 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,8 @@ static void	create_matrix(t_minishell *minishell, char **env)
  * 
  * @param env is the list of environment variables that need to be sorted.
  * @param env_count is the total number of the environment variables.
- *
+ * 
+ * @return the final sorted matrix of the env.
  */
 
 static char	**sort_environment_variables(char **env, int env_count)
@@ -105,11 +106,11 @@ void	setup_environment(t_minishell *minishell, char **env)
 			break ;
 		ft_memset(var, 0, sizeof(t_env_node));
 		len = ft_strchr(*env, '=') - *env;
-		var->env_name = ft_substr(*env, 0, len);
-		if (!var->env_name)
+		var->key = ft_substr(*env, 0, len);
+		if (!var->key)
 			break ;
-		var->env_content = ft_substr(*env, len + 1, ft_strlen(*env) - len - 1);
-		if (!var->env_content)
+		var->value = ft_substr(*env, len + 1, ft_strlen(*env) - len - 1);
+		if (!var->value)
 			break ;
 		ft_lstadd_back(&minishell->env_variables, var);
 		env++;
