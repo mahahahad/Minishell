@@ -1,30 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printarr.c                                      :+:      :+:    :+:   */
+/*   ft_putnbr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/03 20:06:36 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/29 12:47:39 by mdanish          ###   ########.fr       */
+/*   Created: 2023/07/16 15:21:30 by mdanish           #+#    #+#             */
+/*   Updated: 2024/05/29 12:14:29 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-/* Prints the specified array of strings, separated by newlines */
-int	ft_printarr(char **tab)
+void	ft_putnbr_fd(long int number, int fd)
 {
-	int	i;
-
-	i = 0;
-	while (tab[i])
+	if (fd >= 0)
 	{
-		ft_putstr_fd(tab[i], 1);
-		if (tab[i + 1])
-			ft_putstr_fd(", ", 1);
-		i++;
+		if (number > -1)
+			return (ft_putunbr_base_fd(number, fd, DECIMAL, 10));
+		ft_putchar_fd('-', fd);
+		return (ft_putunbr_base_fd(number * -1, fd, DECIMAL, 10));
 	}
-	ft_putchar_fd('\n', 1);
-	return (0);
 }

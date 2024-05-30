@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:28:38 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/23 23:41:10 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/05/28 23:48:06 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void	update_prompt(t_prompt *prompt)
 	if (home_dir && current_dir)
 	{
 		i = ft_strlen(home_dir);
-		if (ft_strncmp(current_dir, home_dir, i) == 0)
+		if (ft_strncmp(current_dir, home_dir, i + 1) == 0)
 		{
 			prompt_str = ft_strjoin(prompt_str, "~");
 			temp = prompt_str;

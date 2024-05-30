@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/24 12:14:09 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/05/29 12:38:07 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,15 @@
 
 int	g_status_code;
 
-// void	handle_sigint(int signum)
-// {
-// 	(void)signum;
-// 	puts("");
-// 	rl_on_new_line();
-// 	rl_replace_line("", 0);
-// 	rl_redisplay();
-// 	g_status_code = 130;
-// }
+void	handle_sigint(int signum)
+{
+	(void)signum;
+	ft_putchar_fd('\n', 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
+	g_status_code = 130;
+}
 
 // TODO: Remove debug function
 void	print_token(t_token token)
@@ -54,9 +54,11 @@ void	print_token(t_token token)
 		default :
 			type = "Word";
 	}
-	puts("{");
-	printf("\tContent: %s\n\tType: %s\n", token.content, type);
-	puts("}");
+	ft_putstr_fd("{\n\tContent: ", 1);
+	ft_putstr_fd(token.content, 1);
+	ft_putstr_fd("\n\tType: ", 1);
+	ft_putstr_fd(type, 1);
+	ft_putstr_fd("\n}\n", 1);
 }
 
 /*
@@ -72,9 +74,9 @@ int	main(int argc, char *argv[] __attribute__((unused)), char **env)
 	// t_cmd	*cmd;
 
 	if (argc != 1)
-		return (write(2, "Minishell can not run external files.\n", 38) - 37);
+		return (ft_putendl_fd("Minishell can not run external files.", 2), 1);
 	g_status_code = 0;
-	// signal(SIGINT, handle_sigint);
+	signal(SIGINT, handle_sigint);
 	ft_memset(&minishell, 0, sizeof(minishell));
 	setup_environment(&minishell, env);
 	minishell.prompt = init_prompt();
@@ -87,16 +89,19 @@ int	main(int argc, char *argv[] __attribute__((unused)), char **env)
 		// run_cmd(cmd, env);
 		// free_cmd(cmd);
 		free(line);
-		for (int i = 0; i < minishell.token_count; i++){
-				print_token(minishell.tokens[i]);
+		if (minishell.token_count)
+		{
+			for (int i = 0; i < minishell.token_count; i++){
+					print_token(minishell.tokens[i]);
+			}
+			free_tokens(&minishell);
 		}
-		free_tokens(&minishell);
 		update_prompt(minishell.prompt);
 		line = readline(minishell.prompt->current);
 	}
 	free(minishell.prompt->previous);
 	free(minishell.prompt->current);
 	free(minishell.prompt);
-	puts("exit");
+	ft_putendl_fd("exit", 1);
 	return (g_status_code);
 }

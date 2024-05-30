@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/26 09:54:28 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/05/29 12:46:09 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,18 +105,15 @@ char	*get_token(char **input)
 	int		i;
 	char	*token;
 	char	*string;
-	char	quotes_found;
 
 	i = -1;
-	quotes_found = '\0';
 	token = NULL;
 	string = *input;
 	while (ft_isspace(*string))
 		string++;
 	while (string[++i])
 	{
-		quotes_found = ft_is_quotation(string[i], quotes_found);
-		if (quotes_found)
+		if (ft_is_quotation(string[i]))
 			continue;
 		if (is_delimiter(string[i]))
 		{
@@ -188,17 +185,14 @@ int	count_tokens(char *input)
 {
 	int		i;
 	int		token_count;
-	char	quotes_found;
 
 	i = -1;
 	token_count = 0;
-	quotes_found = '\0';
 	while (ft_isspace(*input))
 		input++;
 	while (input[++i])
 	{
-		quotes_found = ft_is_quotation(input[i], quotes_found);
-		if (quotes_found)
+		if (ft_is_quotation(input[i]))
 			continue ;
 		if (ft_isspace(input[i]) && input[i + 1])
 		{
@@ -232,7 +226,9 @@ t_token	*tokenize(t_minishell *minishell, char *input)
 	token_count = count_tokens(input);
 	minishell->token_count = token_count;
 	tokens = malloc((token_count + 1) * sizeof(t_token));
-	printf("There are %d tokens in your input\n", token_count);
+	ft_putstr_fd("There are ", 1);
+	ft_putnbr_fd(token_count, 1);
+	ft_putendl_fd(" tokens in your input", 1);
 	while (i < token_count)
 	{
 		tokens[i].content = get_token(&input);
@@ -246,6 +242,9 @@ t_token	*tokenize(t_minishell *minishell, char *input)
 void	parse(t_minishell *minishell, char *line)
 {
 	if (count_quotations(line))
-		write(2, RED "Open quotes detected, command rejected.\n" RESET, 50);
+	{
+		ft_putstr_fd(RED "Open quotes detected, command rejected.\n" RESET, 2);
+		return ;
+	}
 	minishell->tokens = tokenize(minishell, line);
 }

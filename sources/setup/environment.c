@@ -6,13 +6,23 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 10:07:41 by mdanish           #+#    #+#             */
-/*   Updated: 2024/05/24 12:07:31 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/05/29 15:48:49 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	create_matrix(t_minishell *minishell, char **env)
+/**
+ * @brief Creates the matrix duplicate of the environment variables.
+ * 
+ * It is done by mallocing for a char ** and the running ft_strdup() on each
+ * index of env and it is then stored in the newly allocated matrix.
+ * 
+ * @param minishell is used to store the matrix duplication.
+ * @param env is used to create the matrix duplication from.
+ */
+
+static void	create_matrix(t_minishell *minishell, char **env)
 {
 	int	i;
 
@@ -20,19 +30,30 @@ void	create_matrix(t_minishell *minishell, char **env)
 		minishell->envp_count++;
 	minishell->envp = malloc((sizeof(char *) * (minishell->envp_count + 1)));
 	if (!minishell->envp)
-		write(2, "Malloc failed while setting up the env variables\n", 49);
+		ft_putendl_fd("Malloc failed while setting up the env variables", 2);	// exit required
 	ft_memset(minishell->envp, 0, sizeof(char **));
 	i = -1;
 	while (++i < minishell->envp_count)
 	{
 		minishell->envp[i] = ft_strdup(env[i]);
 		if (!minishell->envp[i])
-			write(2, "Malloc failed while setting up the env variables\n", 49);
+			ft_putendl_fd("Malloc failed while setting up the env variables", 2);	// exit required
 	}
 	minishell->envp[minishell->envp_count] = NULL;
 }
 
-char	**sort_environment_variables(char **env, int env_count)
+/**
+ * @brief Sorts the list of the environment variables into alphabetical order.
+ * 
+ * It uses an implementation of bubble sort to achieve the result.
+ * 
+ * @param env is the list of environment variables that need to be sorted.
+ * @param env_count is the total number of the environment variables.
+ * 
+ * @return the final sorted matrix of the env.
+ */
+
+static char	**sort_environment_variables(char **env, int env_count)
 {
 	char	*store;
 	int		i;
@@ -57,6 +78,20 @@ char	**sort_environment_variables(char **env, int env_count)
 
 // We still need to come up with a proper cleanup.
 // The cleanup will require a listclear function as well.
+
+/**
+ * @brief Creates a duplicate of the environment variable in the form of a
+ * char ** matrix as well as a linked list.
+ * 
+ * It uses the create_matrix() function to create the char ** matrix and then
+ * creates a linked list of the * variables after the variables are sorted by
+ * sort_environment_variables().
+ * 
+ * @param minishell is used to store the final duplicates.
+ * @param env is used to create the duplicates from.
+ *
+ */
+
 void	setup_environment(t_minishell *minishell, char **env)
 {
 	int			len;
@@ -68,24 +103,19 @@ void	setup_environment(t_minishell *minishell, char **env)
 	{
 		var = malloc(sizeof(t_env_node));
 		if (!var)
-			write(2, "Malloc failed while setting up the env variables\n", 49);
-		ft_memset(var, 0, sizeof(t_env_node *));
+			break ;
+		ft_memset(var, 0, sizeof(t_env_node));
 		len = ft_strchr(*env, '=') - *env;
-		var->env_name = ft_substr(*env, 0, len);
-		if (!var->env_name)
-			write(2, "Malloc failed while setting up the env variables\n", 49);
-		var->env_content = ft_substr(*env, len + 1, ft_strlen(*env) - len - 1);
-		if (!var->env_content)
-			write(2, "Malloc failed while setting up the env variables\n", 49);
-		var->env_print = true;
-		var->next = NULL;
+		var->key = ft_substr(*env, 0, len);
+		if (!var->key)
+			break ;
+		var->value = ft_substr(*env, len + 1, ft_strlen(*env) - len - 1);
+		if (!var->value)
+			break ;
 		ft_lstadd_back(&minishell->env_variables, var);
 		env++;
 	}
-	// for (t_env_node *i = minishell->env_variables; i; i = i->next){
-	// 	puts("{");
-	// 	printf("\tType: %s\n\tContent: %s\n", "NAME", i->env_name);
-	// 	printf("\tType: %s\n\tContent: %s\n", "VALUE", i->env_content);
-	// 	puts("}\n");
-	// }
+	if (!*env)
+		return ;
+	ft_putendl_fd("Malloc failed while setting up the env variables", 2);	// exit required
 }
