@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   prompt.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.ae>  +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:28:38 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/04 23:52:33 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/05/28 23:48:06 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ t_prompt	*init_prompt(void)
 	t_prompt	*prompt;
 
 	prompt = malloc(sizeof(t_prompt));
+	prompt->previous = NULL;
+	prompt->current = NULL;
 	update_prompt(prompt);
 	return (prompt);
 }
@@ -27,9 +29,6 @@ t_prompt	*init_prompt(void)
 /**
  * @brief Update the provided prompt with the users current location
  * If current directory doesn't exist, return the previous prompt
- *
- * TODO: Use the minishell data structure as input to keep track of previous
- * location
  */
 void	update_prompt(t_prompt *prompt)
 {
@@ -48,7 +47,7 @@ void	update_prompt(t_prompt *prompt)
 	if (home_dir && current_dir)
 	{
 		i = ft_strlen(home_dir);
-		if (ft_strncmp(current_dir, home_dir, i) == 0)
+		if (ft_strncmp(current_dir, home_dir, i + 1) == 0)
 		{
 			prompt_str = ft_strjoin(prompt_str, "~");
 			temp = prompt_str;
@@ -69,4 +68,3 @@ void	update_prompt(t_prompt *prompt)
 	prompt->current = prompt_str;
 	return ;
 }
-

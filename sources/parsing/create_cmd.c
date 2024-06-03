@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   create_cmd.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.ae>  +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:34:36 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/04 17:34:46 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/05/13 15:33:45 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 t_cmd	*create_exec_cmd(t_minishell *minishell)
 {
 	t_cmd_exec	*exec_cmd;
-	t_token	*tokens;
-	int	i;
+	t_token		*tokens;
+	int			i;
 
 	i = 0;
 	exec_cmd = malloc(sizeof(t_cmd_exec));

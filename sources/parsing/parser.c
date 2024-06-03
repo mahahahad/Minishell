@@ -3,19 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.ae>  +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/04 14:43:00 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/05/29 12:46:09 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft.h"
 #include "minishell.h"
+#include <stdbool.h>
 
 int	count_quotations(char *line)
 {
-	int	count;
-	int	i;
+	int		count;
+	int		i;
 	char	quotes_found;
 
 	i = -1;
@@ -25,81 +27,115 @@ int	count_quotations(char *line)
 	{
 		if (line[i] == '"')
 		{
-			if (!quotes_found)
-			{
+			if (!quotes_found && ++count)
 				quotes_found = '"';
-				count++;
-			}
-			else if (quotes_found == '"')
-			{
+			else if (quotes_found == '"' && ++count)
 				quotes_found = '\0';
-				count++;
-			}
-			continue ;
 		}
 		if (line[i] == '\'')
 		{
-			if (!quotes_found)
-			{
+			if (!quotes_found && ++count)
 				quotes_found = '\'';
-				count++;
-			}
-			else if (quotes_found == '\'')
-			{
+			else if (quotes_found == '\'' && ++count)
 				quotes_found = '\0';
-				count++;
-			}
-			continue ;
 		}
 	}
-	return (count);
+	return (count % 2);
 }
 
 /**
- * @brief Skip the leading whitespace characters by moving the pointer to the
- * head of the string ahead.
- * Move the pointer to the head of the string to the start of the next token
+ * @brief
+ * Check if the provided character is in the list of special characters:
+ * - [ | ]
+ * - [ ( ]
+ * - [ ) ]
+ * - [ < ]
+ * - [ > ]
+ * - [ || ]
+ * - [ << ]
+ * - [ >> ]
+ * - [ && ]
+ */
+bool	is_delimiter(char c)
+{
+	if (c && ft_strchr("|<>()&", c))
+		return (true);
+	return (false);
+}
+
+/** @brief
+ * Checks if a character is in the list of repeatable characters:
+ * - [<<]
+ * - [>>]
+ * - [||]
+ * - [&&]
+ */
+bool	is_repeatable_char(char c1, char c2)
+{
+	if ((c1 == '<' && c2 == '<')\
+			|| (c1 == '>' && c2 == '>')\
+			|| (c1 == '|' && c2 == '|')\
+			|| (c1 == '&' && c2 == '&'))
+		return (true);
+	return (false);
+}
+
+/**
+ * @brief
+ * Returns the next token in the provided input string.
+ * Skip the leading whitespace characters by moving the string head
+ * pointer ahead.
+ * Move the string head pointer to the start of the next token
  * or '\0' if there isn't one and return this token.
  *
  * @usage
  *
  * Calling the function with the input:
- * - '       This token '
+ * - '       This|token '
  *
- * will result in the function returning "This" and input pointing to 't' in
- * 'token'.
+ * will result in the function returning "This" and input pointing to '|'
  *
  * Calling the function with the input:
  * - 'token'
  *
  * will result in the function returning "token" and input pointing to '\0'.
  */
-char	*get_token(char	**input)
+char	*get_token(char **input)
 {
-	int	i;
+	int		i;
 	char	*token;
 	char	*string;
-	char	quotes_found;
-	bool	space_found;
 
-	i = 0;
-	quotes_found = '\0';
-	space_found = false;
+	i = -1;
 	token = NULL;
 	string = *input;
 	while (ft_isspace(*string))
 		string++;
-	while (string[i])
+	while (string[++i])
 	{
-		quotes_found = ft_is_quotation(string[i], quotes_found);
-		if (!quotes_found && !space_found && i > 0 && ft_isspace(string[i]))
+		if (ft_is_quotation(string[i]))
+			continue;
+		if (is_delimiter(string[i]))
 		{
-			space_found = true;
+			if (is_repeatable_char(string[i], string[i + 1]))
+			{
+				if (!i)
+					i += 2;
+				break ;
+			}
+			else
+			{
+				if (!i)
+					i++;
+				break ;
+			}
+		}
+		if (ft_isspace(string[i]))
+		{
+			if (!i)
+				i++;
 			break ;
 		}
-		if (space_found && !quotes_found && !ft_isspace(string[i]))	
-			space_found = false;
-		i++;
 	}
 	token = malloc(i + 1);
 	if (!token)
@@ -131,70 +167,68 @@ int	get_token_type(char *content)
 			return (DBL_GREAT);
 		if (content[0] == '<' && content[1] == '<')
 			return (DBL_LESS);
+		if (content[0] == '|' && content[1] == '|')
+			return (OR);
+		if (content[0] == '&' && content[1] == '&')
+			return (AND);
 	}
 	return (WORD);
 }
 
 /**
- * @brief Counts how many tokens there are in the provided input string
- * Uses spaces as a delimiter but ignores them in quoted strings
+ * @brief
+ * Counts how many tokens there are in the provided input string.
+ * Uses spaces and special chars as delimiters but ignores them in quoted
+ * strings.
  */
 int	count_tokens(char *input)
 {
 	int		i;
-	int		j;
-	bool	space_found;
-	char	quotes_found;
+	int		token_count;
 
-	i = 0;
-	j = 0;
-	quotes_found = '\0';
-	space_found = false;
-	while (*input == ' ')
+	i = -1;
+	token_count = 0;
+	while (ft_isspace(*input))
 		input++;
-	while (input[i])
+	while (input[++i])
 	{
-		if (input[i] == '"')
+		if (ft_is_quotation(input[i]))
+			continue ;
+		if (ft_isspace(input[i]) && input[i + 1])
 		{
-			if (!quotes_found)
-				quotes_found = '"';
-			else if (quotes_found == '"')
-				quotes_found = '\0';
+			token_count++;
+			token_count += count_tokens(input + i + 1);
+			break ;
 		}
-		if (input[i] == '\'')
+		if (is_delimiter(input[i]))
 		{
-			if (!quotes_found)
-				quotes_found = '\'';
-			else if (quotes_found == '\'')
-				quotes_found = '\0';
+			if (i > 0 && !ft_isspace(input[i - 1]))
+				token_count++;
+			token_count++;
+			if (is_repeatable_char(input[i], input[i + 1]))
+				i++;
+			token_count += count_tokens(input + i + 1);
+			break ;
 		}
-		if (!quotes_found && !space_found && input[i] == ' ')
-		{
-			if (input[i + 1] && input[i + 1] != ' ')
-			{
-				j++;
-				space_found = true;
-			}
-		}
-		if (!quotes_found && input[i] != ' ')	
-			space_found = false;
-		i++;
 	}
-	if (i > 0)
-		j++;
-	return (j);
+	if (i > 0 && !token_count)
+		token_count++;
+	return (token_count);
 }
 
 t_token	*tokenize(t_minishell *minishell, char *input)
 {
 	t_token	*tokens;
-	int	i;
-	int	token_count;
+	int		i;
+	int		token_count;
 
 	i = 0;
 	token_count = count_tokens(input);
 	minishell->token_count = token_count;
 	tokens = malloc((token_count + 1) * sizeof(t_token));
+	ft_putstr_fd("There are ", 1);
+	ft_putnbr_fd(token_count, 1);
+	ft_putendl_fd(" tokens in your input", 1);
 	while (i < token_count)
 	{
 		tokens[i].content = get_token(&input);
@@ -207,7 +241,10 @@ t_token	*tokenize(t_minishell *minishell, char *input)
 
 void	parse(t_minishell *minishell, char *line)
 {
-	if (count_quotations(line) % 2 != 0)
-		fprintf(stderr, RED "Open quotes detected, command rejected.\n" RESET);
+	if (count_quotations(line))
+	{
+		ft_putstr_fd(RED "Open quotes detected, command rejected.\n" RESET, 2);
+		return ;
+	}
 	minishell->tokens = tokenize(minishell, line);
 }

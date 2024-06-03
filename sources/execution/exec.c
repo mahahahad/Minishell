@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.ae>  +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/04 23:29:48 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/05/29 12:34:08 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,23 +75,34 @@ int	exec_cmd(char **cmd, char **env)
 	{
 		absolute_cmd = find_cmd(cmd[0]);
 		if (!absolute_cmd)
-			return (fprintf(stderr, "%s: command not found\n", cmd_original), 127);
+		{
+			ft_putstr_fd(cmd_original, 2);
+			ft_putendl_fd(": command not found", 2);
+			return (127);
+		}
 		cmd[0] = absolute_cmd;
 	}
 	else
 	{
 		if (access(cmd[0], F_OK) == -1)
-			return (fprintf(stderr, "%s: no such file or directory\n",
-					cmd_original), 127);
+		{
+			ft_putstr_fd(cmd_original, 2);
+			ft_putendl_fd(": no such file or directory", 2);
+			return (127);
+		}
 		else if (access(cmd[0], X_OK) == -1)
-			return (fprintf(stderr, "%s: permission denied\n", cmd_original),
-				126);
+		{
+			ft_putstr_fd(cmd_original, 2);
+			ft_putendl_fd(": Permission denied", 2);
+			return (126);
+		}
 	}
 	pid = fork();
 	if (pid == 0)
 	{
 		execve(cmd[0], cmd, env);
-		fprintf(stderr, "%s: command not found\n", cmd_original);
+		ft_putstr_fd(cmd_original, 2);
+		ft_putendl_fd(": command not found", 2);
 		free(cmd_original);
 		exit(127);
 	}
@@ -103,9 +114,8 @@ int	exec_cmd(char **cmd, char **env)
 
 void	exec_builtin(char **cmd)
 {
-	if (ft_strncmp(cmd[0], "echo", 4) == 0)
-		echo(cmd + 1);
-	if (ft_strncmp(cmd[0], "cd", 2) == 0)
-		g_status_code = cd(cmd + 1);
+	if (ft_strncmp(cmd[0], "echo", 5) == 0)
+		ft_echo(cmd + 1);
+	if (ft_strncmp(cmd[0], "cd", 3) == 0)
+		g_status_code = ft_cd(cmd + 1);
 }
-

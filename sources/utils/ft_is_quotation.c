@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_is_quotation.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.ae>  +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 13:50:06 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/04 14:20:55 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/05/28 23:50:49 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,10 @@
  * Should return:
  * '"'
  */
-char	ft_is_quotation(char c, char quote)
+char	ft_is_quotation(char c)
 {
+	static char quote = '\0';
+
 	if (c == '"')
 	{
 		if (!quote)
