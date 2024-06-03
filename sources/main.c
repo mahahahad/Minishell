@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/29 12:38:07 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/03 22:15:30 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,13 +74,12 @@ int	main(int argc, char *argv[] __attribute__((unused)), char **env)
 	// t_cmd	*cmd;
 
 	if (argc != 1)
-		return (ft_putendl_fd("Minishell can not run external files.", 2), 1);
+		return (ft_putendl_fd("Minishell does not accept arguments.", 2), 1);
 	g_status_code = 0;
 	signal(SIGINT, handle_sigint);
 	ft_memset(&minishell, 0, sizeof(minishell));
 	setup_environment(&minishell, env);
-	minishell.prompt = init_prompt();
-	line = readline(minishell.prompt->current);
+	line = readline(B_YELLOW "minishell$ " RESET);
 	while (line)
 	{
 		add_history(line);
@@ -96,12 +95,8 @@ int	main(int argc, char *argv[] __attribute__((unused)), char **env)
 			}
 			free_tokens(&minishell);
 		}
-		update_prompt(minishell.prompt);
-		line = readline(minishell.prompt->current);
+		line = readline(B_YELLOW "minishell$ " RESET);
 	}
-	free(minishell.prompt->previous);
-	free(minishell.prompt->current);
-	free(minishell.prompt);
 	ft_putendl_fd("exit", 1);
 	return (g_status_code);
 }

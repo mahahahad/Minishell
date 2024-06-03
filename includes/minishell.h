@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/29 15:48:49 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/03 22:16:38 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,9 +140,7 @@ bool			is_builtin(char *str);
 void			free_cmd(t_cmd *cmd);
 void			free_tokens(t_minishell *minishell);
 
-// General
-t_prompt		*init_prompt(void);
-void			update_prompt(t_prompt *prompt);
+// Setup
 void			setup_environment(t_minishell *minishell, char **env);
 
 // Miscellaneous

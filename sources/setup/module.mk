@@ -1,2 +1,2 @@
-SETUP_SRCS := $(addprefix $(SETUP_DIR)/, prompt.c environment.c)
+SETUP_SRCS := $(addprefix $(SETUP_DIR)/, environment.c)
 SRCS += $(SETUP_SRCS)
