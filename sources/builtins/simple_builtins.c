@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/29 13:21:03 by mdanish           #+#    #+#             */
-/*   Updated: 2024/05/29 16:37:00 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/04 13:29:05 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 /**
  * @brief Prints to standard output a line of text.
  * 
- * It printf the arguments till cmd reaches null. While printing, it ensures
+ * It prints the arguments till cmd reaches null. While printing, it ensures
  * there is an argument after the current one before it prints a space to act
  * as a delimiter between the arguments.
  * 
@@ -89,7 +89,7 @@ void	ft_env(char **args, char **envp)
  * 
  * Upon completion, it sets the g_status_code to 0.
  * 
- * @param envp a char ** pointing to the matrix ft_env needs to print.
+ * @param args is used to ensure that no arguments or options are provided.
  *
  */
 
