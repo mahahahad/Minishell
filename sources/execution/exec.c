@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/04 20:50:21 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/04 21:51:52 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,7 @@ void	exec_builtin(char **cmd, t_minishell *minishell)
 	if (!ft_strncmp(*cmd, "echo", 5))
 		ft_echo(cmd);
 	else if (!ft_strncmp(*cmd, "cd", 3))
-		ft_cd(cmd, minishell->env_variables);
+		ft_cd(cmd, minishell);
 	else if (!ft_strncmp(*cmd, "pwd", 4))
 		ft_pwd(cmd);
 	else if (!ft_strncmp(*cmd, "export", 7))

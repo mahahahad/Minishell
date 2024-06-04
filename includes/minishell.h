@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/03 22:16:38 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/04 21:50:21 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,10 @@
 # include <readline/readline.h>
 # include <signal.h>
 # include <stdbool.h>
-# include <stdio.h>
-# include <stdlib.h>
 # include <string.h>
 # include <sys/wait.h>
 # include <termios.h>
 # include <time.h>
-# include <unistd.h>
 
 /** STRUCTURES **/
 
@@ -129,7 +126,7 @@ void			create_new_variable(t_env *new_var, int *length, char *string);
 bool			is_argument_valid(const char *string);
 
 // Other		(Update the name later)
-int				ft_cd(char **cmd);
+void			ft_cd(char **cmd, t_minishell *minishell);
 void			ft_echo(char **cmd);
 void			ft_env(char **args, char **envp);
 void			ft_pwd(char **args);
