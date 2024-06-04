@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/29 12:34:08 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/04 20:50:21 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ char	*find_cmd(char *cmd)
 /**
  * TODO: Check if command is builtin here
  */
-void	run_cmd(t_cmd *cmd, char **env)
+void	run_cmd(t_cmd *cmd, char **env, t_minishell * minishell)
 {
 	t_cmd_exec	*cmd_exec;
 
@@ -51,7 +51,7 @@ void	run_cmd(t_cmd *cmd, char **env)
 	{
 		cmd_exec = (t_cmd_exec *) cmd;
 		if (is_builtin(cmd_exec->tokens[0]))
-			exec_builtin(cmd_exec->tokens);
+			exec_builtin(cmd_exec->tokens, minishell);
 		else
 			exec_cmd(cmd_exec->tokens, env);
 	}
@@ -112,10 +112,39 @@ int	exec_cmd(char **cmd, char **env)
 	return (status);
 }
 
-void	exec_builtin(char **cmd)
+bool	is_builtin(char *str)
 {
-	if (ft_strncmp(cmd[0], "echo", 5) == 0)
-		ft_echo(cmd + 1);
-	if (ft_strncmp(cmd[0], "cd", 3) == 0)
-		g_status_code = ft_cd(cmd + 1);
+	if (!ft_strncmp(str, "echo", 5))
+		return (true);
+	else if (!ft_strncmp(str, "cd", 3))
+		return (true);
+	else if (!ft_strncmp(str, "pwd", 4))
+		return (true);
+	else if (!ft_strncmp(str, "export", 7))
+		return (true);
+	else if (!ft_strncmp(str, "unset", 6))
+		return (true);
+	else if (!ft_strncmp(str, "env", 4))
+		return (true);
+	else if (!ft_strncmp(str, "exit", 5))
+		return (true);
+	return (false);
+}
+
+void	exec_builtin(char **cmd, t_minishell *minishell)
+{
+	if (!ft_strncmp(*cmd, "echo", 5))
+		ft_echo(cmd);
+	else if (!ft_strncmp(*cmd, "cd", 3))
+		ft_cd(cmd, minishell->env_variables);
+	else if (!ft_strncmp(*cmd, "pwd", 4))
+		ft_pwd(cmd);
+	else if (!ft_strncmp(*cmd, "export", 7))
+		ft_export(minishell, cmd);
+	else if (!ft_strncmp(*cmd, "unset", 6))
+		ft_unset(minishell, cmd);
+	else if (!ft_strncmp(*cmd, "env", 4))
+		ft_env(cmd, minishell->envp);
+	// else if (!ft_strncmp(*cmd, "exit", 5))
+	// 	return (true);
 }

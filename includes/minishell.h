@@ -116,16 +116,16 @@ t_cmd			*create_exec_cmd(t_minishell *minishell);
 void			parse(t_minishell *minishell, char *line);
 
 // Execution
-void			exec_builtin(char **cmd);
+void			exec_builtin(char **cmd, t_minishell *minishell);
 int				exec_cmd(char **cmd, char **env);
-void			run_cmd(t_cmd *cmd, char **env);
+void			run_cmd(t_cmd *cmd, char **env, t_minishell *minishell);
 
 // Built-ins
 
 // Export
 void			add_to_matrix(t_minishell *minishell, char *new_var);
 void			ft_export(t_minishell *minishell, char **new_variable);
-void			create_new_variable(t_env_node *new_var, int *length, char *string);
+void			create_new_variable(t_env *new_var, int *length, char *string);
 bool			is_argument_valid(const char *string);
 
 // Other		(Update the name later)
@@ -144,6 +144,6 @@ void			free_tokens(t_minishell *minishell);
 void			setup_environment(t_minishell *minishell, char **env);
 
 // Miscellaneous
-void			ft_lstadd_back(t_env_node **list, t_env_node *new_node);
+void			ft_lstadd_back(t_env **list, t_env *new_node);
 
 #endif
