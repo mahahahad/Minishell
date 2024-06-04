@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 10:07:41 by mdanish           #+#    #+#             */
-/*   Updated: 2024/05/29 15:48:49 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/04 20:59:25 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,17 +94,17 @@ static char	**sort_environment_variables(char **env, int env_count)
 
 void	setup_environment(t_minishell *minishell, char **env)
 {
-	int			len;
-	t_env_node	*var;
+	int		len;
+	t_env	*var;
 
 	create_matrix(minishell, env);
 	env = sort_environment_variables(env, minishell->envp_count);
 	while (*env)
 	{
-		var = malloc(sizeof(t_env_node));
+		var = malloc(sizeof(t_env));
 		if (!var)
 			break ;
-		ft_memset(var, 0, sizeof(t_env_node));
+		ft_memset(var, 0, sizeof(t_env));
 		len = ft_strchr(*env, '=') - *env;
 		var->key = ft_substr(*env, 0, len);
 		if (!var->key)

@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 20:21:11 by mdanish           #+#    #+#             */
-/*   Updated: 2024/05/29 16:31:53 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/04 20:00:29 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ void	add_to_matrix(t_minishell *minishell, char *new_var)
  * 
  */
 
-void	create_new_variable(t_env_node *new_var, int *length, char *string)
+void	create_new_variable(t_env *new_var, int *length, char *string)
 {
 	if (!ft_strchr(string, '='))
 	{

@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 19:45:08 by mdanish           #+#    #+#             */
-/*   Updated: 2024/05/29 16:37:44 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/04 20:58:52 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@
  * 
  */
 
-static bool	check_for_existing_value(t_env_node *list, t_env_node *var, int len)
+static bool	check_for_existing_value(t_env *list, t_env *var, int len)
 {
 	if (!ft_strncmp(list->key, var->key, len))
 	{
@@ -62,10 +62,10 @@ static bool	check_for_existing_value(t_env_node *list, t_env_node *var, int len)
  * 
  */
 
-static void	add_to_list(t_minishell *minishell, t_env_node *var, int len)
+static void	add_to_list(t_minishell *minishell, t_env *var, int len)
 {
-	t_env_node	*list;
-	t_env_node	*store;
+	t_env	*list;
+	t_env	*store;
 
 	list = minishell->env_variables;
 	while (list->next)
@@ -97,7 +97,7 @@ static void	add_to_list(t_minishell *minishell, t_env_node *var, int len)
  * 
  */
 
-static void	ft_print_export(t_env_node *env)
+static void	ft_print_export(t_env *env)
 {
 	while (env)
 	{
@@ -136,8 +136,8 @@ static void	ft_print_export(t_env_node *env)
 
 void	ft_export(t_minishell *minishell, char **new_variables)
 {
-	t_env_node	*var;
-	int			length;
+	t_env	*var;
+	int		length;
 
 	g_status_code = 0;
 	if (!new_variables)
@@ -149,10 +149,10 @@ void	ft_export(t_minishell *minishell, char **new_variables)
 	{
 		if (!is_argument_valid(*new_variables) && new_variables++)
 			continue ;
-		var = malloc(sizeof(t_env_node));
+		var = malloc(sizeof(t_env));
 		if (!var)
 			ft_putendl_fd("Malloc failed while exporting a variable.", 2);	// exit required
-		ft_memset(var, 0, sizeof(t_env_node));
+		ft_memset(var, 0, sizeof(t_env));
 		create_new_variable(var, &length, *new_variables);
 		add_to_list(minishell, var, length);
 		add_to_matrix(minishell, *new_variables);

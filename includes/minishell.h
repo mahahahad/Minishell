@@ -38,7 +38,7 @@
 
 typedef struct s_cmd t_cmd;
 typedef struct s_cmd_exec t_cmd_exec;
-typedef struct s_env_node t_env_node;
+typedef struct s_env t_env;
 typedef struct s_minishell t_minishell;
 typedef struct s_prompt t_prompt;
 typedef struct s_token t_token;
@@ -73,11 +73,11 @@ struct s_prompt
 	char		*current;
 };
 
-struct s_env_node
+struct s_env
 {
 	char		*key;
 	char		*value;
-	t_env_node	*next;
+	t_env		*next;
 };
 
 struct s_minishell
@@ -87,7 +87,7 @@ struct s_minishell
 	char		**envp;
 	t_token		*tokens;
 	t_prompt	*prompt;
-	t_env_node	*env_variables;
+	t_env		*env_variables;
 };
 
 /*

@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/29 13:34:56 by mdanish           #+#    #+#             */
-/*   Updated: 2024/05/29 16:36:14 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/04 20:00:29 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,8 @@
 
 static void	ft_unset_from_list(t_minishell *minishell, char *var, int var_len)
 {
-	t_env_node	*delnode;
-	t_env_node	*store;
+	t_env	*delnode;
+	t_env	*store;
 
 	delnode = minishell->env_variables;
 	if (!ft_strncmp(var, delnode->key, var_len))
