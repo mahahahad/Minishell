@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/04 23:40:35 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/05 00:44:08 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ static bool	check_invalid_args(char **args, t_env *list)
 	bool	error_flag;
 
 	error_flag = false;
-	if (args[1]&& (args[2] || args[1][0] == '-'))
+	if (args[1] && (args[2] || args[1][0] == '-'))
 		error_flag = true;
 	if (args[1] && args[2])
 		ft_putendl_fd("cd: too many arguments", 2);
@@ -109,7 +109,7 @@ static char	*make_value(char *key, char *value, int total_length)
 
 static void	chg_dir(char **args, t_env *old, t_env *new, t_minishell *minishell)
 {
-	char *var;
+	char	*var;
 
 	var = getcwd(NULL, 0);
 	if (chdir(args[1]))
