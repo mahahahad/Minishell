@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/04 21:51:52 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/05 00:37:13 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,6 +112,19 @@ int	exec_cmd(char **cmd, char **env)
 	return (status);
 }
 
+/**
+ * @brief Checks if the command is a builtin.
+ * 
+ * It goes through a bunch of if and else statements that call ft_strncmp()
+ * with different builtin names. If one of them return a difference of 0, the
+ * function returns a positive.
+ * 
+ * @param str is the name of the command that will be compared.
+ *
+ * @return true if the command name is a builtin and false it it not.
+ * 
+ */
+
 bool	is_builtin(char *str)
 {
 	if (!ft_strncmp(str, "echo", 5))
@@ -130,6 +143,18 @@ bool	is_builtin(char *str)
 		return (true);
 	return (false);
 }
+
+/**
+ * @brief Executes the correct builtin.
+ * 
+ * It goes through a bunch of if and else statements that call ft_strncmp()
+ * with different builtin names. If one of them return a difference of 0, the
+ * corresponding function is called.
+ * 
+ * @param cmd contains the name of the command that will be compared.
+ * @param minishell is sent to the builtins as required.
+ * 
+ */
 
 void	exec_builtin(char **cmd, t_minishell *minishell)
 {
