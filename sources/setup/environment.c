@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 10:07:41 by mdanish           #+#    #+#             */
-/*   Updated: 2024/06/04 20:59:25 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/06 14:30:56 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@
  * @param minishell is used to store the matrix duplication.
  * @param env is used to create the matrix duplication from.
  */
-
 static void	create_matrix(t_minishell *minishell, char **env)
 {
 	int	i;
@@ -52,7 +51,6 @@ static void	create_matrix(t_minishell *minishell, char **env)
  * 
  * @return the final sorted matrix of the env.
  */
-
 static char	**sort_environment_variables(char **env, int env_count)
 {
 	char	*store;
@@ -91,7 +89,6 @@ static char	**sort_environment_variables(char **env, int env_count)
  * @param env is used to create the duplicates from.
  *
  */
-
 void	setup_environment(t_minishell *minishell, char **env)
 {
 	int		len;

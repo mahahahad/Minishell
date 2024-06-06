@@ -1,23 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putnbr_base_fd.c                                :+:      :+:    :+:   */
+/*   ft_isdigit.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/10/22 10:38:05 by mdanish           #+#    #+#             */
-/*   Updated: 2024/06/06 20:22:35 by mdanish          ###   ########.fr       */
+/*   Created: 2023/07/03 15:11:19 by mdanish           #+#    #+#             */
+/*   Updated: 2024/06/06 20:18:51 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-void	ft_putnbr_base_fd(long int number, int fd, char *base, int base_len)
+int	ft_isdigit(int character)
 {
-	if (fd >= 0)
-	{
-		if (number >= base_len)
-			ft_putnbr_base_fd((number / base_len), fd, base, base_len);
-		ft_putchar_fd(*(base + (number % base_len)), fd);
-	}
+	if (character > 47 && character < 58)
+		return (1);
+	return (0);
 }

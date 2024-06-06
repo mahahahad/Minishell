@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/29 13:21:03 by mdanish           #+#    #+#             */
-/*   Updated: 2024/06/05 00:28:50 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/06 14:30:56 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@
  * @param cmd points to the strings ft_echo needs to print. (NULL terminated)
  *
  */
-
 void	ft_echo(char **cmd)
 {
 	int	index;
@@ -61,7 +60,6 @@ void	ft_echo(char **cmd)
  * @param envp a char ** pointing to the matrix ft_env needs to print.
  *
  */
-
 void	ft_env(char **args, char **envp)
 {
 	if (args && *args && **args)
@@ -92,7 +90,6 @@ void	ft_env(char **args, char **envp)
  * @param args is used to ensure that no arguments or options are provided.
  *
  */
-
 void	ft_pwd(char **args)
 {
 	char	*current_working_directory;

@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/05 00:44:08 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/06 14:30:56 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@
  * @return true is invalid arguments are detected, false if arguments are valid.
  * 
  */
-
 static bool	check_invalid_args(char **args, t_env *list)
 {
 	bool	error_flag;
@@ -72,7 +71,6 @@ static bool	check_invalid_args(char **args, t_env *list)
  * @return the final string matching the above form.
  * 
  */
-
 static char	*make_value(char *key, char *value, int total_length)
 {
 	char	*matrix_index;
@@ -106,7 +104,6 @@ static char	*make_value(char *key, char *value, int total_length)
  * @param minishell is used to access the matrix and list to add variables.
  * 
  */
-
 static void	chg_dir(char **args, t_env *old, t_env *new, t_minishell *minishell)
 {
 	char	*var;
@@ -153,7 +150,6 @@ static void	chg_dir(char **args, t_env *old, t_env *new, t_minishell *minishell)
  * @param minishell contains the env stores that will be updated on success.
  * 
  */
-
 void	ft_cd(char **args, t_minishell *minishell)
 {
 	t_env	*old;

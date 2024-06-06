@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/05 00:20:26 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/06 18:08:54 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,23 +100,3 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 	ft_putendl_fd("exit", 1);
 	return (g_status_code);
 }
-
-	// char *new_variable[] = {"OLDPWD", NULL};
-	// ft_export(&minishell, new_variable);
-	// while (*(argv + 1))
-	// {
-	// 	char *cmd[] = {"cd", *(++argv), NULL};
-	// 	ft_putendl_fd(RED "BEFORE" RESET, 1);
-	// 	ft_pwd(NULL);
-	// 	ft_export(&minishell, NULL);
-	// 	ft_putchar_fd('\n', 1);
-	// 	ft_env(NULL,  minishell.envp);
-	// 	ft_putchar_fd('\n', 1);
-	// 	ft_cd(cmd, &minishell);
-	// 	ft_putendl_fd(GREEN "AFTER" RESET, 1);
-	// 	ft_pwd(NULL);
-	// 	ft_export(&minishell, NULL);
-	// 	ft_putchar_fd('\n', 1);
-	// 	ft_env(NULL, minishell.envp);
-	// 	ft_putchar_fd('\n', 1);
-	// }
