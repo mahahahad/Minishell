@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/05 00:37:13 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/06 14:30:56 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,6 @@ int	exec_cmd(char **cmd, char **env)
  * @return true if the command name is a builtin and false it it not.
  * 
  */
-
 bool	is_builtin(char *str)
 {
 	if (!ft_strncmp(str, "echo", 5))
@@ -155,7 +154,6 @@ bool	is_builtin(char *str)
  * @param minishell is sent to the builtins as required.
  * 
  */
-
 void	exec_builtin(char **cmd, t_minishell *minishell)
 {
 	if (!ft_strncmp(*cmd, "echo", 5))

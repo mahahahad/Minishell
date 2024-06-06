@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 19:45:08 by mdanish           #+#    #+#             */
-/*   Updated: 2024/06/04 20:58:52 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/06 18:09:28 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@
  * @return true if the key exists, false if the key is not found in the list
  * 
  */
-
 static bool	check_for_existing_value(t_env *list, t_env *var, int len)
 {
 	if (!ft_strncmp(list->key, var->key, len))
@@ -61,7 +60,6 @@ static bool	check_for_existing_value(t_env *list, t_env *var, int len)
  * @param len is the length of the key of the new node.
  * 
  */
-
 static void	add_to_list(t_minishell *minishell, t_env *var, int len)
 {
 	t_env	*list;
@@ -96,7 +94,6 @@ static void	add_to_list(t_minishell *minishell, t_env *var, int len)
  * @param env is the linked list of variables that will be printed to stdout.
  * 
  */
-
 static void	ft_print_export(t_env *env)
 {
 	while (env)
@@ -133,7 +130,6 @@ static void	ft_print_export(t_env *env)
  * @param new_variables will be exported individually. (NULL terminated)
  * 
  */
-
 void	ft_export(t_minishell *minishell, char **new_variables)
 {
 	t_env	*var;
