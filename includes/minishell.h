@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/06 18:12:36 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/10 15:17:07 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,7 @@ struct s_cmd_exec
 
 /** FUNCTIONS **/
 // Parsing
+char		*dollar_expansion(char *token, t_env *list);
 t_cmd		*create_exec_cmd(t_minishell *minishell);
 void		parse(t_minishell *minishell, char *line);
 

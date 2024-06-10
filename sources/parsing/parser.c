@@ -6,13 +6,11 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/29 12:46:09 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/10 17:06:18 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
 #include "minishell.h"
-#include <stdbool.h>
 
 int	count_quotations(char *line)
 {
@@ -233,6 +231,9 @@ t_token	*tokenize(t_minishell *minishell, char *input)
 	{
 		tokens[i].content = get_token(&input);
 		tokens[i].type = get_token_type(tokens[i].content);
+		if (tokens[i].type == WORD)
+			tokens[i].content = dollar_expansion(tokens[i].content, \
+			minishell->env_variables);
 		i++;
 	}
 	tokens[i].content = NULL;
