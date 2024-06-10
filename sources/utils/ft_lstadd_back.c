@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 18:57:19 by mdanish           #+#    #+#             */
-/*   Updated: 2024/06/04 20:59:56 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/10 19:00:13 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	ft_lstadd_back(t_env **list, t_env *new_node)
 {
-	t_env *last;
+	t_env	*last;
 
 	if (!*list)
 		*list = new_node;

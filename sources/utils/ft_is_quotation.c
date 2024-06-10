@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 13:50:06 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/28 23:50:49 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/10 19:00:00 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@
  */
 char	ft_is_quotation(char c)
 {
-	static char quote = '\0';
+	static char	quote = '\0';
 
 	if (c == '"')
 	{

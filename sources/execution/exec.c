@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/06 14:30:56 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/10 18:58:59 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ char	*find_cmd(char *cmd)
 /**
  * TODO: Check if command is builtin here
  */
-void	run_cmd(t_cmd *cmd, char **env, t_minishell * minishell)
+void	run_cmd(t_cmd *cmd, char **env, t_minishell *minishell)
 {
 	t_cmd_exec	*cmd_exec;
 
