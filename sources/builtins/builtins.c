@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/29 13:35:12 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/11 12:03:07 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,10 @@ bool	is_builtin(char *str)
 	return (false);
 }
 
-int	ft_cd(char **cmd)
-{
-	if (cmd[1])
-		return (ft_putendl_fd("cd: too many arguments", 2), 1);
-	chdir(cmd[0]);
-	return (0);
-}
+// int	ft_cd(char **cmd)
+// {
+// 	if (cmd[1])
+// 		return (ft_putendl_fd("cd: too many arguments", 2), 1);
+// 	chdir(cmd[0]);
+// 	return (0);
+// }

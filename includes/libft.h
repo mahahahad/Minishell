@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 15:29:04 by mdanish           #+#    #+#             */
-/*   Updated: 2024/05/29 12:17:27 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/04 11:56:25 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@ char	*ft_char_strjoin(char const *s1, char const *s2, char const c);
 void	ft_free_2d_arr(char **arr);
 char	ft_is_quotation(char c);
 bool	ft_isspace(char c);
+int	ft_isdigit(char c);
+int	ft_isalnum(const char c);
 char	*ft_join(char **tab);
 void	*ft_memset(void *array, int character, size_t bytes);
 int		ft_printarr(char **tab);

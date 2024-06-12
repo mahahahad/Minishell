@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/29 12:38:07 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/11 20:43:25 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,9 +84,9 @@ int	main(int argc, char *argv[] __attribute__((unused)), char **env)
 	while (line)
 	{
 		add_history(line);
-		parse(&minishell, line);
+		t_cmd *cmd = parse(&minishell, line);
 		// cmd = create_exec_cmd(&minishell);
-		// run_cmd(cmd, env);
+		run_cmd(cmd, env);
 		// free_cmd(cmd);
 		free(line);
 		if (minishell.token_count)

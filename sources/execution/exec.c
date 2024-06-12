@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/29 12:34:08 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/11 22:24:51 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,35 @@ char	*find_cmd(char *cmd)
 	return (final_cmd);
 }
 
+char	**convert_cmd_exec(t_token_node *tokens)
+{
+	int	i;
+	t_token_node *current;
+	char	**str_tokens;
+
+	i = 0;
+	current = tokens;
+	while (current)
+	{
+		i++;
+		current = current->next;
+	}
+	str_tokens = malloc(sizeof(char *) * (i + 1));
+	// TODO: Handle malloc fail properly
+	if (!str_tokens)
+		exit(1);
+	i = 0;
+	current = tokens;
+	while (current)
+	{
+		str_tokens[i] = ft_strdup(current->current->content);
+		current = current->next;
+		i++;
+	}
+	str_tokens[i] = NULL;
+	return (str_tokens);
+}
+
 /**
  * TODO: Check if command is builtin here
  */
@@ -50,10 +79,10 @@ void	run_cmd(t_cmd *cmd, char **env)
 	if (cmd->type == CMD_EXEC)
 	{
 		cmd_exec = (t_cmd_exec *) cmd;
-		if (is_builtin(cmd_exec->tokens[0]))
-			exec_builtin(cmd_exec->tokens);
-		else
-			exec_cmd(cmd_exec->tokens, env);
+		// if (is_builtin(cmd_exec->tokens[0].current->content))
+		// 	exec_builtin(cmd_exec->tokens);
+		// else
+		exec_cmd(convert_cmd_exec(cmd_exec->tokens), env);
 	}
 }
 
@@ -112,10 +141,10 @@ int	exec_cmd(char **cmd, char **env)
 	return (status);
 }
 
-void	exec_builtin(char **cmd)
-{
-	if (ft_strncmp(cmd[0], "echo", 5) == 0)
-		ft_echo(cmd + 1);
-	if (ft_strncmp(cmd[0], "cd", 3) == 0)
-		g_status_code = ft_cd(cmd + 1);
-}
+// void	exec_builtin(char **cmd)
+// {
+// 	if (ft_strncmp(cmd[0], "echo", 5) == 0)
+// 		ft_echo(cmd + 1);
+// 	if (ft_strncmp(cmd[0], "cd", 3) == 0)
+// 		g_status_code = ft_cd(cmd + 1);
+// }

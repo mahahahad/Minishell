@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/29 12:46:09 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/11 22:14:03 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,22 +99,33 @@ bool	is_repeatable_char(char c1, char c2)
  * - 'token'
  *
  * will result in the function returning "token" and input pointing to '\0'.
+ *
+ * Calling the function with the input:
+ * - 'token$HOME'
+ *
+ * will result in the function returning "token/home/user" and input pointing to '\0'.
  */
 char	*get_token(char **input)
 {
 	int		i;
 	char	*token;
 	char	*string;
+	char	quotes_found;
 
 	i = -1;
 	token = NULL;
 	string = *input;
+	quotes_found = '\0';
 	while (ft_isspace(*string))
 		string++;
 	while (string[++i])
 	{
-		if (ft_is_quotation(string[i]))
-			continue;
+		// if (quotes_found != '\'' && string[i] == '$')
+		// 	get_env_var(string, &i);
+		// if (!string[i])
+		// 	break ;
+		if (ft_is_quotation(string[i]) && (quotes_found = string[i]))
+			continue ;
 		if (is_delimiter(string[i]))
 		{
 			if (is_repeatable_char(string[i], string[i + 1]))
@@ -236,15 +247,83 @@ t_token	*tokenize(t_minishell *minishell, char *input)
 		i++;
 	}
 	tokens[i].content = NULL;
+	minishell->active_token = &tokens[0];
 	return (tokens);
 }
 
-void	parse(t_minishell *minishell, char *line)
+t_cmd	*parse(t_minishell *minishell, char *line)
 {
 	if (count_quotations(line))
 	{
 		ft_putstr_fd(RED "Open quotes detected, command rejected.\n" RESET, 2);
-		return ;
+		return (NULL);
 	}
 	minishell->tokens = tokenize(minishell, line);
+	return (parse_line(minishell));
 }
+
+t_cmd	*parse_line(t_minishell *minishell)
+{
+	return (parse_pipe(minishell));
+}
+
+t_cmd	*parse_pipe(t_minishell *minishell)
+{
+	return (parse_exec(minishell));
+}
+
+/**
+ * @brief Add the specified token to the end of the tokens list
+ */
+void	push_token(t_token_node **tokens, t_token *token)
+{
+	t_token_node	*new_token;
+	t_token_node	*current;
+
+	new_token = malloc(sizeof(t_token_node));
+	new_token->current = token;
+	new_token->next = NULL;
+	current = *tokens;
+	if (!current)
+	{
+		(*tokens) = new_token;
+		return ;
+	}
+	while (current->next)
+		current = current->next;
+	current->next = new_token;
+	// return (tokens_head);
+}
+
+t_cmd	*parse_exec(t_minishell *minishell)
+{
+	t_cmd	*node;
+	t_cmd_exec	*cmd;
+	// t_token_node	*cmd_tokens;
+	// t_token_node	cmd_tokens_head;
+	int	i;
+
+	i = 0;
+	node = create_exec_cmd(minishell);
+	cmd = (t_cmd_exec *) node;
+	// parse_redir(minishell);
+	// cmd_tokens = cmd->tokens;
+	// cmd_tokens = malloc(sizeof(t_token_node));
+	// cmd_tokens_head = *cmd_tokens;
+	while (i < minishell->token_count && minishell->active_token->type != PIPE)
+	{
+		push_token(&cmd->tokens, minishell->active_token);
+		// cmd_tokens->current = minishell->active_token;
+		// // cmd->tokens->current = minishell->active_token;
+		minishell->active_token = &minishell->tokens[++i];
+		// cmd_tokens = cmd_tokens->next;
+		// cmd_tokens = malloc(sizeof(t_token_node));
+	}
+	// cmd->tokens = &cmd_tokens_head;
+	return ((t_cmd *) cmd);
+}
+
+// t_cmd	*parse_redir(t_minishell *minishell)
+// {
+// 	create_cmd
+// }
