@@ -1,7 +1,8 @@
 NAME := minishell
 CC := cc
 CFLAGS := -Wall -Werror -Wextra -Iincludes
-ADDITIONAL_FLAGS := -lreadline -I/usr/include 
+ADDITIONAL_FLAGS := -lreadline -I/usr/include
+# ADDITIONAL_FLAGS += -I/opt/vagrant/embedded/include/ -l/opt/vagrant/embedded/share/
 
 # Directories
 SRCS_DIR := sources
@@ -28,7 +29,8 @@ RESET := \033[0m
 
 ifeq ($(shell uname -s), Darwin)
 	# Ultimate solution to finding the readline library on macos
-	MACOS_INCLUDE_PATHS := /usr/local/opt/readline/ /opt/local/ /usr/local/ /usr/
+	# MACOS_INCLUDE_PATHS := /usr/local/opt/readline/ /opt/local/ /usr/local/ /usr/
+	MACOS_INCLUDE_PATHS := /opt/vagrant/embedded/ 
 	ADDITIONAL_FLAGS += $(patsubst %, -I%include, $(MACOS_INCLUDE_PATHS))
 	ADDITIONAL_FLAGS += $(patsubst %, -L%lib, $(MACOS_INCLUDE_PATHS))
 	# ADDITIONAL_FLAGS += -I/usr/local/opt/readline/include -L/usr/local/opt/readline/lib

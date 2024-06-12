@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/11 20:43:22 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/06/12 15:21:22 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,5 +160,6 @@ void			setup_environment(t_minishell *minishell, char **env);
 
 // Miscellaneous
 void			ft_lstadd_back(t_env_node **list, t_env_node *new_node);
+void			rl_replace_line(const char *text, int clear_undo);
 
 #endif
