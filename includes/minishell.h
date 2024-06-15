@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/12 15:21:22 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/06/12 19:55:37 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,8 +93,8 @@ struct s_minishell
 	int			token_count;
 	int			envp_count;
 	char		**envp;
-	t_token		*active_token;
-	t_token		*tokens;
+	t_token_node		*tokens;
+	t_token_node	**tokens_head;
 	t_prompt	*prompt;
 	t_env_node	*env_variables;
 };

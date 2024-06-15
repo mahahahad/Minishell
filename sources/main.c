@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/11 20:43:25 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/06/12 19:57:58 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,13 +89,13 @@ int	main(int argc, char *argv[] __attribute__((unused)), char **env)
 		run_cmd(cmd, env);
 		// free_cmd(cmd);
 		free(line);
-		if (minishell.token_count)
-		{
-			for (int i = 0; i < minishell.token_count; i++){
-					print_token(minishell.tokens[i]);
-			}
-			free_tokens(&minishell);
-		}
+		// if (minishell.token_count)
+		// {
+		// 	for (int i = 0; i < minishell.token_count; i++){
+		// 			print_token(minishell.tokens[i]);
+		// 	}
+		// 	free_tokens(&minishell);
+		// }
 		update_prompt(minishell.prompt);
 		line = readline(minishell.prompt->current);
 	}

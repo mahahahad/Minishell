@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/11 22:14:03 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/06/15 20:44:12 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -227,28 +227,66 @@ int	count_tokens(char *input)
 	return (token_count);
 }
 
-t_token	*tokenize(t_minishell *minishell, char *input)
+/**
+ * @brief Add the specified token to the end of the tokens list
+ */
+void	push_token(t_token_node **tokens, t_token *token)
 {
-	t_token	*tokens;
+	t_token_node	*new_token;
+	t_token_node	*current;
+
+	new_token = malloc(sizeof(t_token_node));
+	new_token->current = token;
+	new_token->next = NULL;
+	current = (*tokens);
+	if (!current)
+	{
+		(*tokens) = new_token;
+		return ;
+	}
+	while (current->next)
+		current = current->next;
+	current->next = new_token;
+	// return (tokens_head);
+}
+
+/**
+ * @brief
+ * Split the input based on all the tokens
+ * Sets the tokens linked list in the minishell struct to allow for convenient navigation in other functions
+ *
+ * @returns
+ * The linked list containing all the tokens
+*/
+t_token_node	*tokenize(t_minishell *minishell, char *input)
+{
+	t_token	*token;
+	t_token_node	*tokens_list;
 	int		i;
 	int		token_count;
 
 	i = 0;
 	token_count = count_tokens(input);
 	minishell->token_count = token_count;
-	tokens = malloc((token_count + 1) * sizeof(t_token));
+	tokens_list = NULL;
 	ft_putstr_fd("There are ", 1);
 	ft_putnbr_fd(token_count, 1);
 	ft_putendl_fd(" tokens in your input", 1);
 	while (i < token_count)
 	{
-		tokens[i].content = get_token(&input);
-		tokens[i].type = get_token_type(tokens[i].content);
+		token = malloc(sizeof(t_token));
+		token->content = get_token(&input);
+		token->type = get_token_type(token->content);
+		push_token(&tokens_list, token);
+		// tokens_list->current = token;
+		// tokens_list->next = NULL;
+		// tokens_list = tokens_list->next;
+		// tokens_list = malloc(sizeof(t_token_node));
 		i++;
 	}
-	tokens[i].content = NULL;
-	minishell->active_token = &tokens[0];
-	return (tokens);
+	minishell->tokens_head = &tokens_list;
+	// minishell->active_token = &tokens[0];
+	return (tokens_list);
 }
 
 t_cmd	*parse(t_minishell *minishell, char *line)
@@ -269,31 +307,15 @@ t_cmd	*parse_line(t_minishell *minishell)
 
 t_cmd	*parse_pipe(t_minishell *minishell)
 {
-	return (parse_exec(minishell));
+	t_cmd	*cmd;
+
+	cmd = parse_exec(minishell);
+	// Pipe handling goes here.
+	if (minishell->tokens && minishell->tokens->current->type == PIPE)
+ 		puts("PIPE HANDLING GOES HERE");
+	return (cmd);
 }
 
-/**
- * @brief Add the specified token to the end of the tokens list
- */
-void	push_token(t_token_node **tokens, t_token *token)
-{
-	t_token_node	*new_token;
-	t_token_node	*current;
-
-	new_token = malloc(sizeof(t_token_node));
-	new_token->current = token;
-	new_token->next = NULL;
-	current = *tokens;
-	if (!current)
-	{
-		(*tokens) = new_token;
-		return ;
-	}
-	while (current->next)
-		current = current->next;
-	current->next = new_token;
-	// return (tokens_head);
-}
 
 t_cmd	*parse_exec(t_minishell *minishell)
 {
@@ -310,12 +332,14 @@ t_cmd	*parse_exec(t_minishell *minishell)
 	// cmd_tokens = cmd->tokens;
 	// cmd_tokens = malloc(sizeof(t_token_node));
 	// cmd_tokens_head = *cmd_tokens;
-	while (i < minishell->token_count && minishell->active_token->type != PIPE)
+	while (i < minishell->token_count && minishell->tokens->current->type != PIPE)
 	{
-		push_token(&cmd->tokens, minishell->active_token);
+		push_token(&cmd->tokens, minishell->tokens->current);
+		minishell->tokens = minishell->tokens->next;
+		i++;
 		// cmd_tokens->current = minishell->active_token;
 		// // cmd->tokens->current = minishell->active_token;
-		minishell->active_token = &minishell->tokens[++i];
+		// minishell->active_token = malloc(sizeof(t_token_node));
 		// cmd_tokens = cmd_tokens->next;
 		// cmd_tokens = malloc(sizeof(t_token_node));
 	}
@@ -325,5 +349,22 @@ t_cmd	*parse_exec(t_minishell *minishell)
 
 // t_cmd	*parse_redir(t_minishell *minishell)
 // {
-// 	create_cmd
+// 	while (minishell->tokens->current->type == GREAT || minishell->tokens->current->type == LESS)
+// 	{
+// 		minishell->tokens = minishell->tokens->next;
+// 		if (!minishell->tokens || minishell->tokens->current->type != WORD)
+// 			puts("No file for redirection found");
+// 	}
 // }
+
+/*
+Logic
+
+Tokens are a linked list
+Current token is a t_token
+Next token is a t_token_node
+Another variable stores the head of the linked list (in case it is needed)
+
+Looping through while creating cmd_exec iterates through the tokens linked list and updates the first token in the linked list
+First token in the linked list is used for comparisons in parsing
+*/
