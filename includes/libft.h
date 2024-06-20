@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 15:29:04 by mdanish           #+#    #+#             */
-/*   Updated: 2024/06/10 18:18:25 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/20 17:15:58 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 # define HEX_UP "0123456789ABCDEF"
 # define DECIMAL "0123456789"
 
+char	*ft_c_strjoin_free(char *s1, char *s2, char c, int free_string);
 char	*ft_char_strjoin(char const *s1, char const *s2, char const c);
 void	ft_free_2d_arr(char **arr);
 char	ft_is_quotation(char c);
@@ -42,6 +43,7 @@ char	**ft_split(char const *s, char c);
 char	*ft_strchr(const char *s, int c);
 void	ft_strcpy(char *dest, char const *src);
 char	*ft_strdup(const char *src);
+char	*ft_strjoin_free(char *s1, char *s2, int free_string);
 char	*ft_strjoin(char const *s1, char const *s2);
 size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize);
 size_t	ft_strlen(const char *str);

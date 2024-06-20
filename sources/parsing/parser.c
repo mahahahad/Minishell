@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/10 17:06:18 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/20 23:37:19 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -232,8 +232,11 @@ t_token	*tokenize(t_minishell *minishell, char *input)
 		tokens[i].content = get_token(&input);
 		tokens[i].type = get_token_type(tokens[i].content);
 		if (tokens[i].type == WORD)
+		{
 			tokens[i].content = dollar_expansion(tokens[i].content, \
 			minishell->env_variables);
+			tokens[i].content = wildcards(tokens[i].content, tokens[i].content);
+		}
 		i++;
 	}
 	tokens[i].content = NULL;

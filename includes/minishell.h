@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/10 15:17:07 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/20 23:37:30 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,15 @@
 # define B_YELLOW "\033[33;1m"
 # define RESET "\033[0m"
 
+# include <dirent.h>
+# include <errno.h>
 # include "libft.h"
 # include <readline/history.h>
 # include <readline/readline.h>
 # include <signal.h>
 # include <stdbool.h>
 # include <string.h>
+# include <sys/types.h>
 # include <sys/wait.h>
 # include <termios.h>
 # include <time.h>
@@ -35,6 +38,7 @@ extern int					g_status_code;
 
 /** STRUCTURES **/
 typedef enum e_token_types	t_type;
+typedef struct dirent		t_dir;
 typedef struct s_cmd		t_cmd;
 typedef struct s_cmd_exec	t_cmd_exec;
 typedef struct s_env		t_env;
@@ -104,6 +108,7 @@ struct s_cmd_exec
 char		*dollar_expansion(char *token, t_env *list);
 t_cmd		*create_exec_cmd(t_minishell *minishell);
 void		parse(t_minishell *minishell, char *line);
+char		*wildcards(char *token, char *store);
 
 // Execution
 void		exec_builtin(char **cmd, t_minishell *minishell);
