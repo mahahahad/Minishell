@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 17:04:29 by mdanish           #+#    #+#             */
-/*   Updated: 2024/06/10 22:38:41 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/21 02:28:35 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,19 +156,16 @@ static void	replace_status_code(char **token, int start, int end, int length)
  */
 static bool	invalid_key(char **token, int *start, int *end, int length)
 {
-	while (token[0][++(*start)])
+	while (token[0][(*start)++])
 	{
-		if (token[0][*start - 1] == '\'')
-		{
-			(*start)++;
-			while (token[0][*start - 1] != '\'')
-				(*start)++;
+		if (ft_is_quotation(token[0][*start - 1]) == '\'')
 			continue ;
-		}
-		if (token[0][*start - 1] == '$')
+		else if (token[0][*start - 1] == '$')
+			break ;
+		if (!token[0][*start - 1])
 			break ;
 	}
-	if (!token[0][*start - 1])
+	if (!token[0][*start - 1] && (*start)--)
 		return (true);
 	*end = *start;
 	if (token[0][*end] == '?')
@@ -184,7 +181,7 @@ static bool	invalid_key(char **token, int *start, int *end, int length)
 }
 
 /**
- * @brief Expands any dollar sign if found.
+ * @brief Expands any and all dollar signs if found.
  * 
  * The function uses invalid_key() to identify if the token contains any valid
  * keys. This function will also store the index at which the key starts and
