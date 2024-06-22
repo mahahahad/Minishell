@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:51:40 by mdanish           #+#    #+#             */
-/*   Updated: 2024/06/22 14:52:47 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/22 16:06:19 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,9 @@ static bool	wildcards_are_present(char *token, int *location, DIR **cwd)
 	}
 	if (cwd && token[*location] == '*')
 	{
-		*cwd = opendir(getcwd(cwd_path, PATH_MAX));
+		cwd_path[0] = '\0';
+		getcwd(cwd_path, PATH_MAX);
+		*cwd = opendir(cwd_path);
 		if (*cwd)
 		{
 			errno = 0;
