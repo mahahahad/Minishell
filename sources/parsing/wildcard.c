@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:51:40 by mdanish           #+#    #+#             */
-/*   Updated: 2024/06/21 01:55:39 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/22 05:36:22 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,38 +53,37 @@ static bool	wildcards_are_present(char *token, int *location, DIR **cwd)
 }
 
 /**
- * @brief Checks if expansion needs to include hidden files.
+ * @brief Matches the trailing characters of the file to the token.
  * 
- * The function simply checks through a bunch of hard-coded cases to check if
- * any of the hidden files (files that begin with a [ . ]) are required to be
- * included in the expansion.
+ * The function mainly uses the same logic as match_leaders() to compare the
+ * bytes but in reverse. This means that it compares from the end of the string.
  * 
- * @param token will be checked to see if hidden files are needed.
- * @param location of the [ * ] in the token.
+ * @param token will be used as the standard for comparison.
+ * @param file is the filename that will be compared.
  * 
- * @return true if hidden files are to be included, false if otherwise.
+ * @return true if file matches the token, false if file does not.
  */
-static bool	require_hidden_file(char *token, int location)
+static bool	match_trailers(char *token, char *file)
 {
-	if (location == 1 && token[0] == '.')
-		return (true);
-	if (location == 3 && token[1] == '.')
+	char	quote;
+	int		bytes;
+	int		index;
+
+	quote = '\0';
+	bytes = ft_strlen(token);
+	index = ft_strlen(file);
+	while (bytes-- && index)
 	{
-		if (token[0] == '\'' && token[2] == '\'')
-			return (true);
-		if (token[0] == '"' && token[2] == '"')
-			return (true);
+		if (!quote && (token[bytes] == '"' || token[bytes] == '\''))
+			quote = token[bytes];
+		else if (quote && token[bytes] == quote)
+			quote = '\0';
+		else if (token[bytes] != file[--index])
+			return (false);
 	}
-	if (location == 2 && token[0] == '.' && token[1] == '.')
-		return (true);
-	if (location == 4 && token[1] == '.' && token[2] == '.')
-	{
-		if (token[0] == '\'' && token[3] == '\'')
-			return (true);
-		if (token[0] == '"' && token[3] == '"')
-			return (true);
-	}
-	return (false);
+	if (!index)
+		return (false);
+	return (true);
 }
 
 /**
@@ -97,6 +96,9 @@ static bool	require_hidden_file(char *token, int location)
  * It ensures that all quotes that are meant to be omitted are not included in
  * the matching of the token and filename.
  * 
+ * It also makes sure that the hidden files are not included in the expansion
+ * unless it is specifically required by the token.
+ * 
  * @param token will be compared with the file.
  * @param file is the name of the file in the directory.
  * @param t_index points to the index of the token.
@@ -104,32 +106,42 @@ static bool	require_hidden_file(char *token, int location)
  * 
  * @return The index of the file at the end, or -1 in case of mismatch.
  */
-static int	compare_names(char *token, char *file, int *t_index, int location)
+static int	match_leaders(char *token, char *file, int *t_index, int location)
 {
 	char	quote;
-	int		f_index;
+	int		index;
 
+	index = -1;
+	while (file[0] == '.' && token[++index] && ft_strchr("'\"", token[index]))
+	{
+		if (token[index] != token[index + 1] && token[index + 1] != '.')
+			return (-1);
+		if (token[index] == token [index + 1])
+			index++;
+	}
+	if (file[0] == '.' && token[index] != '.')
+		return (-1);
 	quote = '\0';
-	f_index = 0;
+	index = 0;
 	while (token[++*t_index] && *t_index != location)
 	{
 		if (!quote && (token[*t_index] == '"' || token[*t_index] == '\''))
 			quote = token[*t_index];
 		else if (quote && token[*t_index] == quote)
 			quote = '\0';
-		else if (token[*t_index] != file[f_index++])
+		else if (token[*t_index] != file[index++])
 			return (-1);
 	}
-	return (f_index);
+	return (index);
 }
 
 /**
  * @brief Checks if the file name matches with the token.
  * 
  * The function ensures that hidden files are needed by running the
- * require_hidden_file() function. It then sends it to compare_names() to check
- * if the file name matches the token. If it does match, it continues to set up
- * the next check by increasing the token's index and file's index as necessary.
+ * It then sends it to compare_names() to check if the file name matches the
+ * token. If it does match, it continues to set up the next check by increasing
+ * the token's index and file's index as necessary.
  * 
  * To check is there are more [ * ] in the token, wildcards_are_present() is
  * called again. If the location points to a null byte, the evaluated return of
@@ -147,24 +159,21 @@ static bool	match_pattern(char *token, int location, char *file)
 	int		f_index;
 	int		t_index;
 
-	if (file[0] == '.' && !require_hidden_file(token, location))
-		return (false);
 	t_index = -1;
-	f_index = compare_names(token, file, &t_index, location);
+	f_index = match_leaders(token, file, &t_index, location);
 	if (t_index != location || f_index < 0)
 		return (false);
-	while (token[t_index] == '*')
+	while (token[t_index] && ft_strchr("*'\"", token[t_index]))
 		t_index++;
 	if (!token[t_index])
 		return (true);
-	while ((f_index || !location) && file[f_index] && \
-		token[t_index] != file[f_index])
+	while (file[f_index] && token[t_index] != file[f_index])
 		f_index++;
 	if (!file[f_index])
 		return (false);
 	wildcards_are_present(token + t_index, &location, NULL);
 	if (!token[t_index + location])
-		return (!ft_strncmp(token + t_index, file + f_index, location + 1));
+		return (match_trailers(token + t_index, file + f_index));
 	return (match_pattern(token + t_index, location, file + f_index));
 }
 
