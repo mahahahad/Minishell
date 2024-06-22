@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:51:40 by mdanish           #+#    #+#             */
-/*   Updated: 2024/06/22 05:36:22 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/22 14:52:47 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,13 +167,13 @@ static bool	match_pattern(char *token, int location, char *file)
 		t_index++;
 	if (!token[t_index])
 		return (true);
+	wildcards_are_present(token + t_index, &location, NULL);
+	if (!token[t_index + location])
+		return (match_trailers(token + t_index, file + f_index));
 	while (file[f_index] && token[t_index] != file[f_index])
 		f_index++;
 	if (!file[f_index])
 		return (false);
-	wildcards_are_present(token + t_index, &location, NULL);
-	if (!token[t_index + location])
-		return (match_trailers(token + t_index, file + f_index));
 	return (match_pattern(token + t_index, location, file + f_index));
 }
 
