@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/16 22:43:58 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/06/22 18:21:59 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@
 typedef struct s_cmd t_cmd;
 typedef struct s_cmd_exec t_cmd_exec;
 typedef struct s_cmd_redir t_cmd_redir;
+typedef struct s_cmd_pipe t_cmd_pipe;
 typedef struct s_env_node t_env_node;
 typedef struct s_minishell t_minishell;
 typedef struct s_prompt t_prompt;
@@ -60,7 +61,10 @@ enum e_token_types
 
 enum e_cmd_types
 {
-	CMD_EXEC
+	CMD_EXEC,
+	CMD_PIPE,
+	CMD_LESS,
+	CMD_GREAT
 };
 
 struct s_token
@@ -74,7 +78,6 @@ struct s_token_node
 	t_token			*current;
 	t_token_node	*next;
 };
-
 
 struct s_prompt
 {
@@ -124,6 +127,13 @@ struct s_cmd_redir
 	char	*file;
 };
 
+struct s_cmd_pipe
+{
+	int			type;
+	t_cmd	*cmd_left;
+	t_cmd	*cmd_right;
+};
+
 /** GLOBAL VARIABLE **/
 extern int		g_status_code;
 
@@ -131,11 +141,11 @@ extern int		g_status_code;
 // Parsing
 t_cmd			*create_exec_cmd(void);
 t_cmd			*create_redir_cmd(t_cmd *cmd, int type, char *file);
+t_cmd			*create_pipe_cmd(t_cmd *cmd_left, t_cmd *cmd_right);
 void			push_token(t_token_node **tokens, t_token *token);
 t_token_node	*tokenize(t_minishell *minishell, char *input);
 int				count_quotations(char *line);
 t_cmd			*parse(t_minishell *minishell, char *line);
-t_cmd			*parse_line(t_minishell *minishell);
 t_cmd			*parse_pipe(t_minishell *minishell);
 t_cmd			*parse_exec(t_minishell *minishell);
 t_cmd			*parse_redir(t_cmd *cmd, t_minishell *minishell);

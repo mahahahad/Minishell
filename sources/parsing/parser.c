@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/16 22:41:23 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/06/22 18:44:13 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,6 @@ t_cmd	*parse(t_minishell *minishell, char *line)
 		return (NULL);
 	}
 	minishell->tokens = tokenize(minishell, line);
-	return (parse_line(minishell));
-}
-
-t_cmd	*parse_line(t_minishell *minishell)
-{
 	return (parse_pipe(minishell));
 }
 
@@ -47,9 +42,11 @@ t_cmd	*parse_pipe(t_minishell *minishell)
 	t_cmd	*cmd;
 
 	cmd = parse_exec(minishell);
-	// Pipe handling goes here.
 	if (minishell->tokens && minishell->tokens->current->type == PIPE)
- 		ft_putendl_fd("PIPE HANDLING GOES HERE", 1);
+	{
+		minishell->tokens = minishell->tokens->next;
+		cmd = create_pipe_cmd(cmd, parse_pipe(minishell));
+	}
 	return (cmd);
 }
 
@@ -68,15 +65,15 @@ t_cmd	*parse_exec(t_minishell *minishell)
 	i = 0;
 	node = create_exec_cmd();
 	cmd = (t_cmd_exec *) node;
-	parse_redir((t_cmd *) cmd, minishell);
-	while (i < minishell->token_count && minishell->tokens->current->type != PIPE)
+	node = parse_redir(node, minishell);
+	while (minishell->tokens && minishell->tokens->current->type != PIPE)
 	{
 		push_token(&cmd->tokens, minishell->tokens->current);
 		minishell->tokens = minishell->tokens->next;
 		i++;
-		parse_redir((t_cmd *) cmd, minishell);
+		node = parse_redir(node, minishell);
 	}
-	return ((t_cmd *) cmd);
+	return (node);
 }
 
 /**
@@ -94,12 +91,14 @@ t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell)
 			ft_putendl_fd("No file for redirection found", 1);
 		if (minishell->tokens->current->type == LESS)
 		{
-			cmd = create_redir_cmd(cmd, LESS, minishell->tokens->next->current->content);
+			cmd = create_redir_cmd(cmd, CMD_LESS, minishell->tokens->next->current->content);
+			minishell->tokens = minishell->tokens->next->next;
 			break ;
 		}
 		else if (minishell->tokens->current->type == GREAT)
 		{
-			cmd = create_redir_cmd(cmd, GREAT, minishell->tokens->next->current->content);
+			cmd = create_redir_cmd(cmd, CMD_GREAT, minishell->tokens->next->current->content);
+			minishell->tokens = minishell->tokens->next->next;
 			break ;
 		}
 	}

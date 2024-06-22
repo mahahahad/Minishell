@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/11 22:24:51 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/06/22 18:24:13 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,9 +69,6 @@ char	**convert_cmd_exec(t_token_node *tokens)
 	return (str_tokens);
 }
 
-/**
- * TODO: Check if command is builtin here
- */
 void	run_cmd(t_cmd *cmd, char **env)
 {
 	t_cmd_exec	*cmd_exec;
@@ -79,11 +76,17 @@ void	run_cmd(t_cmd *cmd, char **env)
 	if (cmd->type == CMD_EXEC)
 	{
 		cmd_exec = (t_cmd_exec *) cmd;
-		// if (is_builtin(cmd_exec->tokens[0].current->content))
-		// 	exec_builtin(cmd_exec->tokens);
-		// else
+		// Builtin checks go here
 		exec_cmd(convert_cmd_exec(cmd_exec->tokens), env);
 	}
+	else if (cmd->type == CMD_PIPE)
+	{
+		// Pipe handling goes here
+		ft_putendl_fd("Pipe handling will go here.", 1);
+	}
+	// Redirection handling goes here
+	else if (cmd->type == CMD_LESS) ft_putendl_fd("Redirection handling will go here.", 1);
+	else if (cmd->type == CMD_GREAT) ft_putendl_fd("Redirection handling will go here.", 1);
 }
 
 /**
