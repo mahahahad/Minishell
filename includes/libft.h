@@ -6,22 +6,24 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 15:29:04 by mdanish           #+#    #+#             */
-/*   Updated: 2024/06/20 17:15:58 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/26 16:38:00 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LIBFT_H
 # define LIBFT_H
 
+# include <stdbool.h>
 # include <stdio.h>
 # include <stdlib.h>
+# include <stdint.h>
 # include <unistd.h>
-# include <stdbool.h>
 
 # define HEX_LOW "0123456789abcdef"
 # define HEX_UP "0123456789ABCDEF"
 # define DECIMAL "0123456789"
 
+void	*ft_calloc(size_t count, size_t size);
 char	*ft_c_strjoin_free(char *s1, char *s2, char c, int free_string);
 char	*ft_char_strjoin(char const *s1, char const *s2, char const c);
 void	ft_free_2d_arr(char **arr);

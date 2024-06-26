@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 10:07:41 by mdanish           #+#    #+#             */
-/*   Updated: 2024/06/06 14:30:56 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/26 16:45:48 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,9 @@ static void	create_matrix(t_minishell *minishell, char **env)
 
 	while (env[minishell->envp_count])
 		minishell->envp_count++;
-	minishell->envp = malloc((sizeof(char *) * (minishell->envp_count + 1)));
+	minishell->envp = ft_calloc(minishell->envp_count + 1, sizeof(char *));
 	if (!minishell->envp)
 		ft_putendl_fd("Malloc failed while setting up the env variables", 2);	// exit required
-	ft_memset(minishell->envp, 0, sizeof(char **));
 	i = -1;
 	while (++i < minishell->envp_count)
 	{
@@ -98,10 +97,9 @@ void	setup_environment(t_minishell *minishell, char **env)
 	env = sort_environment_variables(env, minishell->envp_count);
 	while (*env)
 	{
-		var = malloc(sizeof(t_env));
+		var = ft_calloc(1, sizeof(t_env));
 		if (!var)
 			break ;
-		ft_memset(var, 0, sizeof(t_env));
 		len = ft_strchr(*env, '=') - *env;
 		var->key = ft_substr(*env, 0, len);
 		if (!var->key)

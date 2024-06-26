@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/06 14:30:56 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/26 16:38:17 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ static char	*make_value(char *key, char *value, int total_length)
 	int		index;
 
 	index = 0;
-	matrix_index = malloc(total_length + 1);
+	matrix_index = ft_calloc(total_length + 1, sizeof(char));
 	if (!matrix_index)
 		ft_putendl_fd("Malloc fail while changing directory", 2);	// exit requried
 	while (index < total_length - 1 && *key)

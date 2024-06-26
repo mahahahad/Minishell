@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/17 13:14:03 by maabdull          #+#    #+#             */
-/*   Updated: 2024/04/23 22:35:33 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/06/26 16:43:35 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ char	**ft_split(char const *s, char c)
 
 	if (!s)
 		return (NULL);
-	strings = malloc((count_words(s, c) + 1) * sizeof(char *));
+	strings = ft_calloc((count_words(s, c) + 1), sizeof(char *));
 	if (!strings)
 		return (NULL);
 	word_start_index = -1;

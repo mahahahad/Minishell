@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 17:04:29 by mdanish           #+#    #+#             */
-/*   Updated: 2024/06/21 02:28:35 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/26 16:41:22 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ static char	*expand_the_key(char *token, char *value, int start, int *end)
 	}
 	else
 	{
-		expanded = malloc((tok_len + val_len) - (*end - start) + 1);
+		expanded = ft_calloc((tok_len + val_len) - (*end - start) + 1, 1);
 		if (!expanded)
 			ft_putendl_fd("Malloc failed while expanding variables.", 2);
 		ft_memcpy(expanded, token, start);
@@ -81,7 +81,7 @@ static char	*expand_status_code(char *token, int start, int end, int digits)
 
 	status = g_status_code;
 	tok_len = ft_strlen(token);
-	expanded = malloc(tok_len + digits - 1);
+	expanded = ft_calloc(tok_len + digits - 1, sizeof(char));
 	if (!expanded)
 		ft_putendl_fd("Malloc failed while expanding variables.", 2);
 	ft_memcpy(expanded, token, start);

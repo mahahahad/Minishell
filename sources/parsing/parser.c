@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/20 23:37:19 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/26 16:41:54 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,7 +135,7 @@ char	*get_token(char **input)
 			break ;
 		}
 	}
-	token = malloc(i + 1);
+	token = ft_calloc(i + 1, sizeof(char));
 	if (!token)
 		return (NULL);
 	ft_strlcpy(token, string, i + 1);
@@ -223,7 +223,7 @@ t_token	*tokenize(t_minishell *minishell, char *input)
 	i = 0;
 	token_count = count_tokens(input);
 	minishell->token_count = token_count;
-	tokens = malloc((token_count + 1) * sizeof(t_token));
+	tokens = ft_calloc((token_count + 1), sizeof(t_token));
 	ft_putstr_fd("There are ", 1);
 	ft_putnbr_fd(token_count, 1);
 	ft_putendl_fd(" tokens in your input", 1);

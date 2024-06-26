@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 20:21:11 by mdanish           #+#    #+#             */
-/*   Updated: 2024/06/06 20:20:37 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/26 16:45:02 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,10 +68,9 @@ void	add_to_matrix(t_minishell *minishell, char *new_var)
 
 	if (!ft_strchr(new_var, '=') || update_the_matrix(minishell, new_var))
 		return ;
-	env_store = malloc(sizeof(char *) * (minishell->envp_count + 2));
+	env_store = ft_calloc(minishell->envp_count + 2, sizeof(char *));
 	if (!env_store)
 		ft_putendl_fd("Malloc failed while exporting a variable.", 2);	// exit required
-	ft_memset(env_store, 0, sizeof(char *) * (minishell->envp_count + 2));
 	index = -1;
 	while (++index < minishell->envp_count)
 		env_store[index] = minishell->envp[index];

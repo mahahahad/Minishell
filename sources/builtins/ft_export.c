@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 19:45:08 by mdanish           #+#    #+#             */
-/*   Updated: 2024/06/06 18:09:28 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/26 16:45:12 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,10 +145,9 @@ void	ft_export(t_minishell *minishell, char **new_variables)
 	{
 		if (!is_argument_valid(*new_variables) && new_variables++)
 			continue ;
-		var = malloc(sizeof(t_env));
+		var = ft_calloc(1, sizeof(t_env));
 		if (!var)
 			ft_putendl_fd("Malloc failed while exporting a variable.", 2);	// exit required
-		ft_memset(var, 0, sizeof(t_env));
 		create_new_variable(var, &length, *new_variables);
 		add_to_list(minishell, var, length);
 		add_to_matrix(minishell, *new_variables);
