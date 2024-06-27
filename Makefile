@@ -17,7 +17,7 @@ CLEANUP_DIR := $(SRCS_DIR)/cleanup
 MODULES := $(UTILS_DIR) $(PARSER_DIR) $(EXEC_DIR) $(BUILTIN_DIR) $(SETUP_DIR) $(CLEANUP_DIR)
 
 # Files
-SRCS := $(addprefix $(SRCS_DIR)/, main.c)
+SRCS := $(addprefix $(SRCS_DIR)/, debug.c main.c)
 # Include the files needed by all the modules and append them to the SRCS variable
 include $(patsubst %, %/module.mk, $(MODULES))
 OBJS := $(SRCS:$(SRCS_DIR)%.c=$(OBJS_DIR)%.o)

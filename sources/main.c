@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/12 19:57:58 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/06/26 15:02:17 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,43 +22,6 @@ void	handle_sigint(int signum)
 	rl_replace_line("", 0);
 	rl_redisplay();
 	g_status_code = 130;
-}
-
-// TODO: Remove debug function
-void	print_token(t_token token)
-{
-	char	*type;
-
-	switch (token.type){
-		case PIPE:
-			type = "|";
-			break ;
-		case LESS:
-			type = "<";
-			break ;
-		case DBL_LESS:
-			type = "<<";
-			break ;
-		case GREAT:
-			type = ">";
-			break ;
-		case DBL_GREAT:
-			type = ">>";
-			break ;
-		case OR:
-			type = "OR";
-			break ;
-		case AND:
-			type = "AND";
-			break ;
-		default :
-			type = "Word";
-	}
-	ft_putstr_fd("{\n\tContent: ", 1);
-	ft_putstr_fd(token.content, 1);
-	ft_putstr_fd("\n\tType: ", 1);
-	ft_putstr_fd(type, 1);
-	ft_putstr_fd("\n}\n", 1);
 }
 
 /*
@@ -83,8 +46,9 @@ int	main(int argc, char *argv[] __attribute__((unused)), char **env)
 	line = readline(minishell.prompt->current);
 	while (line)
 	{
-		add_history(line);
 		t_cmd *cmd = parse(&minishell, line);
+		if (cmd)
+			add_history(line);
 		// cmd = create_exec_cmd(&minishell);
 		run_cmd(cmd, env);
 		// free_cmd(cmd);
