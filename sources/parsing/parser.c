@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/22 18:44:13 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/06/27 18:16:03 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@
  */
 t_cmd	*parse(t_minishell *minishell, char *line)
 {
+	if (!line || !line[0])
+		return (NULL);
 	if (count_quotations(line))
 	{
 		ft_putstr_fd(RED "Open quotes detected, command rejected.\n" RESET, 2);
@@ -42,7 +44,9 @@ t_cmd	*parse_pipe(t_minishell *minishell)
 	t_cmd	*cmd;
 
 	cmd = parse_exec(minishell);
-	if (minishell->tokens && minishell->tokens->current->type == PIPE)
+	if (!cmd)
+		return (NULL);
+	if (minishell->tokens && minishell->tokens->type == PIPE)
 	{
 		minishell->tokens = minishell->tokens->next;
 		cmd = create_pipe_cmd(cmd, parse_pipe(minishell));
@@ -50,9 +54,41 @@ t_cmd	*parse_pipe(t_minishell *minishell)
 	return (cmd);
 }
 
+t_cmd	*parse_and_or(t_cmd_exec *cmd, t_minishell *minishell)
+{
+	if (minishell->tokens->type == AND)
+	{
+		if (!cmd->tokens)
+			return (ft_putendl_fd("Syntax error near unexpected token `&&'", 2), NULL);
+	}
+	return ((t_cmd *) cmd);
+}
+
+/**
+ * @brief Allocates space for, and copies, only the first node of the provided
+ * token node. Useful for copying tokens into a command struct without it's 
+ * next values.
+ * 
+ * @param token 
+ * @return t_token* 
+ */
+t_token	*copy_token_node(t_token *token)
+{
+	t_token	*token_copy;
+
+	token_copy = malloc(sizeof(t_token));
+	token_copy->next = NULL;
+	token_copy->content = token->content;
+	token_copy->type = token->type;
+	return (token_copy);
+}
+
 /**
  * @brief Parsing function for ensuring that executable commands follow the proper structure
  * 
+ * Prints the appropriate error message if the syntax isn't met such as 
+ * providing special characters at the beginning of the command and returns 
+ * NULL.
  * @param minishell 
  * @return t_cmd* 
  */
@@ -66,13 +102,16 @@ t_cmd	*parse_exec(t_minishell *minishell)
 	node = create_exec_cmd();
 	cmd = (t_cmd_exec *) node;
 	node = parse_redir(node, minishell);
-	while (minishell->tokens && minishell->tokens->current->type != PIPE)
+	while (minishell->tokens && minishell->tokens->type != PIPE)
 	{
-		push_token(&cmd->tokens, minishell->tokens->current);
+		parse_and_or(cmd, minishell);
+		push_token(&cmd->tokens, copy_token_node(minishell->tokens));
 		minishell->tokens = minishell->tokens->next;
 		i++;
 		node = parse_redir(node, minishell);
 	}
+	if (minishell->token_count && !cmd->tokens)
+		return (ft_putendl_fd("Syntax error near unexpected token `|'", 2), NULL);
 	return (node);
 }
 
@@ -85,19 +124,19 @@ t_cmd	*parse_exec(t_minishell *minishell)
  */
 t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell)
 {
-	while (minishell->tokens && (minishell->tokens->current->type == GREAT || minishell->tokens->current->type == LESS))
+	while (minishell->tokens && (minishell->tokens->type == GREAT || minishell->tokens->type == LESS))
 	{
-		if (!minishell->tokens->next || minishell->tokens->next->current->type != WORD)
+		if (!minishell->tokens->next || minishell->tokens->next->type != WORD)
 			ft_putendl_fd("No file for redirection found", 1);
-		if (minishell->tokens->current->type == LESS)
+		if (minishell->tokens->type == LESS)
 		{
-			cmd = create_redir_cmd(cmd, CMD_LESS, minishell->tokens->next->current->content);
+			cmd = create_redir_cmd(cmd, CMD_LESS, minishell->tokens->next->content);
 			minishell->tokens = minishell->tokens->next->next;
 			break ;
 		}
-		else if (minishell->tokens->current->type == GREAT)
+		else if (minishell->tokens->type == GREAT)
 		{
-			cmd = create_redir_cmd(cmd, CMD_GREAT, minishell->tokens->next->current->content);
+			cmd = create_redir_cmd(cmd, CMD_GREAT, minishell->tokens->next->content);
 			minishell->tokens = minishell->tokens->next->next;
 			break ;
 		}

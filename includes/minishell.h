@@ -44,7 +44,6 @@ typedef struct s_env_node t_env_node;
 typedef struct s_minishell t_minishell;
 typedef struct s_prompt t_prompt;
 typedef struct s_token t_token;
-typedef struct s_token_node t_token_node;
 
 enum e_token_types
 {
@@ -71,12 +70,7 @@ struct s_token
 {
 	int			type;
 	char		*content;
-};
-
-struct s_token_node
-{
-	t_token			*current;
-	t_token_node	*next;
+	t_token		*next;
 };
 
 struct s_prompt
@@ -97,8 +91,8 @@ struct s_minishell
 	int			token_count;
 	int			envp_count;
 	char		**envp;
-	t_token_node		*tokens;
-	t_token_node	**tokens_head;
+	t_token		*tokens;
+	t_token		**tokens_head;
 	t_prompt	*prompt;
 	t_env_node	*env_variables;
 };
@@ -117,7 +111,7 @@ struct s_cmd
 struct s_cmd_exec
 {
 	int			type;
-	t_token_node	*tokens;
+	t_token		*tokens;
 };
 
 struct s_cmd_redir
@@ -142,8 +136,8 @@ extern int		g_status_code;
 t_cmd			*create_exec_cmd(void);
 t_cmd			*create_redir_cmd(t_cmd *cmd, int type, char *file);
 t_cmd			*create_pipe_cmd(t_cmd *cmd_left, t_cmd *cmd_right);
-void			push_token(t_token_node **tokens, t_token *token);
-t_token_node	*tokenize(t_minishell *minishell, char *input);
+void			push_token(t_token **tokens_list, t_token *token);
+t_token			*tokenize(t_minishell *minishell, char *input);
 int				count_quotations(char *line);
 t_cmd			*parse(t_minishell *minishell, char *line);
 t_cmd			*parse_pipe(t_minishell *minishell);

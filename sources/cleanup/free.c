@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:38:52 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/12 20:01:35 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/06/27 17:47:17 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@ void	free_tokens(t_minishell *minishell)
 	int	i;
 
 	i = 0;
-	while (minishell->tokens[i].current->content)
+	while (minishell->tokens[i].content)
 	{
-		free(minishell->tokens[i].current->content);
+		free(minishell->tokens[i].content);
 		i++;
 	}
 	free(minishell->tokens);

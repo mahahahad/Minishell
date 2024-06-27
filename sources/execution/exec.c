@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/22 18:24:13 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/06/27 17:46:47 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,10 @@ char	*find_cmd(char *cmd)
 	return (final_cmd);
 }
 
-char	**convert_cmd_exec(t_token_node *tokens)
+char	**convert_cmd_exec(t_token *tokens)
 {
 	int	i;
-	t_token_node *current;
+	t_token *current;
 	char	**str_tokens;
 
 	i = 0;
@@ -61,7 +61,7 @@ char	**convert_cmd_exec(t_token_node *tokens)
 	current = tokens;
 	while (current)
 	{
-		str_tokens[i] = ft_strdup(current->current->content);
+		str_tokens[i] = ft_strdup(current->content);
 		current = current->next;
 		i++;
 	}
@@ -69,10 +69,59 @@ char	**convert_cmd_exec(t_token_node *tokens)
 	return (str_tokens);
 }
 
+void	exec_pipe(t_cmd_pipe *cmd)
+{
+	t_cmd_exec *exec_cmd;
+	if (cmd->cmd_left->type == CMD_EXEC)
+	{
+		ft_putendl_fd("Left command: ", 1);
+		ft_putendl_fd("- Type: Executable", 1);
+		exec_cmd = (t_cmd_exec *) cmd->cmd_left;
+		while (exec_cmd->tokens)
+		{
+			print_token((*exec_cmd->tokens));
+			exec_cmd->tokens = exec_cmd->tokens->next;
+		}
+	}
+	else if (cmd->cmd_left->type == CMD_PIPE)
+	{
+		exec_pipe((t_cmd_pipe *)cmd->cmd_left);
+	}
+	if (cmd->cmd_right->type == CMD_EXEC)
+	{
+		ft_putendl_fd("Right command: ", 1);
+		ft_putendl_fd("- Type: Executable", 1);
+		exec_cmd = (t_cmd_exec *) cmd->cmd_right;
+		while (exec_cmd->tokens)
+		{
+			print_token((*exec_cmd->tokens));
+			exec_cmd->tokens = exec_cmd->tokens->next;
+		}
+	}
+	else if (cmd->cmd_right->type == CMD_PIPE)
+	{
+		exec_pipe((t_cmd_pipe *)cmd->cmd_right);
+	}
+}
+
+void	exec_redir(t_cmd_redir *cmd, char **env)
+{
+	int	fd_redirect;
+
+	// if (cmd->type == GREAT)
+	// 	fd_redirect = open(cmd->file, O_WRONLY);
+	// else if (cmd->type == LESS)
+	fd_redirect = open(cmd->file, O_WRONLY|O_CREAT|O_TRUNC);
+	dup2(fd_redirect, 1);
+	run_cmd(cmd->cmd, env);
+}
+
 void	run_cmd(t_cmd *cmd, char **env)
 {
 	t_cmd_exec	*cmd_exec;
 
+	if (!cmd)
+		return ;
 	if (cmd->type == CMD_EXEC)
 	{
 		cmd_exec = (t_cmd_exec *) cmd;
@@ -82,11 +131,15 @@ void	run_cmd(t_cmd *cmd, char **env)
 	else if (cmd->type == CMD_PIPE)
 	{
 		// Pipe handling goes here
-		ft_putendl_fd("Pipe handling will go here.", 1);
+		exec_pipe((t_cmd_pipe *) cmd);
+		// ft_putendl_fd("Pipe handling will go here.", 1);
 	}
 	// Redirection handling goes here
-	else if (cmd->type == CMD_LESS) ft_putendl_fd("Redirection handling will go here.", 1);
-	else if (cmd->type == CMD_GREAT) ft_putendl_fd("Redirection handling will go here.", 1);
+	else if (cmd->type == CMD_LESS || cmd->type == CMD_GREAT)
+	{
+		exec_redir((t_cmd_redir *) cmd, env);
+		// ft_putendl_fd("Redirection handling will go here.", 1);
+	}
 }
 
 /**

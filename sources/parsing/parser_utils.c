@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 22:36:59 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/16 22:43:39 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/06/27 17:50:18 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -235,23 +235,22 @@ int	count_tokens(char *input)
 /**
  * @brief Add the specified token to the end of the tokens list
  */
-void	push_token(t_token_node **tokens, t_token *token)
+void	push_token(t_token **tokens_list, t_token *token)
 {
-	t_token_node	*new_token;
-	t_token_node	*current;
+	t_token	*current;
 
-	new_token = malloc(sizeof(t_token_node));
-	new_token->current = token;
-	new_token->next = NULL;
-	current = (*tokens);
+	// new_token = malloc(sizeof(t_token));
+	// new_token->current = token;
+	// new_token->next = NULL;
+	current = (*tokens_list);
 	if (!current)
 	{
-		(*tokens) = new_token;
+		(*tokens_list) = token;
 		return ;
 	}
 	while (current->next)
 		current = current->next;
-	current->next = new_token;
+	current->next = token;
 }
 
 /**
@@ -262,10 +261,10 @@ void	push_token(t_token_node **tokens, t_token *token)
  * @returns
  * The linked list containing all the tokens
 */
-t_token_node	*tokenize(t_minishell *minishell, char *input)
+t_token	*tokenize(t_minishell *minishell, char *input)
 {
 	t_token	*token;
-	t_token_node	*tokens_list;
+	t_token *tokens_list;
 	int		i;
 	int		token_count;
 
@@ -281,6 +280,7 @@ t_token_node	*tokenize(t_minishell *minishell, char *input)
 		token = malloc(sizeof(t_token));
 		token->content = get_token(&input);
 		token->type = get_token_type(token->content);
+		token->next = NULL;
 		push_token(&tokens_list, token);
 		i++;
 	}
