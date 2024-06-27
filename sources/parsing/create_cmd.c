@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:34:36 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/22 18:13:55 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/06/27 20:01:39 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,19 +52,21 @@ t_cmd	*create_redir_cmd(t_cmd *cmd, int type, char *file)
 }
 
 /**
- * @brief Create a cmd_pipe struct
+ * @brief Create a general expression command struct
+ * These commands have a left and right side as well as an operator
+ * in the middle such as AND, OR or the PIPE commands
  * 
- * @param cmd_left The command to the left side of the pipe operator
- * @param cmd_right The command to the right side of the operator
+ * @param cmd_left The command to the left of the operator
+ * @param cmd_right The command to the right of the operator
  * @return t_cmd* 
  */
-t_cmd	*create_pipe_cmd(t_cmd *cmd_left, t_cmd *cmd_right)
+t_cmd	*create_expr_cmd(int type, t_cmd *cmd_left, t_cmd *cmd_right)
 {
-	t_cmd_pipe *pipe_cmd;
+	t_cmd_expr	*expr_cmd;
 
-	pipe_cmd = malloc(sizeof(t_cmd_pipe));
-	pipe_cmd->type = CMD_PIPE;
-	pipe_cmd->cmd_left = cmd_left;
-	pipe_cmd->cmd_right = cmd_right;
-	return ((t_cmd *) pipe_cmd);
+	expr_cmd = malloc(sizeof(t_cmd_expr));
+	expr_cmd->type = type;
+	expr_cmd->cmd_left = cmd_left;
+	expr_cmd->cmd_right = cmd_right;
+	return ((t_cmd *) expr_cmd);
 }

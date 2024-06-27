@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/27 18:16:03 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/06/27 20:02:43 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,36 +32,44 @@ t_cmd	*parse(t_minishell *minishell, char *line)
 		return (NULL);
 	}
 	minishell->tokens = tokenize(minishell, line);
-	return (parse_pipe(minishell));
+	return (parse_expr(minishell));
 }
 
 /**
- * @brief Parsing function for ensuring that pipe commands follow the proper structure
+ * @brief General expression parser. Checks if the current token follows the 
+ * proper grammar for a command which is stopped when all the tokens are 
+ * finished or a command delimiter has been found. If there are still tokens 
+ * that remain, this function creates an expression from them as the format for 
+ * all the delimiters is the same with them having a left and right side and an * operator.
  * 
+ * @param minishell 
+ * @return t_cmd* 
  */
-t_cmd	*parse_pipe(t_minishell *minishell)
+t_cmd	*parse_expr(t_minishell *minishell)
 {
 	t_cmd	*cmd;
 
 	cmd = parse_exec(minishell);
 	if (!cmd)
 		return (NULL);
-	if (minishell->tokens && minishell->tokens->type == PIPE)
+	if (!minishell->tokens)
+		return (cmd);
+	if (minishell->tokens->type == PIPE)
 	{
 		minishell->tokens = minishell->tokens->next;
-		cmd = create_pipe_cmd(cmd, parse_pipe(minishell));
+		cmd = create_expr_cmd(CMD_PIPE, cmd, parse_expr(minishell));
+	}
+	else if (minishell->tokens->type == AND)
+	{
+		minishell->tokens = minishell->tokens->next;
+		cmd = create_expr_cmd(CMD_AND, cmd, parse_expr(minishell));
+	}
+	else if (minishell->tokens->type == OR)
+	{
+		minishell->tokens = minishell->tokens->next;
+		cmd = create_expr_cmd(CMD_OR, cmd, parse_expr(minishell));
 	}
 	return (cmd);
-}
-
-t_cmd	*parse_and_or(t_cmd_exec *cmd, t_minishell *minishell)
-{
-	if (minishell->tokens->type == AND)
-	{
-		if (!cmd->tokens)
-			return (ft_putendl_fd("Syntax error near unexpected token `&&'", 2), NULL);
-	}
-	return ((t_cmd *) cmd);
 }
 
 /**
@@ -84,6 +92,46 @@ t_token	*copy_token_node(t_token *token)
 }
 
 /**
+ * @brief Utility function to display error messages when the grammar rules
+ * for an execution command aren't met.
+ * 
+ * @param minishell 
+ * @return bool is_error which is true if an error occured and false otherwise.
+ */
+bool	contains_grammar_error(t_minishell *minishell)
+{
+	bool	is_error;
+
+	is_error = false;
+	if (minishell->tokens->type == PIPE && (is_error = true))
+		ft_putendl_fd("Syntax error near unexpected token `|'", 2);
+	if (minishell->tokens->type == AND && (is_error = true))
+		ft_putendl_fd("Syntax error near unexpected token `&&'", 2);
+	if (minishell->tokens->type == OR && (is_error = true))
+		ft_putendl_fd("Syntax error near unexpected token `||'", 2);
+	if (is_error)
+		g_status_code = 2;
+	return (is_error);
+}
+
+/**
+ * @brief Utility function which checks if the current token type should break 
+ * the execution parsing loop. i.e. is it a PIPE, AND or OR token
+ * 
+ * @param minishell 
+ * @return true 
+ * @return false 
+ */
+bool	is_exec_delimiter(t_minishell *minishell)
+{
+	if (minishell->tokens->type == PIPE || \
+		minishell->tokens->type == AND || \
+		minishell->tokens->type == OR)
+		return (true);
+	return (false);
+}
+
+/**
  * @brief Parsing function for ensuring that executable commands follow the proper structure
  * 
  * Prints the appropriate error message if the syntax isn't met such as 
@@ -102,16 +150,20 @@ t_cmd	*parse_exec(t_minishell *minishell)
 	node = create_exec_cmd();
 	cmd = (t_cmd_exec *) node;
 	node = parse_redir(node, minishell);
-	while (minishell->tokens && minishell->tokens->type != PIPE)
+	while (minishell->tokens)
 	{
-		parse_and_or(cmd, minishell);
+		if (!cmd->tokens)
+			if (contains_grammar_error(minishell))
+				return (NULL);
+		if (is_exec_delimiter(minishell))
+			break ;
 		push_token(&cmd->tokens, copy_token_node(minishell->tokens));
 		minishell->tokens = minishell->tokens->next;
 		i++;
 		node = parse_redir(node, minishell);
 	}
-	if (minishell->token_count && !cmd->tokens)
-		return (ft_putendl_fd("Syntax error near unexpected token `|'", 2), NULL);
+	// if (minishell->token_count && !cmd->tokens)
+	// 	return (ft_putendl_fd("Syntax error near unexpected token `|'", 2), NULL);
 	return (node);
 }
 

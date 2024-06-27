@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/27 17:46:47 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/06/27 19:57:25 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,9 +69,10 @@ char	**convert_cmd_exec(t_token *tokens)
 	return (str_tokens);
 }
 
-void	exec_pipe(t_cmd_pipe *cmd)
+void	exec_pipe(t_cmd_expr *cmd)
 {
 	t_cmd_exec *exec_cmd;
+
 	if (cmd->cmd_left->type == CMD_EXEC)
 	{
 		ft_putendl_fd("Left command: ", 1);
@@ -85,7 +86,7 @@ void	exec_pipe(t_cmd_pipe *cmd)
 	}
 	else if (cmd->cmd_left->type == CMD_PIPE)
 	{
-		exec_pipe((t_cmd_pipe *)cmd->cmd_left);
+		exec_pipe((t_cmd_expr *)cmd->cmd_left);
 	}
 	if (cmd->cmd_right->type == CMD_EXEC)
 	{
@@ -100,7 +101,7 @@ void	exec_pipe(t_cmd_pipe *cmd)
 	}
 	else if (cmd->cmd_right->type == CMD_PIPE)
 	{
-		exec_pipe((t_cmd_pipe *)cmd->cmd_right);
+		exec_pipe((t_cmd_expr *)cmd->cmd_right);
 	}
 }
 
@@ -131,8 +132,17 @@ void	run_cmd(t_cmd *cmd, char **env)
 	else if (cmd->type == CMD_PIPE)
 	{
 		// Pipe handling goes here
-		exec_pipe((t_cmd_pipe *) cmd);
-		// ft_putendl_fd("Pipe handling will go here.", 1);
+		exec_pipe((t_cmd_expr *) cmd);
+	}
+	else if (cmd->type == CMD_AND)
+	{
+		// And command handling goes here
+		exec_pipe((t_cmd_expr *) cmd);
+	}
+	else if (cmd->type == CMD_OR)
+	{
+		// Or command handling goes here
+		exec_pipe((t_cmd_expr *) cmd);
 	}
 	// Redirection handling goes here
 	else if (cmd->type == CMD_LESS || cmd->type == CMD_GREAT)

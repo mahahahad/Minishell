@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/22 18:21:59 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/06/27 19:52:32 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # define B_YELLOW "\033[33;1m"
 # define RESET "\033[0m"
 
+# include <fcntl.h>
 # include "libft.h"
 # include <readline/history.h>
 # include <readline/readline.h>
@@ -36,10 +37,15 @@
 
 /** STRUCTURES **/
 
+// Command Types
 typedef struct s_cmd t_cmd;
 typedef struct s_cmd_exec t_cmd_exec;
 typedef struct s_cmd_redir t_cmd_redir;
+typedef struct s_cmd_expr t_cmd_expr;
 typedef struct s_cmd_pipe t_cmd_pipe;
+typedef struct s_cmd_and t_cmd_and;
+typedef struct s_cmd_or t_cmd_or;
+
 typedef struct s_env_node t_env_node;
 typedef struct s_minishell t_minishell;
 typedef struct s_prompt t_prompt;
@@ -63,7 +69,9 @@ enum e_cmd_types
 	CMD_EXEC,
 	CMD_PIPE,
 	CMD_LESS,
-	CMD_GREAT
+	CMD_GREAT,
+	CMD_AND,
+	CMD_OR,
 };
 
 struct s_token
@@ -128,6 +136,13 @@ struct s_cmd_pipe
 	t_cmd	*cmd_right;
 };
 
+struct s_cmd_expr
+{
+	int		type;
+	t_cmd	*cmd_left;
+	t_cmd	*cmd_right;
+};
+
 /** GLOBAL VARIABLE **/
 extern int		g_status_code;
 
@@ -136,10 +151,12 @@ extern int		g_status_code;
 t_cmd			*create_exec_cmd(void);
 t_cmd			*create_redir_cmd(t_cmd *cmd, int type, char *file);
 t_cmd			*create_pipe_cmd(t_cmd *cmd_left, t_cmd *cmd_right);
+t_cmd			*create_expr_cmd(int type, t_cmd *cmd_left, t_cmd *cmd_right);
 void			push_token(t_token **tokens_list, t_token *token);
 t_token			*tokenize(t_minishell *minishell, char *input);
 int				count_quotations(char *line);
 t_cmd			*parse(t_minishell *minishell, char *line);
+t_cmd			*parse_expr(t_minishell *minishell);
 t_cmd			*parse_pipe(t_minishell *minishell);
 t_cmd			*parse_exec(t_minishell *minishell);
 t_cmd			*parse_redir(t_cmd *cmd, t_minishell *minishell);
