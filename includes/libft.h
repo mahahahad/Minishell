@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 15:29:04 by mdanish           #+#    #+#             */
-/*   Updated: 2024/06/26 16:38:00 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/27 20:28:40 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include <stdlib.h>
 # include <stdint.h>
 # include <unistd.h>
+# include <stddef.h>
 
 # define HEX_LOW "0123456789abcdef"
 # define HEX_UP "0123456789ABCDEF"

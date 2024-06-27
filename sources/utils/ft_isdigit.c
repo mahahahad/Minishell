@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_isdigit.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/03 15:11:19 by mdanish           #+#    #+#             */
-/*   Updated: 2024/06/06 20:18:51 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/27 21:33:52 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

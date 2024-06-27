@@ -3,252 +3,193 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/26 16:41:54 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/27 22:14:56 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	count_quotations(char *line)
-{
-	int		count;
-	int		i;
-	char	quotes_found;
-
-	i = -1;
-	count = 0;
-	quotes_found = '\0';
-	while (line[++i])
-	{
-		if (line[i] == '"')
-		{
-			if (!quotes_found && ++count)
-				quotes_found = '"';
-			else if (quotes_found == '"' && ++count)
-				quotes_found = '\0';
-		}
-		if (line[i] == '\'')
-		{
-			if (!quotes_found && ++count)
-				quotes_found = '\'';
-			else if (quotes_found == '\'' && ++count)
-				quotes_found = '\0';
-		}
-	}
-	return (count % 2);
-}
+/**
+ * This file contains functions directly used for parsing commands
+ */
 
 /**
- * @brief
- * Check if the provided character is in the list of special characters:
- * - [ | ]
- * - [ ( ]
- * - [ ) ]
- * - [ < ]
- * - [ > ]
- * - [ || ]
- * - [ << ]
- * - [ >> ]
- * - [ && ]
+ * @brief General parsing function that is called after receiving user input
+ * Goes through the input and parses it by following the grammar.
+ * 
+ * @return t_cmd* 
  */
-bool	is_delimiter(char c)
+t_cmd	*parse(t_minishell *minishell, char *line)
 {
-	if (c && ft_strchr("|<>()&", c))
-		return (true);
-	return (false);
-}
-
-/** @brief
- * Checks if a character is in the list of repeatable characters:
- * - [<<]
- * - [>>]
- * - [||]
- * - [&&]
- */
-bool	is_repeatable_char(char c1, char c2)
-{
-	if ((c1 == '<' && c2 == '<')\
-			|| (c1 == '>' && c2 == '>')\
-			|| (c1 == '|' && c2 == '|')\
-			|| (c1 == '&' && c2 == '&'))
-		return (true);
-	return (false);
-}
-
-/**
- * @brief
- * Returns the next token in the provided input string.
- * Skip the leading whitespace characters by moving the string head
- * pointer ahead.
- * Move the string head pointer to the start of the next token
- * or '\0' if there isn't one and return this token.
- *
- * @usage
- *
- * Calling the function with the input:
- * - '       This|token '
- *
- * will result in the function returning "This" and input pointing to '|'
- *
- * Calling the function with the input:
- * - 'token'
- *
- * will result in the function returning "token" and input pointing to '\0'.
- */
-char	*get_token(char **input)
-{
-	int		i;
-	char	*token;
-	char	*string;
-
-	i = -1;
-	token = NULL;
-	string = *input;
-	while (ft_isspace(*string))
-		string++;
-	while (string[++i])
-	{
-		if (ft_is_quotation(string[i]))
-			continue;
-		if (is_delimiter(string[i]))
-		{
-			if (is_repeatable_char(string[i], string[i + 1]))
-			{
-				if (!i)
-					i += 2;
-				break ;
-			}
-			else
-			{
-				if (!i)
-					i++;
-				break ;
-			}
-		}
-		if (ft_isspace(string[i]))
-		{
-			if (!i)
-				i++;
-			break ;
-		}
-	}
-	token = ft_calloc(i + 1, sizeof(char));
-	if (!token)
+	if (!line || !line[0])
 		return (NULL);
-	ft_strlcpy(token, string, i + 1);
-	string += i;
-	while (ft_isspace(*string))
-		string++;
-	*input = string;
-	return (token);
-}
-
-int	get_token_type(char *content)
-{
-	if (!content || !content[0])
-		return (ERR);
-	if (!content[1])
-	{
-		if (content[0] == '|')
-			return (PIPE);
-		if (content[0] == '>')
-			return (GREAT);
-		if (content[0] == '<')
-			return (LESS);
-	}
-	else if (!content[2])
-	{
-		if (content[0] == '>' && content[1] == '>')
-			return (DBL_GREAT);
-		if (content[0] == '<' && content[1] == '<')
-			return (DBL_LESS);
-		if (content[0] == '|' && content[1] == '|')
-			return (OR);
-		if (content[0] == '&' && content[1] == '&')
-			return (AND);
-	}
-	return (WORD);
-}
-
-/**
- * @brief
- * Counts how many tokens there are in the provided input string.
- * Uses spaces and special chars as delimiters but ignores them in quoted
- * strings.
- */
-int	count_tokens(char *input)
-{
-	int		i;
-	int		token_count;
-
-	i = -1;
-	token_count = 0;
-	while (ft_isspace(*input))
-		input++;
-	while (input[++i])
-	{
-		if (ft_is_quotation(input[i]))
-			continue ;
-		if (ft_isspace(input[i]) && input[i + 1])
-		{
-			token_count++;
-			token_count += count_tokens(input + i + 1);
-			break ;
-		}
-		if (is_delimiter(input[i]))
-		{
-			if (i > 0 && !ft_isspace(input[i - 1]))
-				token_count++;
-			token_count++;
-			if (is_repeatable_char(input[i], input[i + 1]))
-				i++;
-			token_count += count_tokens(input + i + 1);
-			break ;
-		}
-	}
-	if (i > 0 && !token_count)
-		token_count++;
-	return (token_count);
-}
-
-t_token	*tokenize(t_minishell *minishell, char *input)
-{
-	t_token	*tokens;
-	int		i;
-	int		token_count;
-
-	i = 0;
-	token_count = count_tokens(input);
-	minishell->token_count = token_count;
-	tokens = ft_calloc((token_count + 1), sizeof(t_token));
-	ft_putstr_fd("There are ", 1);
-	ft_putnbr_fd(token_count, 1);
-	ft_putendl_fd(" tokens in your input", 1);
-	while (i < token_count)
-	{
-		tokens[i].content = get_token(&input);
-		tokens[i].type = get_token_type(tokens[i].content);
-		if (tokens[i].type == WORD)
-		{
-			tokens[i].content = dollar_expansion(tokens[i].content, \
-			minishell->env_variables);
-			tokens[i].content = wildcards(tokens[i].content, tokens[i].content);
-		}
-		i++;
-	}
-	tokens[i].content = NULL;
-	return (tokens);
-}
-
-void	parse(t_minishell *minishell, char *line)
-{
 	if (count_quotations(line))
 	{
 		ft_putstr_fd(RED "Open quotes detected, command rejected.\n" RESET, 2);
-		return ;
+		return (NULL);
 	}
-	minishell->tokens = tokenize(minishell, line);
+	tokenize(minishell, line);
+	return (parse_expr(minishell));
+}
+
+/**
+ * @brief General expression parser. Checks if the current token follows the 
+ * proper grammar for a command which is stopped when all the tokens are 
+ * finished or a command delimiter has been found. If there are still tokens 
+ * that remain, this function creates an expression from them as the format for 
+ * all the delimiters is the same with them having a left and right side and an * operator.
+ * 
+ * @param minishell 
+ * @return t_cmd* 
+ */
+t_cmd	*parse_expr(t_minishell *minishell)
+{
+	t_cmd	*cmd;
+
+	cmd = parse_exec(minishell);
+	if (!cmd)
+		return (NULL);
+	if (!minishell->tokens)
+		return (cmd);
+	if (minishell->tokens->type == PIPE)
+	{
+		minishell->tokens = minishell->tokens->next;
+		cmd = create_expr_cmd(CMD_PIPE, cmd, parse_expr(minishell));
+	}
+	else if (minishell->tokens->type == AND)
+	{
+		minishell->tokens = minishell->tokens->next;
+		cmd = create_expr_cmd(CMD_AND, cmd, parse_expr(minishell));
+	}
+	else if (minishell->tokens->type == OR)
+	{
+		minishell->tokens = minishell->tokens->next;
+		cmd = create_expr_cmd(CMD_OR, cmd, parse_expr(minishell));
+	}
+	return (cmd);
+}
+
+/**
+ * @brief Allocates space for, and copies, only the first node of the provided
+ * token node. Useful for copying tokens into a command struct without it's 
+ * next values.
+ * 
+ * @param token 
+ * @return t_token* 
+ */
+t_token	*copy_token_node(t_token *token)
+{
+	t_token	*token_copy;
+
+	token_copy = ft_calloc(1, sizeof(t_token));
+	token_copy->next = NULL;
+	token_copy->content = token->content;
+	token_copy->type = token->type;
+	return (token_copy);
+}
+
+/**
+ * @brief Utility function to display error messages when the grammar rules
+ * for an execution command aren't met.
+ * 
+ * @param minishell 
+ * @return bool is_error which is true if an error occured and false otherwise.
+ */
+bool	contains_grammar_error(t_minishell *minishell)
+{
+	bool	is_error;
+
+	is_error = false;
+	if (minishell->tokens->type == PIPE && (is_error = true))
+		ft_putendl_fd("Syntax error near unexpected token `|'", 2);
+	if (minishell->tokens->type == AND && (is_error = true))
+		ft_putendl_fd("Syntax error near unexpected token `&&'", 2);
+	if (minishell->tokens->type == OR && (is_error = true))
+		ft_putendl_fd("Syntax error near unexpected token `||'", 2);
+	if (is_error)
+		g_status_code = 2;
+	return (is_error);
+}
+
+/**
+ * @brief Utility function which checks if the current token type should break 
+ * the execution parsing loop. i.e. is it a PIPE, AND or OR token
+ * 
+ * @param minishell 
+ * @return true 
+ * @return false 
+ */
+bool	is_exec_delimiter(t_minishell *minishell)
+{
+	if (minishell->tokens->type == PIPE || \
+		minishell->tokens->type == AND || \
+		minishell->tokens->type == OR)
+		return (true);
+	return (false);
+}
+
+/**
+ * @brief Parsing function for ensuring that executable commands follow the proper structure
+ * 
+ * Prints the appropriate error message if the syntax isn't met such as 
+ * providing special characters at the beginning of the command and returns 
+ * NULL.
+ * @param minishell 
+ * @return t_cmd* 
+ */
+t_cmd	*parse_exec(t_minishell *minishell)
+{
+	t_cmd	*node;
+	t_cmd_exec	*cmd;
+	int	i;
+
+	i = 0;
+	node = create_exec_cmd();
+	cmd = (t_cmd_exec *) node;
+	node = parse_redir(node, minishell);
+	while (minishell->tokens)
+	{
+		if (!cmd->tokens)
+			if (contains_grammar_error(minishell))
+				return (NULL);
+		if (is_exec_delimiter(minishell))
+			break ;
+		push_token(&cmd->tokens, copy_token_node(minishell->tokens));
+		minishell->tokens = minishell->tokens->next;
+		i++;
+		node = parse_redir(node, minishell);
+	}
+	return (node);
+}
+
+/**
+ * @brief Parsing function for ensuring that redirection commands follow the proper structure
+ * 
+ * @param cmd 
+ * @param minishell 
+ * @return t_cmd* 
+ */
+t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell)
+{
+	while (minishell->tokens && (minishell->tokens->type == GREAT || minishell->tokens->type == LESS))
+	{
+		if (!minishell->tokens->next || minishell->tokens->next->type != WORD)
+			ft_putendl_fd("No file for redirection found", 1);
+		if (minishell->tokens->type == LESS)
+		{
+			cmd = create_redir_cmd(cmd, CMD_LESS, minishell->tokens->next->content);
+			minishell->tokens = minishell->tokens->next->next;
+			break ;
+		}
+		else if (minishell->tokens->type == GREAT)
+		{
+			cmd = create_redir_cmd(cmd, CMD_GREAT, minishell->tokens->next->content);
+			minishell->tokens = minishell->tokens->next->next;
+			break ;
+		}
+	}
+	return (cmd);
 }

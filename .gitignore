@@ -2,3 +2,4 @@ objects
 minishell
 .vscode
 .*
+*.dSYM

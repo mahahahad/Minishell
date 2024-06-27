@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/10 18:58:59 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/27 22:06:20 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,20 +40,115 @@ char	*find_cmd(char *cmd)
 	return (final_cmd);
 }
 
-/**
- * TODO: Check if command is builtin here
- */
-void	run_cmd(t_cmd *cmd, char **env, t_minishell *minishell)
+char	**convert_cmd_exec(t_token *tokens)
+{
+	int	i;
+	t_token *current;
+	char	**str_tokens;
+
+	i = 0;
+	current = tokens;
+	while (current)
+	{
+		i++;
+		current = current->next;
+	}
+	str_tokens = ft_calloc(i + 1, sizeof(char *));
+	// TODO: Handle malloc fail properly
+	if (!str_tokens)
+		exit(1);
+	i = 0;
+	current = tokens;
+	while (current)
+	{
+		str_tokens[i] = ft_strdup(current->content);
+		current = current->next;
+		i++;
+	}
+	str_tokens[i] = NULL;
+	return (str_tokens);
+}
+
+void	exec_pipe(t_cmd_expr *cmd)
+{
+	t_cmd_exec *exec_cmd;
+
+	if (cmd->cmd_left->type == CMD_EXEC)
+	{
+		ft_putendl_fd("Left command: ", 1);
+		ft_putendl_fd("- Type: Executable", 1);
+		exec_cmd = (t_cmd_exec *) cmd->cmd_left;
+		while (exec_cmd->tokens)
+		{
+			print_token((*exec_cmd->tokens));
+			exec_cmd->tokens = exec_cmd->tokens->next;
+		}
+	}
+	else if (cmd->cmd_left->type == CMD_PIPE)
+	{
+		exec_pipe((t_cmd_expr *)cmd->cmd_left);
+	}
+	if (cmd->cmd_right->type == CMD_EXEC)
+	{
+		ft_putendl_fd("Right command: ", 1);
+		ft_putendl_fd("- Type: Executable", 1);
+		exec_cmd = (t_cmd_exec *) cmd->cmd_right;
+		while (exec_cmd->tokens)
+		{
+			print_token((*exec_cmd->tokens));
+			exec_cmd->tokens = exec_cmd->tokens->next;
+		}
+	}
+	else if (cmd->cmd_right->type == CMD_PIPE)
+	{
+		exec_pipe((t_cmd_expr *)cmd->cmd_right);
+	}
+}
+
+void	exec_redir(t_cmd_redir *cmd, char **env)
+{
+	int	fd_redirect;
+
+	// if (cmd->type == GREAT)
+	// 	fd_redirect = open(cmd->file, O_WRONLY);
+	// else if (cmd->type == LESS)
+	fd_redirect = open(cmd->file, O_WRONLY|O_CREAT|O_TRUNC);
+	dup2(fd_redirect, 1);
+	run_cmd(cmd->cmd, env);
+}
+
+void	run_cmd(t_cmd *cmd, char **env)
 {
 	t_cmd_exec	*cmd_exec;
 
+	if (!cmd)
+		return ;
 	if (cmd->type == CMD_EXEC)
 	{
 		cmd_exec = (t_cmd_exec *) cmd;
-		if (is_builtin(cmd_exec->tokens[0]))
-			exec_builtin(cmd_exec->tokens, minishell);
-		else
-			exec_cmd(cmd_exec->tokens, env);
+		// Builtin checks go here
+		exec_cmd(convert_cmd_exec(cmd_exec->tokens), env);
+	}
+	else if (cmd->type == CMD_PIPE)
+	{
+		// Pipe handling goes here
+		exec_pipe((t_cmd_expr *) cmd);
+	}
+	else if (cmd->type == CMD_AND)
+	{
+		// And command handling goes here
+		exec_pipe((t_cmd_expr *) cmd);
+	}
+	else if (cmd->type == CMD_OR)
+	{
+		// Or command handling goes here
+		exec_pipe((t_cmd_expr *) cmd);
+	}
+	// Redirection handling goes here
+	else if (cmd->type == CMD_LESS || cmd->type == CMD_GREAT)
+	{
+		exec_redir((t_cmd_redir *) cmd, env);
+		// ft_putendl_fd("Redirection handling will go here.", 1);
 	}
 }
 

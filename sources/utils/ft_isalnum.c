@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_isalnum.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/03 15:09:29 by mdanish           #+#    #+#             */
-/*   Updated: 2024/06/06 20:17:22 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/27 21:35:39 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/06 18:08:54 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/27 22:39:51 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,43 +22,6 @@ void	handle_sigint(int signum)
 	rl_replace_line("", 0);
 	rl_redisplay();
 	g_status_code = 130;
-}
-
-// TODO: Remove debug function
-void	print_token(t_token token)
-{
-	char	*type;
-
-	switch (token.type){
-		case PIPE:
-			type = "|";
-			break ;
-		case LESS:
-			type = "<";
-			break ;
-		case DBL_LESS:
-			type = "<<";
-			break ;
-		case GREAT:
-			type = ">";
-			break ;
-		case DBL_GREAT:
-			type = ">>";
-			break ;
-		case OR:
-			type = "OR";
-			break ;
-		case AND:
-			type = "AND";
-			break ;
-		default :
-			type = "Word";
-	}
-	ft_putstr_fd("{\n\tContent: ", 1);
-	ft_putstr_fd(token.content, 1);
-	ft_putstr_fd("\n\tType: ", 1);
-	ft_putstr_fd(type, 1);
-	ft_putstr_fd("\n}\n", 1);
 }
 
 /*
@@ -82,19 +45,21 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 	line = readline(B_YELLOW "minishell$ " RESET);
 	while (line)
 	{
-		add_history(line);
-		parse(&minishell, line);
+		t_cmd *cmd = parse(&minishell, line);
+		if (cmd)
+			add_history(line);
 		// cmd = create_exec_cmd(&minishell);
-		// run_cmd(cmd, env, &minishell);
+		run_cmd(cmd, env);
 		// free_cmd(cmd);
 		free(line);
-		if (minishell.token_count)
-		{
-			for (int i = 0; i < minishell.token_count; i++){
-					print_token(minishell.tokens[i]);
-			}
-			free_tokens(&minishell);
-		}
+		// if (minishell.token_count)
+		// {
+		// 	for (int i = 0; i < minishell.token_count; i++){
+		// 			print_token((*minishell.tokens));
+		// 			minishell.tokens = minishell.tokens->next;
+		// 	}
+		// 	// free_tokens(&minishell);
+		// }
 		line = readline(B_YELLOW "minishell$ " RESET);
 	}
 	ft_putendl_fd("exit", 1);
