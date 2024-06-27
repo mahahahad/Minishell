@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/29 13:34:56 by mdanish           #+#    #+#             */
-/*   Updated: 2024/05/29 16:36:14 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/06 14:30:56 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,10 @@
  * @param var_len is the length of the variable that needs to be unset.
  *
  */
-
 static void	ft_unset_from_list(t_minishell *minishell, char *var, int var_len)
 {
-	t_env_node	*delnode;
-	t_env_node	*store;
+	t_env	*delnode;
+	t_env	*store;
 
 	delnode = minishell->env_variables;
 	if (!ft_strncmp(var, delnode->key, var_len))
@@ -74,7 +73,6 @@ static void	ft_unset_from_list(t_minishell *minishell, char *var, int var_len)
  * @param variable are the variables that need to be unset. (NULL terminated)
  *
  */
-
 void	ft_unset(t_minishell *minishell, char **variable)
 {
 	int			var_len;

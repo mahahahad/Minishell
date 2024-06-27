@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/29 13:21:03 by mdanish           #+#    #+#             */
-/*   Updated: 2024/05/29 16:37:00 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/06 14:30:56 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 /**
  * @brief Prints to standard output a line of text.
  * 
- * It printf the arguments till cmd reaches null. While printing, it ensures
+ * It prints the arguments till cmd reaches null. While printing, it ensures
  * there is an argument after the current one before it prints a space to act
  * as a delimiter between the arguments.
  * 
@@ -27,7 +27,6 @@
  * @param cmd points to the strings ft_echo needs to print. (NULL terminated)
  *
  */
-
 void	ft_echo(char **cmd)
 {
 	int	index;
@@ -61,7 +60,6 @@ void	ft_echo(char **cmd)
  * @param envp a char ** pointing to the matrix ft_env needs to print.
  *
  */
-
 void	ft_env(char **args, char **envp)
 {
 	if (args && *args && **args)
@@ -89,17 +87,16 @@ void	ft_env(char **args, char **envp)
  * 
  * Upon completion, it sets the g_status_code to 0.
  * 
- * @param envp a char ** pointing to the matrix ft_env needs to print.
+ * @param args is used to ensure that no arguments or options are provided.
  *
  */
-
 void	ft_pwd(char **args)
 {
 	char	*current_working_directory;
 
-	if (args && *args && **args)
+	if (args && *args && *args[0] == '-')
 	{
-		ft_putendl_fd("pwd does not accecpt options or arguments.", 2);
+		ft_putendl_fd("pwd does not accecpt options.", 2);
 		g_status_code = 1;
 		return ;
 	}

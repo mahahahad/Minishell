@@ -6,14 +6,13 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/27 19:52:32 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/06/27 22:17:02 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-# define PROMPT "minishell> "
 # define RED "\033[31m"
 # define GREEN "\033[32m"
 # define YELLOW "\033[33m"
@@ -21,35 +20,41 @@
 # define B_YELLOW "\033[33;1m"
 # define RESET "\033[0m"
 
+# include <dirent.h>
+# include <errno.h>
 # include <fcntl.h>
 # include "libft.h"
+# include <linux/limits.h>
 # include <readline/history.h>
 # include <readline/readline.h>
 # include <signal.h>
 # include <stdbool.h>
-# include <stdio.h>
-# include <stdlib.h>
 # include <string.h>
+# include <sys/types.h>
 # include <sys/wait.h>
 # include <termios.h>
 # include <time.h>
-# include <unistd.h>
+
+/** GLOBAL VARIABLE **/
+extern int					g_status_code;
 
 /** STRUCTURES **/
+typedef struct s_env_node	t_env_node;
+typedef struct s_minishell	t_minishell;
+typedef struct s_prompt 	t_prompt;
+typedef struct s_token		t_token;
+typedef enum e_token_types	t_token_type;
+typedef enum e_cmd_types	t_cmd_type;
+typedef struct dirent		t_dir;
+typedef struct s_env		t_env;
+typedef struct s_minishell	t_minishell;
+typedef struct s_token		t_token;
 
 // Command Types
-typedef struct s_cmd t_cmd;
-typedef struct s_cmd_exec t_cmd_exec;
-typedef struct s_cmd_redir t_cmd_redir;
-typedef struct s_cmd_expr t_cmd_expr;
-typedef struct s_cmd_pipe t_cmd_pipe;
-typedef struct s_cmd_and t_cmd_and;
-typedef struct s_cmd_or t_cmd_or;
-
-typedef struct s_env_node t_env_node;
-typedef struct s_minishell t_minishell;
-typedef struct s_prompt t_prompt;
-typedef struct s_token t_token;
+typedef struct s_cmd		t_cmd;
+typedef struct s_cmd_exec	t_cmd_exec;
+typedef struct s_cmd_redir	t_cmd_redir;
+typedef struct s_cmd_expr	t_cmd_expr;
 
 enum e_token_types
 {
@@ -76,123 +81,108 @@ enum e_cmd_types
 
 struct s_token
 {
-	int			type;
-	char		*content;
-	t_token		*next;
+	t_token_type	type;
+	char			*content;
+	t_token			*next;
 };
 
-struct s_prompt
+struct s_env
 {
-	char		*previous;
-	char		*current;
-};
-
-struct s_env_node
-{
-	char		*key;
-	char		*value;
-	t_env_node	*next;
+	char	*key;
+	char	*value;
+	t_env	*next;
 };
 
 struct s_minishell
 {
-	int			token_count;
-	int			envp_count;
-	char		**envp;
-	t_token		*tokens;
-	t_token		**tokens_head;
-	t_prompt	*prompt;
-	t_env_node	*env_variables;
+	char	**envp;
+	int		token_count;
+	int		envp_count;
+	t_env	*env_variables;
+	t_token	*tokens;
+	t_token	**tokens_head;
 };
 
 /*
  * General command structure.
- *
+ * 
  * Every parse function returns this and can be casted to another cmd type
  * because they all share the type variable
- * */
+ * 
+ */
 struct s_cmd
 {
-	int			type;
+	t_cmd_type	type;
 };
 
 struct s_cmd_exec
 {
-	int			type;
-	t_token		*tokens;
+	t_cmd_type	type;
+	t_token	*tokens;
 };
 
 struct s_cmd_redir
 {
-	int			type;
+	t_cmd_type	type;
 	t_cmd	*cmd;
 	char	*file;
 };
 
 struct s_cmd_pipe
 {
-	int			type;
+	t_cmd_type	type;
 	t_cmd	*cmd_left;
 	t_cmd	*cmd_right;
 };
 
 struct s_cmd_expr
 {
-	int		type;
+	t_cmd_type	type;
 	t_cmd	*cmd_left;
 	t_cmd	*cmd_right;
 };
-
-/** GLOBAL VARIABLE **/
-extern int		g_status_code;
 
 /** FUNCTIONS **/
 // Parsing
 t_cmd			*create_exec_cmd(void);
 t_cmd			*create_redir_cmd(t_cmd *cmd, int type, char *file);
-t_cmd			*create_pipe_cmd(t_cmd *cmd_left, t_cmd *cmd_right);
 t_cmd			*create_expr_cmd(int type, t_cmd *cmd_left, t_cmd *cmd_right);
 void			push_token(t_token **tokens_list, t_token *token);
 t_token			*tokenize(t_minishell *minishell, char *input);
 int				count_quotations(char *line);
 t_cmd			*parse(t_minishell *minishell, char *line);
 t_cmd			*parse_expr(t_minishell *minishell);
-t_cmd			*parse_pipe(t_minishell *minishell);
 t_cmd			*parse_exec(t_minishell *minishell);
 t_cmd			*parse_redir(t_cmd *cmd, t_minishell *minishell);
+char		*dollar_expansion(char *token, t_env *list);
+char		*wildcards(char *token, char *store);
 
 // Execution
-void			exec_builtin(char **cmd);
-int				exec_cmd(char **cmd, char **env);
-void			run_cmd(t_cmd *cmd, char **env);
+void		exec_builtin(char **cmd, t_minishell *minishell);
+int			exec_cmd(char **cmd, char **env);
+bool		is_builtin(char *str);
+void		run_cmd(t_cmd *cmd, char **env);
 
 // Built-ins
-
-// Export
-void			add_to_matrix(t_minishell *minishell, char *new_var);
-void			ft_export(t_minishell *minishell, char **new_variable);
-void			create_new_variable(t_env_node *new_var, int *length, char *string);
-bool			is_argument_valid(const char *string);
-
-// Other		(Update the name later)
-void			ft_cd(char **args, t_minishell *minishell);
-void			ft_echo(char **cmd);
-void			ft_env(char **args, char **envp);
-void			ft_pwd(char **args);
-void			ft_unset(t_minishell *minishell, char **variable);
-bool			is_builtin(char *str);
+void		add_to_matrix(t_minishell *minishell, char *new_var);
+void		create_new_variable(t_env *new_var, int *length, char *string);
+void		ft_cd(char **cmd, t_minishell *minishell);
+void		ft_echo(char **cmd);
+void		ft_env(char **args, char **envp);
+void		ft_export(t_minishell *minishell, char **new_variable);
+void		ft_pwd(char **args);
+void		ft_unset(t_minishell *minishell, char **variable);
+bool		is_argument_valid(const char *string);
 
 // Cleanup
-void			free_cmd(t_cmd *cmd);
-void			free_tokens(t_minishell *minishell);
+void		free_cmd(t_cmd *cmd);
+void		free_tokens(t_minishell *minishell);
 
-// General
-t_prompt		*init_prompt(void);
-void			update_prompt(t_prompt *prompt);
-void			setup_environment(t_minishell *minishell, char **env);
+// Setup
+void		setup_environment(t_minishell *minishell, char **env);
 
 // Miscellaneous
-void			ft_lstadd_back(t_env_node **list, t_env_node *new_node);
+void			ft_lstadd_back(t_env **list, t_env *new_node);
 void			rl_replace_line(const char *text, int clear_undo);
 
 // Debug

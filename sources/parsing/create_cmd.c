@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:34:36 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/27 20:01:39 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/06/27 20:34:41 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ t_cmd	*create_exec_cmd(void)
 {
 	t_cmd_exec	*exec_cmd;
 
-	exec_cmd = malloc(sizeof(t_cmd_exec));
+	exec_cmd = ft_calloc(1, sizeof(t_cmd_exec));
 	exec_cmd->type = CMD_EXEC;
 	exec_cmd->tokens = NULL;
 	return ((t_cmd *) exec_cmd);
@@ -44,7 +44,7 @@ t_cmd	*create_redir_cmd(t_cmd *cmd, int type, char *file)
 {
 	t_cmd_redir	*redir_cmd;
 
-	redir_cmd = malloc(sizeof(t_cmd_redir));
+	redir_cmd = ft_calloc(1, sizeof(t_cmd_redir));
 	redir_cmd->cmd = cmd;
 	redir_cmd->type = type;
 	redir_cmd->file = file;
@@ -64,7 +64,7 @@ t_cmd	*create_expr_cmd(int type, t_cmd *cmd_left, t_cmd *cmd_right)
 {
 	t_cmd_expr	*expr_cmd;
 
-	expr_cmd = malloc(sizeof(t_cmd_expr));
+	expr_cmd = ft_calloc(1, sizeof(t_cmd_expr));
 	expr_cmd->type = type;
 	expr_cmd->cmd_left = cmd_left;
 	expr_cmd->cmd_right = cmd_right;

@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 22:36:59 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/27 17:50:18 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/06/27 22:20:43 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,7 +147,7 @@ char	*get_token(char **input)
 			break ;
 		}
 	}
-	token = malloc(i + 1);
+	token = ft_calloc(i + 1, sizeof(char));
 	if (!token)
 		return (NULL);
 	ft_strlcpy(token, string, i + 1);
@@ -239,9 +239,6 @@ void	push_token(t_token **tokens_list, t_token *token)
 {
 	t_token	*current;
 
-	// new_token = malloc(sizeof(t_token));
-	// new_token->current = token;
-	// new_token->next = NULL;
 	current = (*tokens_list);
 	if (!current)
 	{
@@ -253,6 +250,32 @@ void	push_token(t_token **tokens_list, t_token *token)
 	current->next = token;
 }
 
+// t_token	*tokenize(t_minishell *minishell, char *input)
+// {
+// 	t_token	*tokens;
+// 	int		i;
+// 	int		token_count;
+// 	i = 0;
+// 	token_count = count_tokens(input);
+// 	minishell->token_count = token_count;
+// 	tokens = ft_calloc((token_count + 1), sizeof(t_token));
+// 	ft_putstr_fd("There are ", 1);
+// 	ft_putnbr_fd(token_count, 1);
+// 	ft_putendl_fd(" tokens in your input", 1);
+// 	while (i < token_count)
+// 	{
+// 		tokens[i].content = get_token(&input);
+// 		tokens[i].type = get_token_type(tokens[i].content);
+// 		if (tokens[i].type == WORD)
+// 		{
+// 			tokens[i].content = dollar_expansion(tokens[i].content, 			minishell->env_variables);
+// 			tokens[i].content = wildcards(tokens[i].content, tokens[i].content);
+// 		}
+// 		i++;
+// 	}
+// 	tokens[i].content = NULL;
+// 	return (tokens);
+// }
 /**
  * @brief
  * Split the input based on all the tokens
@@ -277,13 +300,20 @@ t_token	*tokenize(t_minishell *minishell, char *input)
 	ft_putendl_fd(" tokens in your input", 1);
 	while (i < token_count)
 	{
-		token = malloc(sizeof(t_token));
+		token = ft_calloc(1, sizeof(t_token));
 		token->content = get_token(&input);
 		token->type = get_token_type(token->content);
+		if (token->type == WORD)
+		{
+			token->content = dollar_expansion(token->content, \
+			minishell->env_variables);
+			token->content = wildcards(token->content, token->content);
+		}
 		token->next = NULL;
 		push_token(&tokens_list, token);
 		i++;
 	}
+	minishell->tokens = tokens_list;
 	minishell->tokens_head = &tokens_list;
 	return (tokens_list);
 }

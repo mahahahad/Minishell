@@ -1,2 +1,3 @@
-PARSER_SRCS := $(addprefix $(PARSER_DIR)/, parser.c parser_utils.c create_cmd.c)
+PARSER_SRCS := $(addprefix $(PARSER_DIR)/, create_cmd.c dollar.c parser.c \
+parser_utils.c wildcard.c)
 SRCS += $(PARSER_SRCS)

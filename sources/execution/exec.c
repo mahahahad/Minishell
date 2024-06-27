@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/27 19:57:25 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/06/27 22:06:20 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ char	**convert_cmd_exec(t_token *tokens)
 		i++;
 		current = current->next;
 	}
-	str_tokens = malloc(sizeof(char *) * (i + 1));
+	str_tokens = ft_calloc(i + 1, sizeof(char *));
 	// TODO: Handle malloc fail properly
 	if (!str_tokens)
 		exit(1);
@@ -207,10 +207,62 @@ int	exec_cmd(char **cmd, char **env)
 	return (status);
 }
 
-// void	exec_builtin(char **cmd)
-// {
-// 	if (ft_strncmp(cmd[0], "echo", 5) == 0)
-// 		ft_echo(cmd + 1);
-// 	if (ft_strncmp(cmd[0], "cd", 3) == 0)
-// 		g_status_code = ft_cd(cmd + 1);
-// }
+/**
+ * @brief Checks if the command is a builtin.
+ * 
+ * It goes through a bunch of if and else statements that call ft_strncmp()
+ * with different builtin names. If one of them return a difference of 0, the
+ * function returns a positive.
+ * 
+ * @param str is the name of the command that will be compared.
+ *
+ * @return true if the command name is a builtin and false it it not.
+ * 
+ */
+bool	is_builtin(char *str)
+{
+	if (!ft_strncmp(str, "echo", 5))
+		return (true);
+	else if (!ft_strncmp(str, "cd", 3))
+		return (true);
+	else if (!ft_strncmp(str, "pwd", 4))
+		return (true);
+	else if (!ft_strncmp(str, "export", 7))
+		return (true);
+	else if (!ft_strncmp(str, "unset", 6))
+		return (true);
+	else if (!ft_strncmp(str, "env", 4))
+		return (true);
+	else if (!ft_strncmp(str, "exit", 5))
+		return (true);
+	return (false);
+}
+
+/**
+ * @brief Executes the correct builtin.
+ * 
+ * It goes through a bunch of if and else statements that call ft_strncmp()
+ * with different builtin names. If one of them return a difference of 0, the
+ * corresponding function is called.
+ * 
+ * @param cmd contains the name of the command that will be compared.
+ * @param minishell is sent to the builtins as required.
+ * 
+ */
+void	exec_builtin(char **cmd, t_minishell *minishell)
+{
+	if (!ft_strncmp(*cmd, "echo", 5))
+		ft_echo(cmd);
+	else if (!ft_strncmp(*cmd, "cd", 3))
+		ft_cd(cmd, minishell);
+	else if (!ft_strncmp(*cmd, "pwd", 4))
+		ft_pwd(cmd);
+	else if (!ft_strncmp(*cmd, "export", 7))
+		ft_export(minishell, cmd);
+	else if (!ft_strncmp(*cmd, "unset", 6))
+		ft_unset(minishell, cmd);
+	else if (!ft_strncmp(*cmd, "env", 4))
+		ft_env(cmd, minishell->envp);
+	// else if (!ft_strncmp(*cmd, "exit", 5))
+	// 	return (true);
+}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_isspace.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.ae>  +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:22:14 by maabdull          #+#    #+#             */
-/*   Updated: 2024/05/04 14:24:47 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/06/27 21:36:03 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

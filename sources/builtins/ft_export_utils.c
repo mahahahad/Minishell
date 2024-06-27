@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 20:21:11 by mdanish           #+#    #+#             */
-/*   Updated: 2024/05/29 16:31:53 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/06/26 16:45:02 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@
  * @return true if the key exists, false if the key is not found in the matrix
  * 
  */
-
 static bool	update_the_matrix(t_minishell *minishell, char *new_var)
 {
 	int	index;
@@ -62,7 +61,6 @@ static bool	update_the_matrix(t_minishell *minishell, char *new_var)
  * @param len is the length of the key of the new node.
  * 
  */
-
 void	add_to_matrix(t_minishell *minishell, char *new_var)
 {
 	char	**env_store;
@@ -70,10 +68,9 @@ void	add_to_matrix(t_minishell *minishell, char *new_var)
 
 	if (!ft_strchr(new_var, '=') || update_the_matrix(minishell, new_var))
 		return ;
-	env_store = malloc(sizeof(char *) * (minishell->envp_count + 2));
+	env_store = ft_calloc(minishell->envp_count + 2, sizeof(char *));
 	if (!env_store)
 		ft_putendl_fd("Malloc failed while exporting a variable.", 2);	// exit required
-	ft_memset(env_store, 0, sizeof(char *) * (minishell->envp_count + 2));
 	index = -1;
 	while (++index < minishell->envp_count)
 		env_store[index] = minishell->envp[index];
@@ -98,8 +95,7 @@ void	add_to_matrix(t_minishell *minishell, char *new_var)
  * @param string contains the new key and value to be added.
  * 
  */
-
-void	create_new_variable(t_env_node *new_var, int *length, char *string)
+void	create_new_variable(t_env *new_var, int *length, char *string)
 {
 	if (!ft_strchr(string, '='))
 	{
@@ -136,7 +132,6 @@ void	create_new_variable(t_env_node *new_var, int *length, char *string)
  * @return true if valid, false if invalid.
  * 
  */
-
 bool	is_argument_valid(const char *string)
 {
 	int	index;
@@ -146,15 +141,12 @@ bool	is_argument_valid(const char *string)
 	{
 		if (string[index] == '_')
 			continue ;
-		else if (string[index] >= '0' && string[index] <= '9')
-			continue ;
-		else if ((string[index] >= 'A' && string[index] <= 'Z') || \
-			(string[index] >= 'a' && string[index] <= 'z'))
+		else if (ft_isalnum(string[index]))
 			continue ;
 		else
 			break ;
 	}
-	if ((string[0] >= '0' && string[0] <= '9') || !string[0] || \
+	if (ft_isdigit(string[0]) || !string[0] || \
 		(string[index] && string[index] != '='))
 	{
 		ft_putendl_fd("Invalid identifier detected in the arguments.", 2);

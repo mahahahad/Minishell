@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/27 20:02:43 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/06/27 22:14:56 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ t_cmd	*parse(t_minishell *minishell, char *line)
 		ft_putstr_fd(RED "Open quotes detected, command rejected.\n" RESET, 2);
 		return (NULL);
 	}
-	minishell->tokens = tokenize(minishell, line);
+	tokenize(minishell, line);
 	return (parse_expr(minishell));
 }
 
@@ -84,7 +84,7 @@ t_token	*copy_token_node(t_token *token)
 {
 	t_token	*token_copy;
 
-	token_copy = malloc(sizeof(t_token));
+	token_copy = ft_calloc(1, sizeof(t_token));
 	token_copy->next = NULL;
 	token_copy->content = token->content;
 	token_copy->type = token->type;
@@ -162,8 +162,6 @@ t_cmd	*parse_exec(t_minishell *minishell)
 		i++;
 		node = parse_redir(node, minishell);
 	}
-	// if (minishell->token_count && !cmd->tokens)
-	// 	return (ft_putendl_fd("Syntax error near unexpected token `|'", 2), NULL);
 	return (node);
 }
 
