@@ -178,4 +178,7 @@ void			setup_environment(t_minishell *minishell, char **env);
 void			ft_lstadd_back(t_env_node **list, t_env_node *new_node);
 void			rl_replace_line(const char *text, int clear_undo);
 
+// Debug
+void			print_token(t_token token);
+
 #endif
