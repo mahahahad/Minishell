@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/02 12:20:41 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/02 13:47:11 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ struct s_minishell
 	int		envp_count;
 	t_env	*env_variables;
 	t_token	*tokens;
-	t_token	**tokens_head;
+	t_token	*tokens_head; //! can be removed
 };
 
 /*
@@ -148,7 +148,7 @@ t_cmd			*create_exec_cmd(void);
 t_cmd			*create_redir_cmd(t_cmd *cmd, int type, char *file);
 t_cmd			*create_expr_cmd(int type, t_cmd *cmd_left, t_cmd *cmd_right);
 void			push_token(t_token **tokens_list, t_token *token);
-t_token			*tokenize(t_minishell *minishell, char *input);
+void			tokenize(t_minishell *minishell, char *input);
 int				count_quotations(char *line);
 t_cmd			*parse(t_minishell *minishell, char *line);
 t_cmd			*parse_expr(t_minishell *minishell);

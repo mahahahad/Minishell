@@ -6,14 +6,14 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 22:36:59 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/27 22:20:43 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/02 13:43:25 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 /**
- * This file contains the utility functions used for the main parsing functions 
+ * This file contains the utility functions used for the main parsing functions
  */
 
 /**
@@ -160,7 +160,7 @@ char	*get_token(char **input)
 
 /**
  * @brief Identify the type of the token passed using the content parameter
- * 
+ *
  * Returns word by default if the content parameter doesn't satisfy any of the requirements
  * @return int from e_token_types
  */
@@ -284,21 +284,17 @@ void	push_token(t_token **tokens_list, t_token *token)
  * @returns
  * The linked list containing all the tokens
 */
-t_token	*tokenize(t_minishell *minishell, char *input)
+void	tokenize(t_minishell *minishell, char *input)
 {
 	t_token	*token;
-	t_token *tokens_list;
 	int		i;
-	int		token_count;
 
 	i = 0;
-	token_count = count_tokens(input);
-	minishell->token_count = token_count;
-	tokens_list = NULL;
+	minishell->token_count = count_tokens(input);
 	ft_putstr_fd("There are ", 1);
-	ft_putnbr_fd(token_count, 1);
+	ft_putnbr_fd(minishell->token_count, 1);
 	ft_putendl_fd(" tokens in your input", 1);
-	while (i < token_count)
+	while (i < minishell->token_count)
 	{
 		token = ft_calloc(1, sizeof(t_token));
 		token->content = get_token(&input);
@@ -310,10 +306,8 @@ t_token	*tokenize(t_minishell *minishell, char *input)
 			token->content = wildcards(token->content, token->content);
 		}
 		token->next = NULL;
-		push_token(&tokens_list, token);
+		push_token(&minishell->tokens, token);
 		i++;
 	}
-	minishell->tokens = tokens_list;
-	minishell->tokens_head = &tokens_list;
-	return (tokens_list);
+	minishell->tokens_head = minishell->tokens;
 }
