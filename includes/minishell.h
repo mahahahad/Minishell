@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/27 22:17:02 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/02 12:20:41 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 # include <errno.h>
 # include <fcntl.h>
 # include "libft.h"
-# include <linux/limits.h>
+# include <limits.h>
 # include <readline/history.h>
 # include <readline/readline.h>
 # include <signal.h>
@@ -105,10 +105,10 @@ struct s_minishell
 
 /*
  * General command structure.
- * 
+ *
  * Every parse function returns this and can be casted to another cmd type
  * because they all share the type variable
- * 
+ *
  */
 struct s_cmd
 {

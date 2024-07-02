@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/27 22:14:56 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/02 12:21:48 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@
 /**
  * @brief General parsing function that is called after receiving user input
  * Goes through the input and parses it by following the grammar.
- * 
- * @return t_cmd* 
+ *
+ * @return t_cmd*
  */
 t_cmd	*parse(t_minishell *minishell, char *line)
 {
@@ -36,14 +36,14 @@ t_cmd	*parse(t_minishell *minishell, char *line)
 }
 
 /**
- * @brief General expression parser. Checks if the current token follows the 
- * proper grammar for a command which is stopped when all the tokens are 
- * finished or a command delimiter has been found. If there are still tokens 
- * that remain, this function creates an expression from them as the format for 
+ * @brief General expression parser. Checks if the current token follows the
+ * proper grammar for a command which is stopped when all the tokens are
+ * finished or a command delimiter has been found. If there are still tokens
+ * that remain, this function creates an expression from them as the format for
  * all the delimiters is the same with them having a left and right side and an * operator.
- * 
- * @param minishell 
- * @return t_cmd* 
+ *
+ * @param minishell
+ * @return t_cmd*
  */
 t_cmd	*parse_expr(t_minishell *minishell)
 {
@@ -74,11 +74,11 @@ t_cmd	*parse_expr(t_minishell *minishell)
 
 /**
  * @brief Allocates space for, and copies, only the first node of the provided
- * token node. Useful for copying tokens into a command struct without it's 
+ * token node. Useful for copying tokens into a command struct without it's
  * next values.
- * 
- * @param token 
- * @return t_token* 
+ *
+ * @param token
+ * @return t_token*
  */
 t_token	*copy_token_node(t_token *token)
 {
@@ -94,8 +94,8 @@ t_token	*copy_token_node(t_token *token)
 /**
  * @brief Utility function to display error messages when the grammar rules
  * for an execution command aren't met.
- * 
- * @param minishell 
+ *
+ * @param minishell
  * @return bool is_error which is true if an error occured and false otherwise.
  */
 bool	contains_grammar_error(t_minishell *minishell)
@@ -115,12 +115,12 @@ bool	contains_grammar_error(t_minishell *minishell)
 }
 
 /**
- * @brief Utility function which checks if the current token type should break 
+ * @brief Utility function which checks if the current token type should break
  * the execution parsing loop. i.e. is it a PIPE, AND or OR token
- * 
- * @param minishell 
- * @return true 
- * @return false 
+ *
+ * @param minishell
+ * @return true
+ * @return false
  */
 bool	is_exec_delimiter(t_minishell *minishell)
 {
@@ -133,20 +133,18 @@ bool	is_exec_delimiter(t_minishell *minishell)
 
 /**
  * @brief Parsing function for ensuring that executable commands follow the proper structure
- * 
- * Prints the appropriate error message if the syntax isn't met such as 
- * providing special characters at the beginning of the command and returns 
+ *
+ * Prints the appropriate error message if the syntax isn't met such as
+ * providing special characters at the beginning of the command and returns
  * NULL.
- * @param minishell 
- * @return t_cmd* 
+ * @param minishell
+ * @return t_cmd*
  */
 t_cmd	*parse_exec(t_minishell *minishell)
 {
 	t_cmd	*node;
 	t_cmd_exec	*cmd;
-	int	i;
 
-	i = 0;
 	node = create_exec_cmd();
 	cmd = (t_cmd_exec *) node;
 	node = parse_redir(node, minishell);
@@ -159,7 +157,6 @@ t_cmd	*parse_exec(t_minishell *minishell)
 			break ;
 		push_token(&cmd->tokens, copy_token_node(minishell->tokens));
 		minishell->tokens = minishell->tokens->next;
-		i++;
 		node = parse_redir(node, minishell);
 	}
 	return (node);
@@ -167,10 +164,10 @@ t_cmd	*parse_exec(t_minishell *minishell)
 
 /**
  * @brief Parsing function for ensuring that redirection commands follow the proper structure
- * 
- * @param cmd 
- * @param minishell 
- * @return t_cmd* 
+ *
+ * @param cmd
+ * @param minishell
+ * @return t_cmd*
  */
 t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell)
 {
