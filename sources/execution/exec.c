@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/27 22:06:20 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/02 22:11:09 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,16 +105,25 @@ void	exec_pipe(t_cmd_expr *cmd)
 	}
 }
 
+// TODO: Account for both symbols
+/**
+ * @brief The contents of a file descriptor specified before the redirection
+ * operator should be redirected to the next provided file descriptor
+ * 
+ * @param cmd 
+ * @param env 
+ */
 void	exec_redir(t_cmd_redir *cmd, char **env)
 {
 	int	fd_redirect;
+	int	saved_fd;
 
-	// if (cmd->type == GREAT)
-	// 	fd_redirect = open(cmd->file, O_WRONLY);
-	// else if (cmd->type == LESS)
-	fd_redirect = open(cmd->file, O_WRONLY|O_CREAT|O_TRUNC);
-	dup2(fd_redirect, 1);
+	saved_fd = dup(STDOUT_FILENO);
+	fd_redirect = open(cmd->file, O_WRONLY|O_CREAT|O_TRUNC, 0666);
+	dup2(fd_redirect, STDOUT_FILENO);
 	run_cmd(cmd->cmd, env);
+	dup2(saved_fd, STDOUT_FILENO);
+	close(saved_fd);
 }
 
 void	run_cmd(t_cmd *cmd, char **env)
