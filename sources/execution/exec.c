@@ -6,11 +6,15 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/02 22:11:09 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/02 22:21:21 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+/**
+ * This file contains the functions to execute the various command types
+ */
 
 // Mallocs the full path to a command
 // or returns NULL if no command was found
@@ -167,7 +171,7 @@ void	run_cmd(t_cmd *cmd, char **env)
  * following the format:
  * {command, options}
  */
-int	exec_cmd(char **cmd, char **env)
+void	exec_cmd(char **cmd, char **env)
 {
 	int		status;
 	int		pid;
@@ -192,13 +196,15 @@ int	exec_cmd(char **cmd, char **env)
 		{
 			ft_putstr_fd(cmd_original, 2);
 			ft_putendl_fd(": no such file or directory", 2);
-			return (127);
+			g_status_code = 127;
+			return ;
 		}
 		else if (access(cmd[0], X_OK) == -1)
 		{
 			ft_putstr_fd(cmd_original, 2);
 			ft_putendl_fd(": Permission denied", 2);
-			return (126);
+			g_status_code = 126;
+			return ;
 		}
 	}
 	pid = fork();
@@ -208,12 +214,12 @@ int	exec_cmd(char **cmd, char **env)
 		ft_putstr_fd(cmd_original, 2);
 		ft_putendl_fd(": command not found", 2);
 		free(cmd_original);
+		g_status_code = 127;
 		exit(127);
 	}
 	waitpid(pid, &status, 0);
 	free(cmd_original);
 	// free(absolute_cmd);
-	return (status);
 }
 
 /**

@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/02 13:47:11 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/02 22:21:39 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,7 +159,7 @@ char		*wildcards(char *token, char *store);
 
 // Execution
 void		exec_builtin(char **cmd, t_minishell *minishell);
-int			exec_cmd(char **cmd, char **env);
+void		exec_cmd(char **cmd, char **env);
 bool		is_builtin(char *str);
 void		run_cmd(t_cmd *cmd, char **env);
 
