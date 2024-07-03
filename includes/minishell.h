@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/02 22:21:39 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/03 15:44:09 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ enum e_cmd_types
 	CMD_PIPE,
 	CMD_LESS,
 	CMD_GREAT,
+	CMD_DBL_GREAT,
 	CMD_AND,
 	CMD_OR,
 };

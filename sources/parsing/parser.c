@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/02 12:21:48 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/03 15:49:25 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,7 +171,9 @@ t_cmd	*parse_exec(t_minishell *minishell)
  */
 t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell)
 {
-	while (minishell->tokens && (minishell->tokens->type == GREAT || minishell->tokens->type == LESS))
+	while (minishell->tokens && (minishell->tokens->type == GREAT || \
+		minishell->tokens->type == LESS || \
+		minishell->tokens->type == DBL_GREAT))
 	{
 		if (!minishell->tokens->next || minishell->tokens->next->type != WORD)
 			ft_putendl_fd("No file for redirection found", 1);
@@ -184,6 +186,12 @@ t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell)
 		else if (minishell->tokens->type == GREAT)
 		{
 			cmd = create_redir_cmd(cmd, CMD_GREAT, minishell->tokens->next->content);
+			minishell->tokens = minishell->tokens->next->next;
+			break ;
+		}
+		else if (minishell->tokens->type == DBL_GREAT)
+		{
+			cmd = create_redir_cmd(cmd, CMD_DBL_GREAT, minishell->tokens->next->content);
 			minishell->tokens = minishell->tokens->next->next;
 			break ;
 		}
