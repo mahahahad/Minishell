@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/02 22:21:21 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/03 15:40:22 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,26 +113,24 @@ void	exec_pipe(t_cmd_expr *cmd)
 /**
  * @brief The contents of a file descriptor specified before the redirection
  * operator should be redirected to the next provided file descriptor
- * 
- * @param cmd 
- * @param env 
+ *
+ * @param cmd
+ * @param env
  */
 void	exec_redir(t_cmd_redir *cmd, char **env)
 {
 	int	fd_redirect;
-	int	saved_fd;
 
-	saved_fd = dup(STDOUT_FILENO);
 	fd_redirect = open(cmd->file, O_WRONLY|O_CREAT|O_TRUNC, 0666);
 	dup2(fd_redirect, STDOUT_FILENO);
 	run_cmd(cmd->cmd, env);
-	dup2(saved_fd, STDOUT_FILENO);
-	close(saved_fd);
 }
 
 void	run_cmd(t_cmd *cmd, char **env)
 {
 	t_cmd_exec	*cmd_exec;
+	int	pid;
+	int status;
 
 	if (!cmd)
 		return ;
@@ -160,7 +158,15 @@ void	run_cmd(t_cmd *cmd, char **env)
 	// Redirection handling goes here
 	else if (cmd->type == CMD_LESS || cmd->type == CMD_GREAT)
 	{
-		exec_redir((t_cmd_redir *) cmd, env);
+		pid = fork();
+		if (pid < 0)
+			perror("fork failed");
+		else if (pid == 0)
+		{
+			exec_redir((t_cmd_redir *) cmd, env);
+			exit(0);
+		}
+		waitpid(pid, &status, 0);
 		// ft_putendl_fd("Redirection handling will go here.", 1);
 	}
 }
@@ -186,7 +192,8 @@ void	exec_cmd(char **cmd, char **env)
 		{
 			ft_putstr_fd(cmd_original, 2);
 			ft_putendl_fd(": command not found", 2);
-			return (127);
+			g_status_code = 127;
+			return ;
 		}
 		cmd[0] = absolute_cmd;
 	}
@@ -224,15 +231,15 @@ void	exec_cmd(char **cmd, char **env)
 
 /**
  * @brief Checks if the command is a builtin.
- * 
+ *
  * It goes through a bunch of if and else statements that call ft_strncmp()
  * with different builtin names. If one of them return a difference of 0, the
  * function returns a positive.
- * 
+ *
  * @param str is the name of the command that will be compared.
  *
  * @return true if the command name is a builtin and false it it not.
- * 
+ *
  */
 bool	is_builtin(char *str)
 {
@@ -255,15 +262,15 @@ bool	is_builtin(char *str)
 
 /**
  * @brief Executes the correct builtin.
- * 
+ *
  * It goes through a bunch of if and else statements that call ft_strncmp()
  * with different builtin names. If one of them return a difference of 0, the
  * corresponding function is called.
- * 
+ *
  * @param cmd contains the name of the command that will be compared.
  * @param minishell is sent to the builtins as required.
- * 
- */
+ *
+ *
 void	exec_builtin(char **cmd, t_minishell *minishell)
 {
 	if (!ft_strncmp(*cmd, "echo", 5))
@@ -281,3 +288,4 @@ void	exec_builtin(char **cmd, t_minishell *minishell)
 	// else if (!ft_strncmp(*cmd, "exit", 5))
 	// 	return (true);
 }
+*/
