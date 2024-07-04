@@ -21,6 +21,7 @@ SRCS := $(addprefix $(SRCS_DIR)/, debug.c main.c)
 # Include the files needed by all the modules and append them to the SRCS variable
 include $(patsubst %, %/module.mk, $(MODULES))
 OBJS := $(SRCS:$(SRCS_DIR)%.c=$(OBJS_DIR)%.o)
+TEST_FILE := ./test_cases
 
 # Custom colours
 YELLOW := \033[38;2;230;255;0;48;2;25;25;25;1m
@@ -28,13 +29,13 @@ GREEN := \033[38;2;170;255;0;48;2;25;25;25;1m
 RESET := \033[0m
 
 ifeq ($(shell uname -s), Darwin)
-	# Ultimate solution to finding the readline library on macos
-	# MACOS_INCLUDE_PATHS := /usr/local/opt/readline/ /opt/local/ /usr/local/ /usr/
+# Ultimate solution to finding the readline library on macos
+# MACOS_INCLUDE_PATHS := /usr/local/opt/readline/ /opt/local/ /usr/local/ /usr/
 	MACOS_INCLUDE_PATHS := /opt/vagrant/embedded/ 
 	ADDITIONAL_FLAGS += $(patsubst %, -I%include, $(MACOS_INCLUDE_PATHS))
 	ADDITIONAL_FLAGS += $(patsubst %, -L%lib, $(MACOS_INCLUDE_PATHS))
-	# ADDITIONAL_FLAGS += -I/usr/local/opt/readline/include -L/usr/local/opt/readline/lib
-	# ADDITIONAL_FLAGS += -I/opt/homebrew/opt/readline/include -L/opt/homebrew/opt/readline/lib
+# ADDITIONAL_FLAGS += -I/usr/local/opt/readline/include -L/usr/local/opt/readline/lib
+# ADDITIONAL_FLAGS += -I/opt/homebrew/opt/readline/include -L/opt/homebrew/opt/readline/lib
 endif
 
 # Rules
@@ -67,4 +68,7 @@ re: fclean all
 debug: re
 	@$(CC) $(CFLAGS) $(SRCS) $(ADDITIONAL_FLAGS) -g3 -fsanitize=address -o $(NAME)
 
-.PHONY: all clean fclean re debug
+test: re
+	./$(NAME) < $(TEST_FILE)
+
+.PHONY: all clean fclean re debug test

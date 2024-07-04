@@ -1,0 +1,10 @@
+echo something
+echo something | cat -e
+echo something | cat -e | grep s
+echo something | cat -e | grep $
+echo something | cat -e | grep $ >file
+cat file
+rm file
+>file echo something | cat -e | grep $
+cat file
+rm file
