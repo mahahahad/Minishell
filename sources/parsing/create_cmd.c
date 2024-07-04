@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:34:36 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/27 20:34:41 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/04 13:45:13 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,9 @@ t_cmd	*create_redir_cmd(t_cmd *cmd, int type, char *file)
 	redir_cmd->cmd = cmd;
 	redir_cmd->type = type;
 	redir_cmd->file = file;
+	redir_cmd->fd = STDOUT_FILENO;
+	if (type == CMD_LESS)
+		redir_cmd->fd = STDIN_FILENO;
 	return ((t_cmd *) redir_cmd);
 }
 

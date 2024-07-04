@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/03 15:44:09 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/04 13:43:48 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@
 extern int					g_status_code;
 
 /** STRUCTURES **/
-typedef struct s_env_node	t_env_node;
 typedef struct s_minishell	t_minishell;
 typedef struct s_prompt 	t_prompt;
 typedef struct s_token		t_token;
@@ -47,8 +46,6 @@ typedef enum e_token_types	t_token_type;
 typedef enum e_cmd_types	t_cmd_type;
 typedef struct dirent		t_dir;
 typedef struct s_env		t_env;
-typedef struct s_minishell	t_minishell;
-typedef struct s_token		t_token;
 
 // Command Types
 typedef struct s_cmd		t_cmd;
@@ -127,6 +124,7 @@ struct s_cmd_redir
 	t_cmd_type	type;
 	t_cmd	*cmd;
 	char	*file;
+	int		fd;
 };
 
 struct s_cmd_pipe

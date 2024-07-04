@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/04 13:39:32 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/04 13:49:07 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,9 @@ void	exec_redir(t_cmd_redir *cmd, char **env)
 		fd_redirect = open(cmd->file, O_WRONLY|O_CREAT|O_APPEND, 0666);
 	else if (cmd->type == CMD_GREAT)
 		fd_redirect = open(cmd->file, O_WRONLY|O_CREAT|O_TRUNC, 0666);
-	dup2(fd_redirect, STDOUT_FILENO);
+	else if (cmd->type == CMD_LESS)
+		fd_redirect = open(cmd->file, O_RDONLY);
+	dup2(fd_redirect, cmd->fd);
 	run_cmd(cmd->cmd, env);
 }
 
@@ -152,7 +154,8 @@ void	run_cmd(t_cmd *cmd, char **env)
 		exec_pipe((t_cmd_expr *) cmd);
 	}
 	// Redirection handling goes here
-	else if (cmd->type == CMD_DBL_GREAT || cmd->type == CMD_GREAT)
+	else if (cmd->type == CMD_DBL_GREAT || cmd->type == CMD_GREAT \
+		|| cmd->type == CMD_LESS)
 	{
 		pid = fork();
 		if (pid < 0)
