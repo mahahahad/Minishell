@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/04 22:36:27 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/04 23:08:12 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,6 @@ char	**convert_cmd_exec(t_token *tokens)
 
 void	exec_pipe(t_cmd_expr *cmd, char **env)
 {
-	t_cmd_exec *cmd_exec;
 	int	fd[2];
 	int	pid1;
 	int	pid2;
@@ -91,8 +90,7 @@ void	exec_pipe(t_cmd_expr *cmd, char **env)
 		dup2(fd[1], STDOUT_FILENO);
 		close(fd[0]);
 		close(fd[1]);
-		cmd_exec = (t_cmd_exec *) cmd->cmd_left;
-		exec_cmd(convert_cmd_exec(cmd_exec->tokens), env);
+		run_cmd(cmd->cmd_left, env);
 		exit(0);
 	}
 	receive_signal(CHILD);
@@ -104,13 +102,7 @@ void	exec_pipe(t_cmd_expr *cmd, char **env)
 		dup2(fd[0], STDIN_FILENO);
 		close(fd[0]);
 		close(fd[1]);
-		if (cmd->cmd_right->type == CMD_PIPE)
-			exec_pipe((t_cmd_expr *) cmd->cmd_right, env);
-		if (cmd->cmd_right->type == CMD_EXEC)
-		{
-			cmd_exec = (t_cmd_exec *) cmd->cmd_right;
-			exec_cmd(convert_cmd_exec(cmd_exec->tokens), env);
-		}
+		run_cmd(cmd->cmd_right, env);
 		exit(0);
 	}
 	close(fd[0]);
