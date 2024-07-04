@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 22:36:59 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/02 13:43:25 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/04 14:07:12 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -291,9 +291,10 @@ void	tokenize(t_minishell *minishell, char *input)
 
 	i = 0;
 	minishell->token_count = count_tokens(input);
-	ft_putstr_fd("There are ", 1);
-	ft_putnbr_fd(minishell->token_count, 1);
-	ft_putendl_fd(" tokens in your input", 1);
+	//! For debugging purposes
+	// ft_putstr_fd("There are ", 1);
+	// ft_putnbr_fd(minishell->token_count, 1);
+	// ft_putendl_fd(" tokens in your input", 1);
 	while (i < minishell->token_count)
 	{
 		token = ft_calloc(1, sizeof(t_token));
