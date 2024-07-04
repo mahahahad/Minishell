@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/04 13:49:07 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/04 14:56:08 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,40 +73,54 @@ char	**convert_cmd_exec(t_token *tokens)
 	return (str_tokens);
 }
 
-void	exec_pipe(t_cmd_expr *cmd)
+void	exec_pipe(t_cmd_expr *cmd, char **env)
 {
-	t_cmd_exec *exec_cmd;
+	t_cmd_exec *cmd_exec;
+	int	fd[2];
+	int	pid1;
+	int	pid2;
 
-	if (cmd->cmd_left->type == CMD_EXEC)
+	if (pipe(fd) < 0)
+		return (ft_putendl_fd("pipe creation failed", 1));
+	pid1 = fork();
+	if (pid1 < 0)
+		return (ft_putendl_fd("fork failed", 1));
+	if (pid1 == 0)
 	{
-		ft_putendl_fd("Left command: ", 1);
-		ft_putendl_fd("- Type: Executable", 1);
-		exec_cmd = (t_cmd_exec *) cmd->cmd_left;
-		while (exec_cmd->tokens)
+		dup2(fd[1], STDOUT_FILENO);
+		close(fd[0]);
+		close(fd[1]);
+		if (cmd->cmd_left->type == CMD_PIPE)
+			exec_pipe((t_cmd_expr *) cmd->cmd_left, env);
+		if (cmd->cmd_left->type == CMD_EXEC)
 		{
-			print_token((*exec_cmd->tokens));
-			exec_cmd->tokens = exec_cmd->tokens->next;
+			cmd_exec = (t_cmd_exec *) cmd->cmd_left;
+			exec_cmd(convert_cmd_exec(cmd_exec->tokens), env);
 		}
+		exit(0);
 	}
-	else if (cmd->cmd_left->type == CMD_PIPE)
+	pid2 = fork();
+	if (pid2 < 0)
+		return (ft_putendl_fd("fork failed", 1));
+	if (pid2 == 0)
 	{
-		exec_pipe((t_cmd_expr *)cmd->cmd_left);
-	}
-	if (cmd->cmd_right->type == CMD_EXEC)
-	{
-		ft_putendl_fd("Right command: ", 1);
-		ft_putendl_fd("- Type: Executable", 1);
-		exec_cmd = (t_cmd_exec *) cmd->cmd_right;
-		while (exec_cmd->tokens)
+		dup2(fd[0], STDIN_FILENO);
+		close(fd[0]);
+		close(fd[1]);
+		if (cmd->cmd_right->type == CMD_PIPE)
+			exec_pipe((t_cmd_expr *) cmd->cmd_right, env);
+		if (cmd->cmd_right->type == CMD_EXEC)
 		{
-			print_token((*exec_cmd->tokens));
-			exec_cmd->tokens = exec_cmd->tokens->next;
+			cmd_exec = (t_cmd_exec *) cmd->cmd_right;
+			exec_cmd(convert_cmd_exec(cmd_exec->tokens), env);
 		}
+		exec_cmd(convert_cmd_exec(cmd_exec->tokens), env);
+		exit(0);
 	}
-	else if (cmd->cmd_right->type == CMD_PIPE)
-	{
-		exec_pipe((t_cmd_expr *)cmd->cmd_right);
-	}
+	close(fd[0]);
+	close(fd[1]);
+	waitpid(pid1, NULL, 0);
+	waitpid(pid2, NULL, 0);
 }
 
 void	exec_redir(t_cmd_redir *cmd, char **env)
@@ -132,42 +146,29 @@ void	run_cmd(t_cmd *cmd, char **env)
 
 	if (!cmd)
 		return ;
-	if (cmd->type == CMD_EXEC)
+	pid = fork();
+	if (pid < 0)
+		perror("fork failed");
+	else if (pid == 0)
 	{
-		cmd_exec = (t_cmd_exec *) cmd;
-		// Builtin checks go here
-		exec_cmd(convert_cmd_exec(cmd_exec->tokens), env);
-	}
-	else if (cmd->type == CMD_PIPE)
-	{
-		// Pipe handling goes here
-		exec_pipe((t_cmd_expr *) cmd);
-	}
-	else if (cmd->type == CMD_AND)
-	{
-		// And command handling goes here
-		exec_pipe((t_cmd_expr *) cmd);
-	}
-	else if (cmd->type == CMD_OR)
-	{
-		// Or command handling goes here
-		exec_pipe((t_cmd_expr *) cmd);
-	}
-	// Redirection handling goes here
-	else if (cmd->type == CMD_DBL_GREAT || cmd->type == CMD_GREAT \
-		|| cmd->type == CMD_LESS)
-	{
-		pid = fork();
-		if (pid < 0)
-			perror("fork failed");
-		else if (pid == 0)
+		if (cmd->type == CMD_EXEC)
 		{
-			exec_redir((t_cmd_redir *) cmd, env);
-			exit(0);
+			cmd_exec = (t_cmd_exec *) cmd;
+			// Builtin checks go here
+			exec_cmd(convert_cmd_exec(cmd_exec->tokens), env);
 		}
-		waitpid(pid, &status, 0);
-		// ft_putendl_fd("Redirection handling will go here.", 1);
+		else if (cmd->type == CMD_PIPE)
+			exec_pipe((t_cmd_expr *) cmd, env);
+		else if (cmd->type == CMD_AND)
+			exec_pipe((t_cmd_expr *) cmd, env);
+		else if (cmd->type == CMD_OR)
+			exec_pipe((t_cmd_expr *) cmd, env);
+		else if (cmd->type == CMD_DBL_GREAT || cmd->type == CMD_GREAT \
+			|| cmd->type == CMD_LESS)
+			exec_redir((t_cmd_redir *) cmd, env);
+		exit(0);
 	}
+	waitpid(pid, &status, 0);
 }
 
 /**
