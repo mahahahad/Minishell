@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/03 15:55:02 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/04 13:39:32 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,15 +109,14 @@ void	exec_pipe(t_cmd_expr *cmd)
 	}
 }
 
-// TODO: Account for both symbols
 void	exec_redir(t_cmd_redir *cmd, char **env)
 {
 	int	fd_redirect;
 
 	fd_redirect = 0;
-	if (cmd->type == DBL_GREAT)
+	if (cmd->type == CMD_DBL_GREAT)
 		fd_redirect = open(cmd->file, O_WRONLY|O_CREAT|O_APPEND, 0666);
-	else if (cmd->type == GREAT)
+	else if (cmd->type == CMD_GREAT)
 		fd_redirect = open(cmd->file, O_WRONLY|O_CREAT|O_TRUNC, 0666);
 	dup2(fd_redirect, STDOUT_FILENO);
 	run_cmd(cmd->cmd, env);
