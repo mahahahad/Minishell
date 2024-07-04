@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/03 15:49:25 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/04 19:25:04 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,19 +181,16 @@ t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell)
 		{
 			cmd = create_redir_cmd(cmd, CMD_LESS, minishell->tokens->next->content);
 			minishell->tokens = minishell->tokens->next->next;
-			break ;
 		}
 		else if (minishell->tokens->type == GREAT)
 		{
 			cmd = create_redir_cmd(cmd, CMD_GREAT, minishell->tokens->next->content);
 			minishell->tokens = minishell->tokens->next->next;
-			break ;
 		}
 		else if (minishell->tokens->type == DBL_GREAT)
 		{
 			cmd = create_redir_cmd(cmd, CMD_DBL_GREAT, minishell->tokens->next->content);
 			minishell->tokens = minishell->tokens->next->next;
-			break ;
 		}
 	}
 	return (cmd);

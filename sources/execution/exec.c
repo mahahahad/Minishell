@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/04 14:56:08 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/04 16:38:24 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,27 +81,27 @@ void	exec_pipe(t_cmd_expr *cmd, char **env)
 	int	pid2;
 
 	if (pipe(fd) < 0)
-		return (ft_putendl_fd("pipe creation failed", 1));
+		return (ft_putendl_fd("pipe creation failed", 2));
 	pid1 = fork();
 	if (pid1 < 0)
-		return (ft_putendl_fd("fork failed", 1));
+		return (ft_putendl_fd("fork failed", 2));
 	if (pid1 == 0)
 	{
 		dup2(fd[1], STDOUT_FILENO);
 		close(fd[0]);
 		close(fd[1]);
-		if (cmd->cmd_left->type == CMD_PIPE)
-			exec_pipe((t_cmd_expr *) cmd->cmd_left, env);
-		if (cmd->cmd_left->type == CMD_EXEC)
-		{
+		// if (cmd->cmd_left->type == CMD_PIPE)
+		// 	exec_pipe((t_cmd_expr *) cmd->cmd_left, env);
+		// if (cmd->cmd_left->type == CMD_EXEC)
+		// {
 			cmd_exec = (t_cmd_exec *) cmd->cmd_left;
 			exec_cmd(convert_cmd_exec(cmd_exec->tokens), env);
-		}
+		// }
 		exit(0);
 	}
 	pid2 = fork();
 	if (pid2 < 0)
-		return (ft_putendl_fd("fork failed", 1));
+		return (ft_putendl_fd("fork failed", 2));
 	if (pid2 == 0)
 	{
 		dup2(fd[0], STDIN_FILENO);
@@ -114,7 +114,6 @@ void	exec_pipe(t_cmd_expr *cmd, char **env)
 			cmd_exec = (t_cmd_exec *) cmd->cmd_right;
 			exec_cmd(convert_cmd_exec(cmd_exec->tokens), env);
 		}
-		exec_cmd(convert_cmd_exec(cmd_exec->tokens), env);
 		exit(0);
 	}
 	close(fd[0]);
@@ -142,7 +141,6 @@ void	run_cmd(t_cmd *cmd, char **env)
 {
 	t_cmd_exec	*cmd_exec;
 	int	pid;
-	int status;
 
 	if (!cmd)
 		return ;
@@ -168,7 +166,7 @@ void	run_cmd(t_cmd *cmd, char **env)
 			exec_redir((t_cmd_redir *) cmd, env);
 		exit(0);
 	}
-	waitpid(pid, &status, 0);
+	waitpid(pid, NULL, 0);
 }
 
 /**
