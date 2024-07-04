@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/04 13:43:48 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/04 22:37:28 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ typedef struct s_prompt 	t_prompt;
 typedef struct s_token		t_token;
 typedef enum e_token_types	t_token_type;
 typedef enum e_cmd_types	t_cmd_type;
+typedef enum e_signal_receivers	t_signal_receiver;
 typedef struct dirent		t_dir;
 typedef struct s_env		t_env;
 
@@ -74,7 +75,13 @@ enum e_cmd_types
 	CMD_GREAT,
 	CMD_DBL_GREAT,
 	CMD_AND,
-	CMD_OR,
+	CMD_OR
+};
+
+enum e_signal_receivers
+{
+	CHILD,
+	PARENT
 };
 
 struct s_token
@@ -142,6 +149,10 @@ struct s_cmd_expr
 };
 
 /** FUNCTIONS **/
+
+// Signals
+void	receive_signal(t_signal_receiver receiver);
+
 // Parsing
 t_cmd			*create_exec_cmd(void);
 t_cmd			*create_redir_cmd(t_cmd *cmd, int type, char *file);
