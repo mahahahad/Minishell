@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/05 16:21:31 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/06 00:31:37 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,22 +37,13 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 		if (!line)
 			break ;
 		cmd = parse(&minishell, line);
-		PRINT_CMD(cmd);
 		if (cmd)
 			add_history(line);
 		// run_cmd(cmd, env);
+		//! FOR DEBUGGING:
+		PRINT_CMD(cmd);
 		// free_cmd(cmd);
 		free(line);
-		//! for debugging, to be removed
-		// minishell.tokens = minishell.tokens_head;
-		// if (minishell.token_count)
-		// {
-		// 	for (int i = 0; i < minishell.token_count; i++){
-		// 			print_token((*minishell.tokens));
-		// 			minishell.tokens = minishell.tokens->next;
-		// 	}
-		// free_tokens(&minishell);
-		// }
 	}
 	ft_putendl_fd("exit", 1);
 	return (g_status_code);

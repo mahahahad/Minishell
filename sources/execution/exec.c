@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/04 23:40:27 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/05 21:31:54 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,11 +80,11 @@ void	exec_pipe(t_cmd_expr *cmd, char **env)
 	int	pid2;
 
 	if (pipe(fd) < 0)
-		return (ft_putendl_fd("pipe creation failed", 2));
+		return (ft_putendl_fd("pipe creation", 2));
 	receive_signal(CHILD);
 	pid1 = fork();
 	if (pid1 < 0)
-		return (ft_putendl_fd("fork failed", 2));
+		return (ft_putendl_fd("fork", 2));
 	else if (pid1 == 0)
 	{
 		dup2(fd[1], STDOUT_FILENO);
@@ -96,7 +96,7 @@ void	exec_pipe(t_cmd_expr *cmd, char **env)
 	receive_signal(CHILD);
 	pid2 = fork();
 	if (pid2 < 0)
-		return (ft_putendl_fd("fork failed", 2));
+		return (ft_putendl_fd("fork", 2));
 	else if (pid2 == 0)
 	{
 		dup2(fd[0], STDIN_FILENO);
@@ -126,6 +126,60 @@ void	exec_redir(t_cmd_redir *cmd, char **env)
 	run_cmd(cmd->cmd, env);
 }
 
+/**
+ * @brief Get the length of the longer string out of the provided two strings
+ * 
+ * @param str1 
+ * @param str2 
+ * @return int 
+ */
+int	get_longer_length(char *str1, char *str2)
+{
+	int	len1;
+	int	len2;
+
+	len1 = ft_strlen(str1);
+	len2 = ft_strlen(str2);
+	if (len1 > len2)
+		return (len1);
+	return (len2);
+}
+
+/**
+ * @brief Execute a heredoc command.
+ * Infinitely displays a prompt that accepts user input until the delimiter is 
+ * found.
+ * This user input is stored in the write end of a pipe using ft_putendl_fd 
+ * which is accumulated due to how pipes manage buffers, until it is read from
+ * the read end.
+ * Once the delimiter is found, the read end of the pipe is dup2'd into the 
+ * stdin which makes it the input for the command to be executed.
+ * 
+ * @param cmd 
+ * @param env 
+ */
+void	exec_heredoc(t_cmd_heredoc *cmd, char **env)
+{
+	char	*line;
+	int		fd[2];
+
+	if (pipe(fd) < 0)
+		perror("pipe creation");
+	while (true)
+	{
+		line = readline("> ");
+		if (ft_strncmp(line, cmd->delimiter, get_longer_length(line, cmd->delimiter)) == 0)
+			break ;
+		ft_putendl_fd(line, fd[1]);
+		free(line);
+	}
+	free(line);
+	dup2(fd[0], STDIN_FILENO);
+	close(fd[0]);
+	close(fd[1]);
+	run_cmd(cmd->cmd, env);
+}
+
 void	run_cmd(t_cmd *cmd, char **env)
 {
 	t_cmd_exec	*cmd_exec;
@@ -136,7 +190,7 @@ void	run_cmd(t_cmd *cmd, char **env)
 	receive_signal(CHILD);
 	pid = fork();
 	if (pid < 0)
-		perror("fork failed");
+		perror("fork");
 	else if (pid == 0)
 	{
 		if (cmd->type == CMD_EXEC)
@@ -154,6 +208,8 @@ void	run_cmd(t_cmd *cmd, char **env)
 		else if (cmd->type == CMD_DBL_GREAT || cmd->type == CMD_GREAT \
 			|| cmd->type == CMD_LESS)
 			exec_redir((t_cmd_redir *) cmd, env);
+		else if (cmd->type == CMD_HEREDOC)
+			exec_heredoc((t_cmd_heredoc *) cmd, env);
 		exit(0);
 	}
 	waitpid(pid, NULL, 0);
@@ -197,7 +253,7 @@ void	exec_cmd(char **cmd, char **env)
 		else if (access(cmd[0], X_OK) == -1)
 		{
 			ft_putstr_fd(cmd_original, 2);
-			ft_putendl_fd(": Permission denied", 2);
+			ft_putendl_fd(": permission denied", 2);
 			g_status_code = 126;
 			return ;
 		}

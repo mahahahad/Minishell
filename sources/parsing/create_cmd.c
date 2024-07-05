@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:34:36 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/04 23:45:04 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/05 17:01:05 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,4 +72,15 @@ t_cmd	*create_expr_cmd(t_cmd_type type, t_cmd *cmd_left, t_cmd *cmd_right)
 	expr_cmd->cmd_left = cmd_left;
 	expr_cmd->cmd_right = cmd_right;
 	return ((t_cmd *) expr_cmd);
+}
+
+t_cmd	*create_heredoc(t_cmd *cmd, char *delimiter)
+{
+	t_cmd_heredoc	*heredoc_cmd;
+
+	heredoc_cmd = ft_calloc(1, sizeof(t_cmd_heredoc));
+	heredoc_cmd->cmd = cmd;
+	heredoc_cmd->type = CMD_HEREDOC;
+	heredoc_cmd->delimiter = delimiter;
+	return ((t_cmd *) heredoc_cmd);
 }

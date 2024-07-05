@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/05 16:24:54 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/05 23:34:23 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ typedef struct s_cmd		t_cmd;
 typedef struct s_cmd_exec	t_cmd_exec;
 typedef struct s_cmd_redir	t_cmd_redir;
 typedef struct s_cmd_expr	t_cmd_expr;
+typedef struct s_cmd_heredoc	t_cmd_heredoc;
 
 enum e_token_types
 {
@@ -72,6 +73,7 @@ enum e_cmd_types
 	CMD_EXEC,
 	CMD_PIPE,
 	CMD_LESS,
+	CMD_HEREDOC,
 	CMD_GREAT,
 	CMD_DBL_GREAT,
 	CMD_AND,
@@ -134,18 +136,18 @@ struct s_cmd_redir
 	int		fd;
 };
 
-struct s_cmd_pipe
+struct s_cmd_expr
 {
 	t_cmd_type	type;
 	t_cmd	*cmd_left;
 	t_cmd	*cmd_right;
 };
 
-struct s_cmd_expr
+struct s_cmd_heredoc
 {
 	t_cmd_type	type;
-	t_cmd	*cmd_left;
-	t_cmd	*cmd_right;
+	t_cmd	*cmd;
+	char	*delimiter;
 };
 
 /** FUNCTIONS **/
@@ -157,9 +159,13 @@ void	receive_signal(t_signal_receiver receiver);
 t_cmd			*create_exec_cmd(void);
 t_cmd			*create_redir_cmd(t_cmd *cmd, t_cmd_type type, char *file);
 t_cmd			*create_expr_cmd(t_cmd_type type, t_cmd *cmd_left, t_cmd *cmd_right);
+t_cmd			*create_heredoc(t_cmd *cmd, char *delimiter);
 void			push_token(t_token **tokens_list, t_token *token);
 void			tokenize(t_minishell *minishell, char *input);
 int				count_quotations(char *line);
+bool	is_exec_delimiter(t_minishell *minishell);
+void	*print_exec_parse_err(t_minishell *minishell);
+t_token	*copy_token_node(t_token *token);
 t_cmd			*parse(t_minishell *minishell, char *line);
 t_cmd			*parse_expr(t_minishell *minishell);
 t_cmd			*parse_exec(t_minishell *minishell);
