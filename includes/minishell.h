@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/04 22:37:28 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/05 16:24:54 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,8 +155,8 @@ void	receive_signal(t_signal_receiver receiver);
 
 // Parsing
 t_cmd			*create_exec_cmd(void);
-t_cmd			*create_redir_cmd(t_cmd *cmd, int type, char *file);
-t_cmd			*create_expr_cmd(int type, t_cmd *cmd_left, t_cmd *cmd_right);
+t_cmd			*create_redir_cmd(t_cmd *cmd, t_cmd_type type, char *file);
+t_cmd			*create_expr_cmd(t_cmd_type type, t_cmd *cmd_left, t_cmd *cmd_right);
 void			push_token(t_token **tokens_list, t_token *token);
 void			tokenize(t_minishell *minishell, char *input);
 int				count_quotations(char *line);
@@ -196,6 +196,12 @@ void			ft_lstadd_back(t_env **list, t_env *new_node);
 void			rl_replace_line(const char *text, int clear_undo);
 
 // Debug
-void			print_token(t_token token);
+void			print_cmd(t_cmd *cmd, int node_depth, char *prefix);
+
+/**
+ * @brief alias for the print_cmd function which allows users to not specify the node_depth while calling it manually. 
+ */
+# define PRINT_CMD(cmd, ...) print_cmd(cmd, 0, "  ")
+
 
 #endif

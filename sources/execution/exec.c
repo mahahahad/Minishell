@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/04 23:08:12 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/04 23:40:27 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ void	exec_pipe(t_cmd_expr *cmd, char **env)
 	pid1 = fork();
 	if (pid1 < 0)
 		return (ft_putendl_fd("fork failed", 2));
-	if (pid1 == 0)
+	else if (pid1 == 0)
 	{
 		dup2(fd[1], STDOUT_FILENO);
 		close(fd[0]);
@@ -97,7 +97,7 @@ void	exec_pipe(t_cmd_expr *cmd, char **env)
 	pid2 = fork();
 	if (pid2 < 0)
 		return (ft_putendl_fd("fork failed", 2));
-	if (pid2 == 0)
+	else if (pid2 == 0)
 	{
 		dup2(fd[0], STDIN_FILENO);
 		close(fd[0]);

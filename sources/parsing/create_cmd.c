@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:34:36 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/04 13:45:13 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/04 23:45:04 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ t_cmd	*create_exec_cmd(void)
  * @param file The file to read from or write to
  * @return t_cmd* 
  */
-t_cmd	*create_redir_cmd(t_cmd *cmd, int type, char *file)
+t_cmd	*create_redir_cmd(t_cmd *cmd, t_cmd_type type, char *file)
 {
 	t_cmd_redir	*redir_cmd;
 
@@ -63,7 +63,7 @@ t_cmd	*create_redir_cmd(t_cmd *cmd, int type, char *file)
  * @param cmd_right The command to the right of the operator
  * @return t_cmd* 
  */
-t_cmd	*create_expr_cmd(int type, t_cmd *cmd_left, t_cmd *cmd_right)
+t_cmd	*create_expr_cmd(t_cmd_type type, t_cmd *cmd_left, t_cmd *cmd_right)
 {
 	t_cmd_expr	*expr_cmd;
 

@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/04 22:31:53 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/05 16:21:31 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,9 +37,10 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 		if (!line)
 			break ;
 		cmd = parse(&minishell, line);
+		PRINT_CMD(cmd);
 		if (cmd)
 			add_history(line);
-		run_cmd(cmd, env);
+		// run_cmd(cmd, env);
 		// free_cmd(cmd);
 		free(line);
 		//! for debugging, to be removed
