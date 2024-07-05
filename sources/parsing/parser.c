@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/04 19:25:04 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/06 00:24:39 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,30 @@
  */
 
 /**
- * @brief General parsing function that is called after receiving user input
- * Goes through the input and parses it by following the grammar.
- *
- * @return t_cmd*
+ * @brief Parse the command line.
+ * 
+ * This function is the main parsing function that is called on every
+ * line after receiving input. It performs the pre-requisite checks and
+ * makes the command line accessible to all the subsequent parsing functions
+ * by splitting them into tokens. It then starts the parsing process by calling
+ * the parse_expr function which recursively builds the command tree.
+ * 
+ * Performs some checks prior to parsing incase of an early return due to
+ * incorrect input. Such as:
+ * - Checking if the line contains anything, which is used for detecting 
+ * no-command enter key presses.
+ * - Checking if the number of quotations are uneven, which is used for
+ * detecting open quotes.
+ * TODO: - Checking if the number of brackets are uneven, which is used for
+ * TODO: detecting open brackets.
+ * Then, splits the command line into tokens wherever appropriate and sets them
+ * in the minishell struct to use in other functions.
+ * Finally, calls the parse_expr function which adds to the command tree
+ * following the proper grammar.
+ * 
+ * @param minishell the common minishell struct
+ * @param line the raw user input line
+ * @return t_cmd* the parsed command tree 
  */
 t_cmd	*parse(t_minishell *minishell, char *line)
 {
@@ -36,12 +56,33 @@ t_cmd	*parse(t_minishell *minishell, char *line)
 }
 
 /**
- * @brief General expression parser. Checks if the current token follows the
- * proper grammar for a command which is stopped when all the tokens are
- * finished or a command delimiter has been found. If there are still tokens
- * that remain, this function creates an expression from them as the format for
- * all the delimiters is the same with them having a left and right side and an * operator.
- *
+ * @brief Parse a general expression.
+ * 
+ * Expressions are commands that follow the format:
+ * <CMD_LEFT> <SYMBOL> <CMD_RIGHT>
+ * This function is called from the main parse function as it calls the 
+ * parse_exec function first and then checks if there are remaining tokens 
+ * which would mean that a delimiting symbol was found and the command structure
+ * that it retured is a valid command that can be used as the left command of
+ * the expression.
+ * This ensures that if the command line contains expressions, they will have
+ * a valid command to their right and left. But if they do not contain
+ * expressions, the command line will still contain a valid command.
+ * 
+ * Calls the parse_exec function which creates a command structure ensuring
+ * that there are valid commands surrounding the symbol in expression
+ * (|, ||, &&) commands.
+ * Checks and returns if the command structure is null, which is used 
+ * for identifying errors.
+ * Checks if there are any remaining tokens yet to be parsed. Returns the
+ * command if there aren't, since that means the command line has been fully 
+ * parsed. Continues if there are, which means that a token containing a symbol 
+ * that separates expressions was found.
+ * Checks the type of this token and creates the appropriate struct by first
+ * parsing another expression command by calling parse_expr again on the
+ * remaining tokens which ensures a valid right command.
+ * Returns this command structure.
+ * 
  * @param minishell
  * @return t_cmd*
  */
@@ -73,70 +114,36 @@ t_cmd	*parse_expr(t_minishell *minishell)
 }
 
 /**
- * @brief Allocates space for, and copies, only the first node of the provided
- * token node. Useful for copying tokens into a command struct without it's
- * next values.
+ * @brief Parse an executable command.
  *
- * @param token
- * @return t_token*
- */
-t_token	*copy_token_node(t_token *token)
-{
-	t_token	*token_copy;
-
-	token_copy = ft_calloc(1, sizeof(t_token));
-	token_copy->next = NULL;
-	token_copy->content = token->content;
-	token_copy->type = token->type;
-	return (token_copy);
-}
-
-/**
- * @brief Utility function to display error messages when the grammar rules
- * for an execution command aren't met.
- *
- * @param minishell
- * @return bool is_error which is true if an error occured and false otherwise.
- */
-bool	contains_grammar_error(t_minishell *minishell)
-{
-	bool	is_error;
-
-	is_error = false;
-	if (minishell->tokens->type == PIPE && (is_error = true))
-		ft_putendl_fd("Syntax error near unexpected token `|'", 2);
-	if (minishell->tokens->type == AND && (is_error = true))
-		ft_putendl_fd("Syntax error near unexpected token `&&'", 2);
-	if (minishell->tokens->type == OR && (is_error = true))
-		ft_putendl_fd("Syntax error near unexpected token `||'", 2);
-	if (is_error)
-		g_status_code = 2;
-	return (is_error);
-}
-
-/**
- * @brief Utility function which checks if the current token type should break
- * the execution parsing loop. i.e. is it a PIPE, AND or OR token
- *
- * @param minishell
- * @return true
- * @return false
- */
-bool	is_exec_delimiter(t_minishell *minishell)
-{
-	if (minishell->tokens->type == PIPE || \
-		minishell->tokens->type == AND || \
-		minishell->tokens->type == OR)
-		return (true);
-	return (false);
-}
-
-/**
- * @brief Parsing function for ensuring that executable commands follow the proper structure
- *
- * Prints the appropriate error message if the syntax isn't met such as
- * providing special characters at the beginning of the command and returns
- * NULL.
+ * This function is called to create an executable command with the tokens, 
+ * starting from the active token, till a forbidden token is found.
+ * Executable commands follow the format:
+ * [<REDIRECTION>] <WORD> [<COMMAND>]
+ * This means that they can start with only an optional redirection symbol (<, 
+ * <<, >, >>) or a word.
+ * Executable commands are the most common type of commands as every other
+ * command type contains them in one way or another.
+ * If an executable command starts with a redirection, this function creates
+ * a redirection command and sets its command to be the executable command
+ * which it then updates through the loop.
+ * 
+ * Creates an empty command structure which will be filled with tokens
+ * Checks if the starting token is a redirection token and parses accordingly
+ * by calling the parse_redir function.
+ * Starts a loop until all the tokens have finished and performs the following
+ * actions:
+ * - Checks if the current token is of a type that should break the loop
+ * (|, ||, &&)
+ * - Checks if there are no tokens in the command struct (implying this is the 
+ * first one) and prints the appropriate error message (because commands can
+ * not start with these token types)
+ * - Since the current token is valid, pushes it to the command struct.
+ * - Move the current token to the next one.
+ * - Check and parse incase a redirection token type was found using 
+ * parse_redir.
+ * Returns the command structure once it is finished.
+ * 
  * @param minishell
  * @return t_cmd*
  */
@@ -148,23 +155,41 @@ t_cmd	*parse_exec(t_minishell *minishell)
 	node = create_exec_cmd();
 	cmd = (t_cmd_exec *) node;
 	node = parse_redir(node, minishell);
+	if (!node)
+		return (node);
 	while (minishell->tokens)
 	{
-		if (!cmd->tokens)
-			if (contains_grammar_error(minishell))
-				return (NULL);
 		if (is_exec_delimiter(minishell))
+		{
+			if (!cmd->tokens)
+				return (print_exec_parse_err(minishell));
 			break ;
+		}
 		push_token(&cmd->tokens, copy_token_node(minishell->tokens));
 		minishell->tokens = minishell->tokens->next;
 		node = parse_redir(node, minishell);
+		if (!node)
+			return (node);
 	}
 	return (node);
 }
 
 /**
- * @brief Parsing function for ensuring that redirection commands follow the proper structure
- *
+ * @brief Parse a redirection command.
+ * 
+ * This function ensures the current token and next token match the format
+ * needed for redirection commands:
+ * <SYMBOL> <FILE_NAME>
+ * The command which is to be redirected is provided to the function as an
+ * argument.
+
+ * Starts a loop until either the tokens are over, or the current token's type
+ * is a non-redirection type and performs the following actions:
+ * - Check and return if the next token doesn't exist or isn't of the WORD type
+ * - Check and create a redirection command struct based on the type of 
+ * redirection
+ * Return the original or modified command struct
+ * 
  * @param cmd
  * @param minishell
  * @return t_cmd*
@@ -173,10 +198,11 @@ t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell)
 {
 	while (minishell->tokens && (minishell->tokens->type == GREAT || \
 		minishell->tokens->type == LESS || \
-		minishell->tokens->type == DBL_GREAT))
+		minishell->tokens->type == DBL_GREAT || \
+		minishell->tokens->type == DBL_LESS))
 	{
 		if (!minishell->tokens->next || minishell->tokens->next->type != WORD)
-			ft_putendl_fd("No file for redirection found", 1);
+			return (ft_putendl_fd("No file for redirection found", 1), NULL);
 		if (minishell->tokens->type == LESS)
 		{
 			cmd = create_redir_cmd(cmd, CMD_LESS, minishell->tokens->next->content);
@@ -190,6 +216,11 @@ t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell)
 		else if (minishell->tokens->type == DBL_GREAT)
 		{
 			cmd = create_redir_cmd(cmd, CMD_DBL_GREAT, minishell->tokens->next->content);
+			minishell->tokens = minishell->tokens->next->next;
+		}
+		else if (minishell->tokens->type == DBL_LESS)
+		{
+			cmd = create_heredoc(cmd, minishell->tokens->next->content);
 			minishell->tokens = minishell->tokens->next->next;
 		}
 	}

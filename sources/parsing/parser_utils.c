@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 22:36:59 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/04 14:07:12 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/06 00:29:53 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,66 @@
  */
 
 /**
- * @brief Count the number of quotation pairs in the provided line
+ * @brief Allocate space for, and copy, only the first node of the provided
+ * token node.
+ * Useful for copying tokens into a command struct without it's
+ * next values.
+ *
+ * @param token
+ * @return t_token*
+ */
+t_token	*copy_token_node(t_token *token)
+{
+	t_token	*token_copy;
+
+	token_copy = ft_calloc(1, sizeof(t_token));
+	token_copy->next = NULL;
+	token_copy->content = token->content;
+	token_copy->type = token->type;
+	return (token_copy);
+}
+
+/**
+ * @brief Print the appropriate error message indicating a symbol was found
+ * in a location it should not have been in.
+ *
+ * @param minishell
+ * @return NULL
+ */
+void	*print_exec_parse_err(t_minishell *minishell)
+{
+	g_status_code = 2;
+	if (minishell->tokens->type == PIPE )
+		ft_putendl_fd("Syntax error near unexpected token `|'", 2);
+	else if (minishell->tokens->type == AND)
+		ft_putendl_fd("Syntax error near unexpected token `&&'", 2);
+	else if (minishell->tokens->type == OR)
+		ft_putendl_fd("Syntax error near unexpected token `||'", 2);
+	return (NULL);
+}
+
+/**
+ * @brief Is the current token's type one that should break the executable
+ * command loop (PIPE, AND, OR)
+ * 
+ * @param minishell
+ * @return true
+ * @return false
+ */
+bool	is_exec_delimiter(t_minishell *minishell)
+{
+	if (minishell->tokens->type == PIPE || \
+		minishell->tokens->type == AND || \
+		minishell->tokens->type == OR)
+		return (true);
+	return (false);
+}
+
+/**
+ * @brief Count the number of quotation pairs in the provided line.
+ * 
+ * @param char*
+ * @return int
  */
 int	count_quotations(char *line)
 {
@@ -49,8 +108,7 @@ int	count_quotations(char *line)
 }
 
 /**
- * @brief
- * Check if the provided character is in the list of special characters:
+ * @brief Check if the provided character is in the list of special characters:
  * - [ | ]
  * - [ ( ]
  * - [ ) ]
@@ -68,8 +126,7 @@ bool	is_delimiter(char c)
 	return (false);
 }
 
-/** @brief
- * Checks if a character is in the list of repeatable characters:
+/** @brief Check if a character is in the list of repeatable characters:
  * - [<<]
  * - [>>]
  * - [||]
@@ -86,8 +143,8 @@ bool	is_repeatable_char(char c1, char c2)
 }
 
 /**
- * @brief
- * Returns the next token in the provided input string.
+ * @brief Return the next token in the provided input string.
+
  * Skip the leading whitespace characters by moving the string head
  * pointer ahead.
  * Move the string head pointer to the start of the next token
@@ -102,11 +159,8 @@ bool	is_repeatable_char(char c1, char c2)
  * - 'token'
  *
  * will result in the function returning "token" and input pointing to '\0'.
- *
- * Calling the function with the input:
- * - 'token$HOME'
- *
- * will result in the function returning "token/home/user" and input pointing to '\0'.
+ * @param char**
+ * @return char*
  */
 char	*get_token(char **input)
 {
@@ -161,7 +215,10 @@ char	*get_token(char **input)
 /**
  * @brief Identify the type of the token passed using the content parameter
  *
- * Returns word by default if the content parameter doesn't satisfy any of the requirements
+ * Returns word by default if the content parameter doesn't satisfy any of the 
+ * requirements
+ * 
+ * @param char*
  * @return int from e_token_types
  */
 int	get_token_type(char *content)
@@ -192,10 +249,13 @@ int	get_token_type(char *content)
 }
 
 /**
- * @brief
- * Counts how many tokens there are in the provided input string.
+ * @brief Count how many tokens there are in the provided input string.
+ * 
  * Uses spaces and special chars as delimiters but ignores them in quoted
  * strings.
+ * 
+ * @param char*
+ * @return int
  */
 int	count_tokens(char *input)
 {
@@ -234,6 +294,9 @@ int	count_tokens(char *input)
 
 /**
  * @brief Add the specified token to the end of the tokens list
+ * 
+ * @param t_token**
+ * @param t_token*
  */
 void	push_token(t_token **tokens_list, t_token *token)
 {
@@ -250,40 +313,15 @@ void	push_token(t_token **tokens_list, t_token *token)
 	current->next = token;
 }
 
-// t_token	*tokenize(t_minishell *minishell, char *input)
-// {
-// 	t_token	*tokens;
-// 	int		i;
-// 	int		token_count;
-// 	i = 0;
-// 	token_count = count_tokens(input);
-// 	minishell->token_count = token_count;
-// 	tokens = ft_calloc((token_count + 1), sizeof(t_token));
-// 	ft_putstr_fd("There are ", 1);
-// 	ft_putnbr_fd(token_count, 1);
-// 	ft_putendl_fd(" tokens in your input", 1);
-// 	while (i < token_count)
-// 	{
-// 		tokens[i].content = get_token(&input);
-// 		tokens[i].type = get_token_type(tokens[i].content);
-// 		if (tokens[i].type == WORD)
-// 		{
-// 			tokens[i].content = dollar_expansion(tokens[i].content, 			minishell->env_variables);
-// 			tokens[i].content = wildcards(tokens[i].content, tokens[i].content);
-// 		}
-// 		i++;
-// 	}
-// 	tokens[i].content = NULL;
-// 	return (tokens);
-// }
 /**
- * @brief
- * Split the input based on all the tokens
- * Sets the tokens linked list in the minishell struct to allow for convenient navigation in other functions
+ * @brief Split the input based on all the tokens
+ * 
+ * Sets the tokens linked list in the minishell struct to allow for convenient 
+ * navigation in other functions
  *
- * @returns
- * The linked list containing all the tokens
-*/
+ * @param t_minishell*
+ * @param char*
+ */
 void	tokenize(t_minishell *minishell, char *input)
 {
 	t_token	*token;
