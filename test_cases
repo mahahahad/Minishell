@@ -1,6 +1,6 @@
 echo something
 echo something | cat -e
-echo something | cat -e | grep s
+echo something | cat -e | grep a
 echo something | cat -e | grep $
 echo something | cat -e | grep $ >file
 cat file
