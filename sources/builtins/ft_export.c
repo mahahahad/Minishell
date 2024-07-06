@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 19:45:08 by mdanish           #+#    #+#             */
-/*   Updated: 2024/06/26 16:45:12 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/06 20:12:55 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,27 +130,26 @@ static void	ft_print_export(t_env *env)
  * @param new_variables will be exported individually. (NULL terminated)
  * 
  */
-void	ft_export(t_minishell *minishell, char **new_variables)
+void	ft_export(t_minishell *minishell, char **args)
 {
 	t_env	*var;
 	int		length;
 
 	g_status_code = 0;
-	if (!new_variables)
+	if (!args[1])
+		return (ft_print_export(minishell->env_variables));
+	if (args[1][0] == '-')
+		return (ft_putendl_fd("Export does not accept options", 2));
+	while (*args)
 	{
-		ft_print_export(minishell->env_variables);
-		return ;
-	}
-	while (*new_variables)
-	{
-		if (!is_argument_valid(*new_variables) && new_variables++)
+		if (!is_argument_valid(*args) && args++)
 			continue ;
 		var = ft_calloc(1, sizeof(t_env));
 		if (!var)
 			ft_putendl_fd("Malloc failed while exporting a variable.", 2);	// exit required
-		create_new_variable(var, &length, *new_variables);
+		create_new_variable(var, &length, *args);
 		add_to_list(minishell, var, length);
-		add_to_matrix(minishell, *new_variables);
-		new_variables++;
+		add_to_matrix(minishell, *args);
+		args++;
 	}
 }

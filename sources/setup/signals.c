@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signals.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 22:33:34 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/04 22:37:21 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/06 23:57:49 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void	handle_signal_child(int signum)
  * 
  * @param receiver 
  */
-void	receive_signal(t_signal_receiver receiver)
+void	receive_signal(t_sig_rec receiver)
 {
 	if (receiver == PARENT)
 	{

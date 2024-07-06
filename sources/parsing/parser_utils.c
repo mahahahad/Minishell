@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 22:36:59 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/06 00:29:53 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/06 23:23:59 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ t_token	*copy_token_node(t_token *token)
 void	*print_exec_parse_err(t_minishell *minishell)
 {
 	g_status_code = 2;
-	if (minishell->tokens->type == PIPE )
+	if (minishell->tokens->type == PIPE)
 		ft_putendl_fd("Syntax error near unexpected token `|'", 2);
 	else if (minishell->tokens->type == AND)
 		ft_putendl_fd("Syntax error near unexpected token `&&'", 2);
@@ -134,9 +134,9 @@ bool	is_delimiter(char c)
  */
 bool	is_repeatable_char(char c1, char c2)
 {
-	if ((c1 == '<' && c2 == '<')\
-			|| (c1 == '>' && c2 == '>')\
-			|| (c1 == '|' && c2 == '|')\
+	if ((c1 == '<' && c2 == '<') \
+			|| (c1 == '>' && c2 == '>') \
+			|| (c1 == '|' && c2 == '|') \
 			|| (c1 == '&' && c2 == '&'))
 		return (true);
 	return (false);
@@ -165,51 +165,27 @@ bool	is_repeatable_char(char c1, char c2)
 char	*get_token(char **input)
 {
 	int		i;
-	char	*token;
-	char	*string;
-	char	quotes_found;
 
 	i = -1;
-	token = NULL;
-	string = *input;
-	quotes_found = '\0';
-	while (ft_isspace(*string))
-		string++;
-	while (string[++i])
+	while (ft_isspace(**input))
+		(*input)++;
+	while ((*input)[++i])
 	{
-		if (ft_is_quotation(string[i]) && (quotes_found = string[i]))
+		if (ft_is_quotation((*input)[i]))
 			continue ;
-		if (is_delimiter(string[i]))
+		if (is_delimiter((*input)[i]))
 		{
-			if (is_repeatable_char(string[i], string[i + 1]))
-			{
-				if (!i)
-					i += 2;
-				break ;
-			}
-			else
-			{
-				if (!i)
-					i++;
-				break ;
-			}
-		}
-		if (ft_isspace(string[i]))
-		{
+			if (is_repeatable_char((*input)[i], (*input)[i + 1]) && !i)
+				i += 2;
 			if (!i)
 				i++;
 			break ;
 		}
+		if (ft_isspace((*input)[i]) && (i || ++i))
+			break ;
 	}
-	token = ft_calloc(i + 1, sizeof(char));
-	if (!token)
-		return (NULL);
-	ft_strlcpy(token, string, i + 1);
-	string += i;
-	while (ft_isspace(*string))
-		string++;
-	*input = string;
-	return (token);
+	*input += i;
+	return (ft_substr(*input - i, 0, i));
 }
 
 /**
@@ -260,36 +236,26 @@ int	get_token_type(char *content)
 int	count_tokens(char *input)
 {
 	int		i;
-	int		token_count;
 
 	i = -1;
-	token_count = 0;
 	while (ft_isspace(*input))
 		input++;
 	while (input[++i])
 	{
 		if (ft_is_quotation(input[i]))
 			continue ;
-		if (ft_isspace(input[i]) && input[i + 1])
+		else if (ft_isspace(input[i]) && input[i + 1])
+			return (count_tokens(input + i + 1) + 1);
+		else if (is_delimiter(input[i]))
 		{
-			token_count++;
-			token_count += count_tokens(input + i + 1);
-			break ;
-		}
-		if (is_delimiter(input[i]))
-		{
-			if (i > 0 && !ft_isspace(input[i - 1]))
-				token_count++;
-			token_count++;
 			if (is_repeatable_char(input[i], input[i + 1]))
 				i++;
-			token_count += count_tokens(input + i + 1);
-			break ;
+			if (i > 0 && !ft_isspace(input[i - 1]))
+				return (count_tokens(input + i + 1) + 2);
+			return (count_tokens(input + i + 1) + 1);
 		}
 	}
-	if (i > 0 && !token_count)
-		token_count++;
-	return (token_count);
+	return (i != 0);
 }
 
 /**

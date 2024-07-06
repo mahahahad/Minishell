@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/26 16:38:17 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/06 20:11:28 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,9 +111,8 @@ static void	chg_dir(char **args, t_env *old, t_env *new, t_minishell *minishell)
 	var = getcwd(NULL, 0);
 	if (chdir(args[1]))
 	{
-		ft_putendl_fd("cd: can not change directory", 2);
 		g_status_code = 1;
-		return ;
+		return (ft_putendl_fd("cd: can not change directory", 2));
 	}
 	if (old)
 	{

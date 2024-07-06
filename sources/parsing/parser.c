@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/06 00:24:39 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/06 23:55:57 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,11 +149,11 @@ t_cmd	*parse_expr(t_minishell *minishell)
  */
 t_cmd	*parse_exec(t_minishell *minishell)
 {
-	t_cmd	*node;
+	t_cmd		*node;
 	t_cmd_exec	*cmd;
 
-	node = create_exec_cmd();
-	cmd = (t_cmd_exec *) node;
+	node = ft_calloc(1, sizeof(t_cmd_exec));
+	cmd = (t_cmd_exec *)node;
 	node = parse_redir(node, minishell);
 	if (!node)
 		return (node);
@@ -196,33 +196,25 @@ t_cmd	*parse_exec(t_minishell *minishell)
  */
 t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell)
 {
+	char	*content;
+
 	while (minishell->tokens && (minishell->tokens->type == GREAT || \
 		minishell->tokens->type == LESS || \
 		minishell->tokens->type == DBL_GREAT || \
 		minishell->tokens->type == DBL_LESS))
 	{
+		content = minishell->tokens->next->content;
 		if (!minishell->tokens->next || minishell->tokens->next->type != WORD)
 			return (ft_putendl_fd("No file for redirection found", 1), NULL);
 		if (minishell->tokens->type == LESS)
-		{
-			cmd = create_redir_cmd(cmd, CMD_LESS, minishell->tokens->next->content);
-			minishell->tokens = minishell->tokens->next->next;
-		}
+			cmd = create_redir_cmd(cmd, CMD_LESS, content);
 		else if (minishell->tokens->type == GREAT)
-		{
-			cmd = create_redir_cmd(cmd, CMD_GREAT, minishell->tokens->next->content);
-			minishell->tokens = minishell->tokens->next->next;
-		}
+			cmd = create_redir_cmd(cmd, CMD_GREAT, content);
 		else if (minishell->tokens->type == DBL_GREAT)
-		{
-			cmd = create_redir_cmd(cmd, CMD_DBL_GREAT, minishell->tokens->next->content);
-			minishell->tokens = minishell->tokens->next->next;
-		}
+			cmd = create_redir_cmd(cmd, CMD_DBL_GREAT, content);
 		else if (minishell->tokens->type == DBL_LESS)
-		{
-			cmd = create_heredoc(cmd, minishell->tokens->next->content);
-			minishell->tokens = minishell->tokens->next->next;
-		}
+			cmd = create_heredoc(cmd, content);
+		minishell->tokens = minishell->tokens->next->next;
 	}
 	return (cmd);
 }

@@ -62,11 +62,10 @@ void	ft_echo(char **cmd)
  */
 void	ft_env(char **args, char **envp)
 {
-	if (args && *args && **args)
+	if (args[1] && args[1][0])
 	{
-		ft_putendl_fd("env does not accecpt options or arguments.", 2);
 		g_status_code = 1;
-		return ;
+		return (ft_putendl_fd("env does not accecpt options or arguments.", 2));
 	}
 	while (*envp)
 	{
@@ -94,7 +93,7 @@ void	ft_pwd(char **args)
 {
 	char	*current_working_directory;
 
-	if (args && *args && *args[0] == '-')
+	if (args[1] && args[1][0] == '-')
 	{
 		ft_putendl_fd("pwd does not accecpt options.", 2);
 		g_status_code = 1;

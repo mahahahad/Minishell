@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/05 23:34:23 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/07 00:36:21 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@
 # include <readline/history.h>
 # include <readline/readline.h>
 # include <signal.h>
-# include <stdbool.h>
 # include <string.h>
 # include <sys/types.h>
 # include <sys/wait.h>
@@ -40,11 +39,11 @@ extern int					g_status_code;
 
 /** STRUCTURES **/
 typedef struct s_minishell	t_minishell;
-typedef struct s_prompt 	t_prompt;
+typedef struct s_prompt		t_prompt;
 typedef struct s_token		t_token;
-typedef enum e_token_types	t_token_type;
+typedef enum e_token_types	t_tkn_type;
 typedef enum e_cmd_types	t_cmd_type;
-typedef enum e_signal_receivers	t_signal_receiver;
+typedef enum e_sig_rec		t_sig_rec;
 typedef struct dirent		t_dir;
 typedef struct s_env		t_env;
 
@@ -53,7 +52,7 @@ typedef struct s_cmd		t_cmd;
 typedef struct s_cmd_exec	t_cmd_exec;
 typedef struct s_cmd_redir	t_cmd_redir;
 typedef struct s_cmd_expr	t_cmd_expr;
-typedef struct s_cmd_heredoc	t_cmd_heredoc;
+typedef struct s_cmd_hdoc	t_cmd_heredoc;
 
 enum e_token_types
 {
@@ -80,7 +79,7 @@ enum e_cmd_types
 	CMD_OR
 };
 
-enum e_signal_receivers
+enum e_sig_rec
 {
 	CHILD,
 	PARENT
@@ -88,26 +87,26 @@ enum e_signal_receivers
 
 struct s_token
 {
-	t_token_type	type;
-	char			*content;
-	t_token			*next;
+	t_tkn_type	type;
+	char		*content;
+	t_token		*next;
 };
 
 struct s_env
 {
-	char	*key;
-	char	*value;
-	t_env	*next;
+	char		*key;
+	char		*value;
+	t_env		*next;
 };
 
 struct s_minishell
 {
-	char	**envp;
-	int		token_count;
-	int		envp_count;
-	t_env	*env_variables;
-	t_token	*tokens;
-	t_token	*tokens_head; //! can be removed
+	char		**envp;
+	int			token_count;
+	int			envp_count;
+	t_env		*env_variables;
+	t_token		*tokens;
+	t_token		*tokens_head; //! can be removed
 };
 
 /*
@@ -125,89 +124,88 @@ struct s_cmd
 struct s_cmd_exec
 {
 	t_cmd_type	type;
-	t_token	*tokens;
+	t_token		*tokens;
 };
 
 struct s_cmd_redir
 {
 	t_cmd_type	type;
-	t_cmd	*cmd;
-	char	*file;
-	int		fd;
+	t_cmd		*cmd;
+	char		*file;
+	int			fd;
 };
 
 struct s_cmd_expr
 {
 	t_cmd_type	type;
-	t_cmd	*cmd_left;
-	t_cmd	*cmd_right;
+	t_cmd		*cmd_left;
+	t_cmd		*cmd_right;
 };
 
-struct s_cmd_heredoc
+struct s_cmd_hdoc
 {
 	t_cmd_type	type;
-	t_cmd	*cmd;
-	char	*delimiter;
+	t_cmd		*cmd;
+	char		*delimiter;
 };
 
 /** FUNCTIONS **/
 
 // Signals
-void	receive_signal(t_signal_receiver receiver);
+void	receive_signal(t_sig_rec receiver);
 
 // Parsing
-t_cmd			*create_exec_cmd(void);
-t_cmd			*create_redir_cmd(t_cmd *cmd, t_cmd_type type, char *file);
-t_cmd			*create_expr_cmd(t_cmd_type type, t_cmd *cmd_left, t_cmd *cmd_right);
-t_cmd			*create_heredoc(t_cmd *cmd, char *delimiter);
-void			push_token(t_token **tokens_list, t_token *token);
-void			tokenize(t_minishell *minishell, char *input);
-int				count_quotations(char *line);
+t_cmd	*create_redir_cmd(t_cmd *cmd, t_cmd_type type, char *file);
+t_cmd	*create_expr_cmd(t_cmd_type type, t_cmd *cmd_left, t_cmd *cmd_right);
+t_cmd	*create_heredoc(t_cmd *cmd, char *delimiter);
+void	push_token(t_token **tokens_list, t_token *token);
+void	tokenize(t_minishell *minishell, char *input);
+int		count_quotations(char *line);
 bool	is_exec_delimiter(t_minishell *minishell);
 void	*print_exec_parse_err(t_minishell *minishell);
 t_token	*copy_token_node(t_token *token);
-t_cmd			*parse(t_minishell *minishell, char *line);
-t_cmd			*parse_expr(t_minishell *minishell);
-t_cmd			*parse_exec(t_minishell *minishell);
-t_cmd			*parse_redir(t_cmd *cmd, t_minishell *minishell);
-char		*dollar_expansion(char *token, t_env *list);
-char		*wildcards(char *token, char *store);
+t_cmd	*parse(t_minishell *minishell, char *line);
+t_cmd	*parse_expr(t_minishell *minishell);
+t_cmd	*parse_exec(t_minishell *minishell);
+t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell);
+char	*dollar_expansion(char *token, t_env *list);
+char	*wildcards(char *token, char *store);
 
 // Execution
-void		exec_builtin(char **cmd, t_minishell *minishell);
-void		exec_cmd(char **cmd, char **env);
-bool		is_builtin(char *str);
-void		run_cmd(t_cmd *cmd, char **env);
+void	exec_builtin(char **cmd, t_minishell *minishell);
+void	exec_cmd(char **cmd, char **env);
+bool	is_builtin(char *str);
+void	run_cmd(t_cmd *cmd, char **env);
 
 // Built-ins
-void		add_to_matrix(t_minishell *minishell, char *new_var);
-void		create_new_variable(t_env *new_var, int *length, char *string);
-void		ft_cd(char **cmd, t_minishell *minishell);
-void		ft_echo(char **cmd);
-void		ft_env(char **args, char **envp);
-void		ft_export(t_minishell *minishell, char **new_variable);
-void		ft_pwd(char **args);
-void		ft_unset(t_minishell *minishell, char **variable);
-bool		is_argument_valid(const char *string);
+void	add_to_matrix(t_minishell *minishell, char *new_var);
+void	create_new_variable(t_env *new_var, int *length, char *string);
+void	ft_cd(char **cmd, t_minishell *minishell);
+void	ft_echo(char **cmd);
+void	ft_env(char **args, char **envp);
+void	ft_export(t_minishell *minishell, char **new_variable);
+void	ft_pwd(char **args);
+void	ft_unset(t_minishell *minishell, char **variable);
+bool	is_argument_valid(const char *string);
 
 // Cleanup
-void		free_cmd(t_cmd *cmd);
-void		free_tokens(t_minishell *minishell);
+void	free_cmd(t_cmd *cmd);
+void	free_tokens(t_minishell *minishell);
 
 // Setup
-void		setup_environment(t_minishell *minishell, char **env);
+void	setup_environment(t_minishell *minishell, char **env);
 
 // Miscellaneous
-void			ft_lstadd_back(t_env **list, t_env *new_node);
-void			rl_replace_line(const char *text, int clear_undo);
+void	ft_lstadd_back(t_env **list, t_env *new_node);
+void	rl_replace_line(const char *text, int clear_undo);
 
 // Debug
-void			print_cmd(t_cmd *cmd, int node_depth, char *prefix);
+void	print_cmd(t_cmd *cmd, int node_depth, char *prefix);
 
 /**
- * @brief alias for the print_cmd function which allows users to not specify the node_depth while calling it manually. 
+ * @brief alias for the print_cmd function which allows users to not specify the
+ * node_depth while calling it manually. 
  */
 # define PRINT_CMD(cmd, ...) print_cmd(cmd, 0, "  ")
-
 
 #endif
