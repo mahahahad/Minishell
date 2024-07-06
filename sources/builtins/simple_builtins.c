@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/29 13:21:03 by mdanish           #+#    #+#             */
-/*   Updated: 2024/06/06 14:30:56 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/06 23:20:51 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,18 +29,29 @@
  */
 void	ft_echo(char **cmd)
 {
-	int	index;
+	int		index;
+	int		i;
+	bool	option_flag;
 
-	index = 1;
-	if (!ft_strncmp(cmd[1], "-n", 3))
-		index++;
+	index = 0;
+	option_flag = false;
+	while (cmd[++index] && cmd[index][0] == '-')
+	{
+		i = 1;
+		while (cmd[index][i] == 'n')
+			i++;
+		if (!cmd[index][i])
+			option_flag = true;
+		else
+			break ;
+	}
 	while (cmd[index])
 	{
 		ft_putstr_fd(cmd[index], 1);
 		if (cmd[++index])
 			ft_putchar_fd(' ', 1);
 	}
-	if (ft_strncmp(cmd[1], "-n", 3))
+	if (!option_flag)
 		ft_putchar_fd('\n', 1);
 	g_status_code = 0;
 }
