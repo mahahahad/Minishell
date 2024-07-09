@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 22:36:59 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/06 23:23:59 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/07 19:20:53 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -236,6 +236,7 @@ int	get_token_type(char *content)
 int	count_tokens(char *input)
 {
 	int		i;
+	bool	extra_token;
 
 	i = -1;
 	while (ft_isspace(*input))
@@ -244,15 +245,16 @@ int	count_tokens(char *input)
 	{
 		if (ft_is_quotation(input[i]))
 			continue ;
-		else if (ft_isspace(input[i]) && input[i + 1])
+		if (ft_isspace(input[i]) && input[i + 1])
 			return (count_tokens(input + i + 1) + 1);
-		else if (is_delimiter(input[i]))
+		if (is_delimiter(input[i]))
 		{
+			extra_token = false;
+			if (i > 0 && !ft_isspace(input[i - 1]))
+				extra_token = true;
 			if (is_repeatable_char(input[i], input[i + 1]))
 				i++;
-			if (i > 0 && !ft_isspace(input[i - 1]))
-				return (count_tokens(input + i + 1) + 2);
-			return (count_tokens(input + i + 1) + 1);
+			return (count_tokens(input + i + 1) + 1 + extra_token);
 		}
 	}
 	return (i != 0);
