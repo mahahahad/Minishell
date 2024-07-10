@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/06 00:31:37 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/10 17:13:41 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,13 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 			break ;
 		cmd = parse(&minishell, line);
 		if (cmd)
+		{
 			add_history(line);
-		// run_cmd(cmd, env);
-		//! FOR DEBUGGING:
-		PRINT_CMD(cmd);
-		// free_cmd(cmd);
+			run_cmd(cmd, env);
+			//! FOR DEBUGGING:
+			// PRINT_CMD(cmd);
+			// free_cmd(cmd);
+		}
 		free(line);
 	}
 	ft_putendl_fd("exit", 1);

@@ -6,10 +6,11 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/05 21:31:54 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/10 18:39:33 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft.h"
 #include "minishell.h"
 
 /**
@@ -111,17 +112,102 @@ void	exec_pipe(t_cmd_expr *cmd, char **env)
 	waitpid(pid2, NULL, 0);
 }
 
+/**
+ * @brief Check if the provided command is of a redirection type
+ *
+ * @param cmd
+ * @return bool
+ */
+bool	is_redirection_cmd(t_cmd *cmd)
+{
+	if (cmd->type == CMD_LESS || \
+		cmd->type == CMD_HEREDOC || \
+		cmd->type == CMD_GREAT || \
+		cmd->type == CMD_DBL_GREAT)
+		return (true);
+	return (false);
+}
+
+/**
+ * @brief Open all the files in the redirection command tree.
+ *
+ * Recursively opens all the files in the provided command tree. 
+ * This is necessary because every file must get created but only the first
+ * one should contain the command output.
+ * This is done by checking if the command contains a cmd variable that is of
+ * a redirection type. (There is room for optimization here because it gets
+ * opened twice if its not a redir cmd, once here and once in the exec_redir
+ * function). If it is a redirection command, it calls itself with the cmd
+ * variable in the command.
+ * This goes on until a non-redirection command is found, which opens the file
+ * associated with the command and returns the command which is to be used
+ * with the first file in the command tree to mimic bash behaviour.
+ * (The tree structure causes the file passed in at the end to be the first
+ * file in the tree.)
+ *
+ * Checks if the current commands cmd variable is not of a redirection type
+ * and opens the file specified in the command and returns the command.
+ * If the command is a redirection command, calls the function again with the
+ * cmd variable in this command and stores it's output in the final_cmd var.
+ * Opens the file specified in the command and returns final_cmd.
+ *
+ * @param cmd 
+ * @return t_cmd*
+ */
+t_cmd_redir	*open_files(t_cmd_redir *cmd)
+{
+	t_cmd_redir	*final_cmd;
+
+	if (!is_redirection_cmd(cmd->cmd))
+	{
+		if (cmd->type == CMD_DBL_GREAT)
+			open(cmd->file, O_WRONLY|O_CREAT|O_APPEND, 0666);
+		else if (cmd->type == CMD_GREAT)
+			open(cmd->file, O_WRONLY|O_CREAT|O_TRUNC, 0666);
+		else if (cmd->type == CMD_LESS)
+			open(cmd->file, O_RDONLY);
+		return (cmd);
+	}
+	else
+		final_cmd = open_files((t_cmd_redir *) cmd->cmd);
+	if (cmd->type == CMD_DBL_GREAT)
+		open(cmd->file, O_WRONLY|O_CREAT|O_APPEND, 0666);
+	else if (cmd->type == CMD_GREAT)
+		open(cmd->file, O_WRONLY|O_CREAT|O_TRUNC, 0666);
+	else if (cmd->type == CMD_LESS)
+		open(cmd->file, O_RDONLY);
+	return (final_cmd);
+}
+
+/**
+ * @brief Execute a redirection command.
+ *
+ * This function is run when a redirection command is encountered.
+ * It opens the file specified in the command and uses that for redirection
+ *
+ * Creates an empty redirection command struct to save the first command in.
+ * Opens all the files it finds in the redirection tree using the open_files function.
+ * Checks and opens the first commands file with the appropriate parameters.
+ * dup2's the opened file descriptor to the specified file descriptor of the final command.
+ * Executes the command stored in the final commands command variable using the run_cmd function.
+ *
+ * @param cmd
+ * @param env
+ */
 void	exec_redir(t_cmd_redir *cmd, char **env)
 {
 	int	fd_redirect;
+	t_cmd_redir *cmd_head;
 
 	fd_redirect = 0;
-	if (cmd->type == CMD_DBL_GREAT)
-		fd_redirect = open(cmd->file, O_WRONLY|O_CREAT|O_APPEND, 0666);
-	else if (cmd->type == CMD_GREAT)
-		fd_redirect = open(cmd->file, O_WRONLY|O_CREAT|O_TRUNC, 0666);
-	else if (cmd->type == CMD_LESS)
-		fd_redirect = open(cmd->file, O_RDONLY);
+	cmd_head = cmd;
+	cmd = open_files(cmd);
+	if (cmd_head->type == CMD_DBL_GREAT)
+		fd_redirect = open(cmd_head->file, O_WRONLY|O_CREAT|O_APPEND, 0666);
+	else if (cmd_head->type == CMD_GREAT)
+		fd_redirect = open(cmd_head->file, O_WRONLY|O_CREAT|O_TRUNC, 0666);
+	else if (cmd_head->type == CMD_LESS)
+		fd_redirect = open(cmd_head->file, O_RDONLY);
 	dup2(fd_redirect, cmd->fd);
 	run_cmd(cmd->cmd, env);
 }
@@ -147,6 +233,7 @@ int	get_longer_length(char *str1, char *str2)
 
 /**
  * @brief Execute a heredoc command.
+ * 
  * Infinitely displays a prompt that accepts user input until the delimiter is 
  * found.
  * This user input is stored in the write end of a pipe using ft_putendl_fd 
@@ -165,6 +252,7 @@ void	exec_heredoc(t_cmd_heredoc *cmd, char **env)
 
 	if (pipe(fd) < 0)
 		perror("pipe creation");
+	ft_putendl_fd("Running heredoc", 1);
 	while (true)
 	{
 		line = readline("> ");

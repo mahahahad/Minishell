@@ -8,3 +8,10 @@ rm file
 >file echo something | cat -e | grep $
 cat file
 rm file
+echo hi > 1 > 2 > 3 > 4 > 5
+cat 1
+cat 2
+cat 3
+cat 4
+cat 5
+rm 1 2 3 4 5
