@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/12 18:45:03 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/12 18:50:40 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,7 +159,7 @@ void	add_token_back(t_token **tokens_list, t_token *token);
 t_cmd	*create_expr_cmd(t_cmd_type type, t_cmd *cmd_left, t_cmd *cmd_right);
 t_cmd	*create_heredoc(t_cmd *cmd, char *delimiter);
 t_cmd	*create_redir_cmd(t_cmd *cmd, t_cmd_type type, char *file);
-int		count_quotations(char *line);
+bool	count_quotations(char *line);
 int		count_tokens(char *input);
 char	*dollar_expansion(char *token, t_env *list);
 char	*get_token(char **input);

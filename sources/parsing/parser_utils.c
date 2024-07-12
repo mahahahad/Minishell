@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 22:36:59 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/07 19:20:53 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/12 23:23:26 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,26 +15,6 @@
 /**
  * This file contains the utility functions used for the main parsing functions
  */
-
-/**
- * @brief Allocate space for, and copy, only the first node of the provided
- * token node.
- * Useful for copying tokens into a command struct without it's
- * next values.
- *
- * @param token
- * @return t_token*
- */
-t_token	*copy_token_node(t_token *token)
-{
-	t_token	*token_copy;
-
-	token_copy = ft_calloc(1, sizeof(t_token));
-	token_copy->next = NULL;
-	token_copy->content = token->content;
-	token_copy->type = token->type;
-	return (token_copy);
-}
 
 /**
  * @brief Print the appropriate error message indicating a symbol was found
@@ -76,34 +56,29 @@ bool	is_exec_delimiter(t_minishell *minishell)
  * @brief Count the number of quotation pairs in the provided line.
  * 
  * @param char*
- * @return int
+ * @return true if valid quotes and false if invalid quotes.
  */
-int	count_quotations(char *line)
+bool	count_quotations(char *line)
 {
 	int		count;
-	int		i;
+	int		index;
 	char	quotes_found;
 
-	i = -1;
+	index = -1;
 	count = 0;
 	quotes_found = '\0';
-	while (line[++i])
+	while (line[++index])
 	{
-		if (line[i] == '"')
+		if (line[index] == '"' || line[index] == '\'')
 		{
 			if (!quotes_found && ++count)
-				quotes_found = '"';
-			else if (quotes_found == '"' && ++count)
-				quotes_found = '\0';
-		}
-		if (line[i] == '\'')
-		{
-			if (!quotes_found && ++count)
-				quotes_found = '\'';
-			else if (quotes_found == '\'' && ++count)
+				quotes_found = line[index];
+			else if (quotes_found == line[index] && ++count)
 				quotes_found = '\0';
 		}
 	}
+	if (count % 2)
+		ft_putstr_fd(RED "Open quotes detected, command rejected.\n" RESET, 2);
 	return (count % 2);
 }
 

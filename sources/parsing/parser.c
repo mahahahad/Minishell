@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/06 23:55:57 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/12 18:28:17 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,25 +158,25 @@ t_cmd	*parse_exec(t_minishell *minishell)
 {
 	t_cmd		*node;
 	t_cmd_exec	*cmd;
+	t_token		*current_token;
 
 	node = ft_calloc(1, sizeof(t_cmd_exec));
 	cmd = (t_cmd_exec *)node;
-	node = parse_redir(node, minishell);
-	if (!node)
-		return (node);
 	while (minishell->tokens)
 	{
+		node = parse_redir(node, minishell);
+		if (!node || !minishell->tokens)
+			return (node);
 		if (is_exec_delimiter(minishell))
 		{
 			if (!cmd->tokens)
 				return (print_exec_parse_err(minishell));
 			break ;
 		}
-		push_token(&cmd->tokens, copy_token_node(minishell->tokens));
+		current_token = minishell->tokens;
 		minishell->tokens = minishell->tokens->next;
-		node = parse_redir(node, minishell);
-		if (!node)
-			return (node);
+		current_token->next = NULL;
+		add_token_back(&cmd->tokens, current_token);
 	}
 	return (node);
 }
