@@ -261,15 +261,45 @@ int	count_tokens(char *input)
 }
 
 /**
+ * @brief Frees up the token list.
+ * 
+ * Simply goes through the list and frees the content and the node itself.
+ * It can be used in case of malloc fail or when performing a general cleanup.
+ * 
+ * @param list is the list of tokens.
+ */
+void	clear_tokens(t_token **list)
+{
+	t_token	*current;
+	t_token	*next;
+
+	current = *list;
+	while (current)
+	{
+		next = current->next;
+		free(current->content);
+		free(current);
+		current = next;
+	}
+	*list = NULL;
+}
+
+/**
  * @brief Add the specified token to the end of the tokens list
  * 
  * @param t_token**
  * @param t_token*
  */
-void	push_token(t_token **tokens_list, t_token *token)
+void	add_token_back(t_token **tokens_list, t_token *token)
 {
 	t_token	*current;
 
+	if (!token)
+	{
+		ft_putendl_fd("Malloc while tokenising the prompt failed.", 2);
+		clear_tokens(tokens_list);
+		return ;
+	}
 	current = (*tokens_list);
 	if (!current)
 	{
@@ -282,39 +312,42 @@ void	push_token(t_token **tokens_list, t_token *token)
 }
 
 /**
- * @brief Split the input based on all the tokens
+ * @brief Creates a new node for the token list.
  * 
- * Sets the tokens linked list in the minishell struct to allow for convenient 
- * navigation in other functions
- *
- * @param t_minishell*
- * @param char*
+ * The function mallocs for t_token node and stores within it the content that
+ * is provided as an argument. It then calls get_token_type() to identify the
+ * type of the content and is stored within the token. For tokens of the type
+ * [ WORD ], dollar_expansion() and wildcards() are called to take care of all
+ * the expansion part of the parsing.
+ * 
+ * @param content is the content of the token.
+ * @param list refers to the environment variables.
+ * 
+ * @return the token created and NULL in case of error.
  */
-void	tokenize(t_minishell *minishell, char *input)
+t_token	*new_token(char *content, t_env *list)
 {
 	t_token	*token;
-	int		i;
+	t_token	*store;
 
-	i = 0;
-	minishell->token_count = count_tokens(input);
-	//! For debugging purposes
-	// ft_putstr_fd("There are ", 1);
-	// ft_putnbr_fd(minishell->token_count, 1);
-	// ft_putendl_fd(" tokens in your input", 1);
-	while (i < minishell->token_count)
+	if (!content)
+		return (NULL);
+	token = ft_calloc(1, sizeof(t_token));
+	if (!token)
+		return (NULL);
+	token->content = content;
+	token->type = get_token_type(token->content);
+	if (token->type == WORD && list)
 	{
-		token = ft_calloc(1, sizeof(t_token));
-		token->content = get_token(&input);
-		token->type = get_token_type(token->content);
-		if (token->type == WORD)
+		token->content = dollar_expansion(token->content, list);
+		store = wildcards(token->content);
+		if (store)
 		{
-			token->content = dollar_expansion(token->content, \
-			minishell->env_variables);
-			token->content = wildcards(token->content, token->content);
+			free(content);
+			free(token);
+			return (store);
 		}
-		token->next = NULL;
-		push_token(&minishell->tokens, token);
-		i++;
+		token->content = quote_trimming(token->content);
 	}
-	minishell->tokens_head = minishell->tokens;
+	return (token);
 }

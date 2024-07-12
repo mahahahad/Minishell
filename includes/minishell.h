@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/07 00:36:21 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/12 18:45:03 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,21 +155,22 @@ struct s_cmd_hdoc
 void	receive_signal(t_sig_rec receiver);
 
 // Parsing
-t_cmd	*create_redir_cmd(t_cmd *cmd, t_cmd_type type, char *file);
+void	add_token_back(t_token **tokens_list, t_token *token);
 t_cmd	*create_expr_cmd(t_cmd_type type, t_cmd *cmd_left, t_cmd *cmd_right);
 t_cmd	*create_heredoc(t_cmd *cmd, char *delimiter);
-void	push_token(t_token **tokens_list, t_token *token);
-void	tokenize(t_minishell *minishell, char *input);
+t_cmd	*create_redir_cmd(t_cmd *cmd, t_cmd_type type, char *file);
 int		count_quotations(char *line);
-bool	is_exec_delimiter(t_minishell *minishell);
-void	*print_exec_parse_err(t_minishell *minishell);
-t_token	*copy_token_node(t_token *token);
-t_cmd	*parse(t_minishell *minishell, char *line);
-t_cmd	*parse_expr(t_minishell *minishell);
-t_cmd	*parse_exec(t_minishell *minishell);
-t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell);
+int		count_tokens(char *input);
 char	*dollar_expansion(char *token, t_env *list);
-char	*wildcards(char *token, char *store);
+char	*get_token(char **input);
+bool	is_exec_delimiter(t_minishell *minishell);
+t_token	*new_token(char *content, t_env *list);
+t_cmd	*parse(t_minishell *minishell, char *line);
+t_cmd	*parse_exec(t_minishell *minishell);
+t_cmd	*parse_expr(t_minishell *minishell);
+t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell);
+void	*print_exec_parse_err(t_minishell *minishell);
+t_token	*wildcards(char *token);
 
 // Execution
 void	exec_builtin(char **cmd, t_minishell *minishell);

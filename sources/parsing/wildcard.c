@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   wildcard.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:51:40 by mdanish           #+#    #+#             */
-/*   Updated: 2024/06/27 20:49:41 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/12 18:55:27 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,29 +191,31 @@ static bool	match_pattern(char *token, int location, char *file)
  * current directory. This is sent to match_pattern() to validate the file name
  * according to the pattern provided by the token.
  * 
- * For each valid filename, it is joined and stored in the token variable, which
- * is returned upon success.
+ * For each valid filename, add_token_back() is called with the new_token()
+ * function to add that specific file name as an independant token to the final
+ * list present in the master struct.
  * 
  * @param token is the token that needs to be checked for the wildcards.
  * @param store contains a copy of token.
  * 
  * @return the pointer to the final token.
  */
-char	*wildcards(char *token, char *store)
+t_token	*wildcards(char *token_string)
 {
 	DIR		*cwd_stream;
-	t_dir	*files;
 	int		location;
+	t_dir	*files;
+	t_token	*token;
 
-	if (!wildcards_are_present(token, &location, &cwd_stream))
-		return (token);
-	token = NULL;
+	if (!wildcards_are_present(token_string, &location, &cwd_stream))
+		return (NULL);
 	files = readdir(cwd_stream);
+	token = NULL;
 	while (files)
 	{
-		if (match_pattern(store, location, files->d_name))
+		if (match_pattern(token_string, location, files->d_name))
 		{
-			token = ft_c_strjoin_free(files->d_name, token, ' ', 2);
+			add_token_back(&token, new_token(ft_strdup(files->d_name), NULL));
 			if (!token)
 				break ;
 		}
@@ -224,5 +226,5 @@ char	*wildcards(char *token, char *store)
 		ft_putendl_fd("Directory can not be read", 2);
 	else if (!errno && token)
 		return (token);
-	return (store);
+	return (NULL);
 }

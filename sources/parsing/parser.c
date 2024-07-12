@@ -44,14 +44,23 @@
  */
 t_cmd	*parse(t_minishell *minishell, char *line)
 {
-	if (!line || !line[0])
+	int		i;
+
+	if (!line || !line[0] || count_quotations(line))
 		return (NULL);
-	if (count_quotations(line))
+	minishell->token_count = count_tokens(line);
+	//! For debugging purposes
+	// ft_putstr_fd("There are ", 1);
+	// ft_putnbr_fd(minishell->token_count, 1);
+	// ft_putendl_fd(" tokens in your input", 1);
+	i = -1;
+	while (++i < minishell->token_count)
 	{
-		ft_putstr_fd(RED "Open quotes detected, command rejected.\n" RESET, 2);
-		return (NULL);
+		add_token_back(&minishell->tokens, \
+			new_token(get_token(&line), minishell->env_variables));
+		// if (!minishell->tokens) ------> malloc fail handling required!!!
 	}
-	tokenize(minishell, line);
+	minishell->tokens_head = minishell->tokens;
 	return (parse_expr(minishell));
 }
 
