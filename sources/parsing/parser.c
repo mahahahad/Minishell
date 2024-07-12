@@ -31,8 +31,6 @@
  * no-command enter key presses.
  * - Checking if the number of quotations are uneven, which is used for
  * detecting open quotes.
- * TODO: - Checking if the number of brackets are uneven, which is used for
- * TODO: detecting open brackets.
  * Then, splits the command line into tokens wherever appropriate and sets them
  * in the minishell struct to use in other functions.
  * Finally, calls the parse_expr function which adds to the command tree
@@ -46,7 +44,7 @@ t_cmd	*parse(t_minishell *minishell, char *line)
 {
 	int		i;
 
-	if (!line || !line[0] || count_quotations(line))
+	if (!line || !line[0] || count_quotations(line) || !valid_brackets(line))
 		return (NULL);
 	minishell->token_count = count_tokens(line);
 	//! For debugging purposes

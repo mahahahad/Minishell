@@ -170,6 +170,7 @@ t_cmd	*parse_exec(t_minishell *minishell);
 t_cmd	*parse_expr(t_minishell *minishell);
 t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell);
 void	*print_exec_parse_err(t_minishell *minishell);
+bool	valid_brackets(char *line);
 t_token	*wildcards(char *token);
 
 // Execution

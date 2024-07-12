@@ -108,6 +108,36 @@ int	count_quotations(char *line)
 }
 
 /**
+ * @brief Count the number of bracket pairs in the provided line.
+ * 
+ * It goes through the line and ensures there are no open, misplaced or nested
+ * brackets in the line
+ * 
+ * @param char*
+ * @return int
+ */
+bool	valid_brackets(char *line)
+{
+	int		count;
+	int		index;
+
+	index = -1;
+	count = 0;
+	while (line[++index] && count > -1 && count < 2)
+	{
+		if (ft_is_quotation(line[index]))
+			continue ;
+		if (line[index] == '(')
+			count++;
+		else if (line[index] == ')')
+			count--;
+	}
+	if (count)
+		ft_putstr_fd(RED "Bad brackets detected, command rejected.\n" RESET, 2);
+	return (!count);
+}
+
+/**
  * @brief Check if the provided character is in the list of special characters:
  * - [ | ]
  * - [ ( ]
