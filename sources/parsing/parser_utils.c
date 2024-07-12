@@ -342,6 +342,39 @@ void	add_token_back(t_token **tokens_list, t_token *token)
 }
 
 /**
+ * @brief Removes the quotes from the token.
+ * 
+ * For all the tokens of type [ WORD ], this function identifies any quotes in
+ * the token at removes it. This is done by using two indexes and copying the
+ * indexs over from within the string itself, all while ignoring the quotes that
+ * are needed to be ommited.
+ * 
+ * @param token is the string that contains the token itself.
+ * 
+ * @return The token after the quotes are removed.
+ */
+char	*quote_trimming(char *token)
+{
+	int		token_index;
+	int		quote_index;
+	char	quote;
+
+	token_index = 0;
+	quote_index = 0;
+	while (token[quote_index])
+	{
+		if ((token[quote_index] == '"' || token[quote_index] == '\'') && !quote)
+			quote = token[quote_index++];
+		else if (quote == token[quote_index] && ++quote_index)
+			quote = '\0';
+		else
+			token[token_index++] = token[quote_index++];
+	}
+	token[token_index] = token[quote_index];
+	return (token);
+}
+
+/**
  * @brief Creates a new node for the token list.
  * 
  * The function mallocs for t_token node and stores within it the content that
