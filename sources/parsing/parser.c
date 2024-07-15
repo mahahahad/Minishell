@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/12 18:28:17 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/13 14:53:14 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,10 +167,10 @@ t_cmd	*parse_exec(t_minishell *minishell)
 		node = parse_redir(node, minishell);
 		if (!node || !minishell->tokens)
 			return (node);
-		if (is_exec_delimiter(minishell))
+		if (is_exec_delimiter(minishell->tokens->type))
 		{
 			if (!cmd->tokens)
-				return (print_exec_parse_err(minishell));
+				return (print_exec_parse_err(minishell->tokens->type));
 			break ;
 		}
 		current_token = minishell->tokens;
@@ -203,23 +203,24 @@ t_cmd	*parse_exec(t_minishell *minishell)
  */
 t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell)
 {
-	char	*content;
+	char		*content;
+	t_tkn_type	type;
 
-	while (minishell->tokens && (minishell->tokens->type == GREAT || \
-		minishell->tokens->type == LESS || \
-		minishell->tokens->type == DBL_GREAT || \
-		minishell->tokens->type == DBL_LESS))
+	while (minishell->tokens)
 	{
+		type = minishell->tokens->type;
+		if (!(type > PIPE && type < OR))
+			break ;
 		content = minishell->tokens->next->content;
 		if (!minishell->tokens->next || minishell->tokens->next->type != WORD)
-			return (ft_putendl_fd("No file for redirection found", 1), NULL);
-		if (minishell->tokens->type == LESS)
+			return (ft_putendl_fd("No file for redirection found", 2), NULL);
+		if (type == LESS)
 			cmd = create_redir_cmd(cmd, CMD_LESS, content);
-		else if (minishell->tokens->type == GREAT)
+		else if (type == GREAT)
 			cmd = create_redir_cmd(cmd, CMD_GREAT, content);
-		else if (minishell->tokens->type == DBL_GREAT)
+		else if (type == DBL_GREAT)
 			cmd = create_redir_cmd(cmd, CMD_DBL_GREAT, content);
-		else if (minishell->tokens->type == DBL_LESS)
+		else if (type == DBL_LESS)
 			cmd = create_heredoc(cmd, content);
 		minishell->tokens = minishell->tokens->next->next;
 	}

@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:34:36 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/06 23:34:51 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/14 00:40:01 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,8 @@ t_cmd	*create_redir_cmd(t_cmd *cmd, t_cmd_type type, char *file)
 	redir_cmd->cmd = cmd;
 	redir_cmd->type = type;
 	redir_cmd->file = file;
-	redir_cmd->fd = STDOUT_FILENO;
-	if (type == CMD_LESS)
-		redir_cmd->fd = STDIN_FILENO;
+	if (type != CMD_LESS)
+		redir_cmd->fd = STDOUT_FILENO;
 	return ((t_cmd *) redir_cmd);
 }
 

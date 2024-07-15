@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 22:33:34 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/06 23:57:49 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/14 00:01:19 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,12 +33,12 @@ void	handle_signal_child(int signum)
 	{
 		if (signum == SIGINT)
 		{
-			ft_putendl_fd("", 1);
+			ft_putchar_fd('\n', 2);
 			g_status_code = 130;
 		}
 		else if (signum == SIGQUIT)
 		{
-			ft_putendl_fd("Quit: 3", 1);
+			ft_putendl_fd("Quit: 3", 2);
 			g_status_code = 131;
 		}
 	}

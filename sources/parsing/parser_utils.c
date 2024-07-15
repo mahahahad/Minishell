@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 22:36:59 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/12 23:23:26 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/13 14:41:38 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,14 +23,14 @@
  * @param minishell
  * @return NULL
  */
-void	*print_exec_parse_err(t_minishell *minishell)
+void	*print_exec_parse_err(t_tkn_type type)
 {
 	g_status_code = 2;
-	if (minishell->tokens->type == PIPE)
+	if (type == PIPE)
 		ft_putendl_fd("Syntax error near unexpected token `|'", 2);
-	else if (minishell->tokens->type == AND)
+	else if (type == AND)
 		ft_putendl_fd("Syntax error near unexpected token `&&'", 2);
-	else if (minishell->tokens->type == OR)
+	else if (type == OR)
 		ft_putendl_fd("Syntax error near unexpected token `||'", 2);
 	return (NULL);
 }
@@ -43,13 +43,9 @@ void	*print_exec_parse_err(t_minishell *minishell)
  * @return true
  * @return false
  */
-bool	is_exec_delimiter(t_minishell *minishell)
+bool	is_exec_delimiter(t_tkn_type type)
 {
-	if (minishell->tokens->type == PIPE || \
-		minishell->tokens->type == AND || \
-		minishell->tokens->type == OR)
-		return (true);
-	return (false);
+	return (type == PIPE || type == AND || type == OR);
 }
 
 /**
@@ -98,7 +94,7 @@ bool	valid_brackets(char *line)
 
 	index = -1;
 	count = 0;
-	while (line[++index] && count > -1 && count < 2)
+	while (line[++index] && (!count || count == 1))
 	{
 		if (ft_is_quotation(line[index]))
 			continue ;
@@ -110,41 +106,6 @@ bool	valid_brackets(char *line)
 	if (count)
 		ft_putstr_fd(RED "Bad brackets detected, command rejected.\n" RESET, 2);
 	return (!count);
-}
-
-/**
- * @brief Check if the provided character is in the list of special characters:
- * - [ | ]
- * - [ ( ]
- * - [ ) ]
- * - [ < ]
- * - [ > ]
- * - [ || ]
- * - [ << ]
- * - [ >> ]
- * - [ && ]
- */
-bool	is_delimiter(char c)
-{
-	if (c && ft_strchr("|<>()&", c))
-		return (true);
-	return (false);
-}
-
-/** @brief Check if a character is in the list of repeatable characters:
- * - [<<]
- * - [>>]
- * - [||]
- * - [&&]
- */
-bool	is_repeatable_char(char c1, char c2)
-{
-	if ((c1 == '<' && c2 == '<') \
-			|| (c1 == '>' && c2 == '>') \
-			|| (c1 == '|' && c2 == '|') \
-			|| (c1 == '&' && c2 == '&'))
-		return (true);
-	return (false);
 }
 
 /**
@@ -178,12 +139,12 @@ char	*get_token(char **input)
 	{
 		if (ft_is_quotation((*input)[i]))
 			continue ;
-		if (is_delimiter((*input)[i]))
+		if (ft_strchr("|<>()&", (*input)[i]))
 		{
-			if (is_repeatable_char((*input)[i], (*input)[i + 1]) && !i)
-				i += 2;
+			if ((*input)[i] == (*input)[i + 1] && !i)
+				i = 2;
 			if (!i)
-				i++;
+				i = 1;
 			break ;
 		}
 		if (ft_isspace((*input)[i]) && (i || ++i))
@@ -252,12 +213,12 @@ int	count_tokens(char *input)
 			continue ;
 		if (ft_isspace(input[i]) && input[i + 1])
 			return (count_tokens(input + i + 1) + 1);
-		if (is_delimiter(input[i]))
+		if (ft_strchr("|<>()&", input[i]))
 		{
 			extra_token = false;
 			if (i > 0 && !ft_isspace(input[i - 1]))
 				extra_token = true;
-			if (is_repeatable_char(input[i], input[i + 1]))
+			if (input[i] == input[i + 1])
 				i++;
 			return (count_tokens(input + i + 1) + 1 + extra_token);
 		}

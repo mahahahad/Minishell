@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/12 18:50:40 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/13 14:41:59 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,13 +163,13 @@ bool	count_quotations(char *line);
 int		count_tokens(char *input);
 char	*dollar_expansion(char *token, t_env *list);
 char	*get_token(char **input);
-bool	is_exec_delimiter(t_minishell *minishell);
+bool	is_exec_delimiter(t_tkn_type type);
 t_token	*new_token(char *content, t_env *list);
 t_cmd	*parse(t_minishell *minishell, char *line);
 t_cmd	*parse_exec(t_minishell *minishell);
 t_cmd	*parse_expr(t_minishell *minishell);
 t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell);
-void	*print_exec_parse_err(t_minishell *minishell);
+void	*print_exec_parse_err(t_tkn_type type);
 bool	valid_brackets(char *line);
 t_token	*wildcards(char *token);
 
