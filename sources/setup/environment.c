@@ -6,11 +6,37 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 10:07:41 by mdanish           #+#    #+#             */
-/*   Updated: 2024/06/26 16:45:48 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/15 12:52:04 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+/**
+ * @brief Cleanup of the environment in case of any malloc fail.
+ * 
+ * The function calls free_split() on the char double pointer version of the
+ * environment variables. The list version of it is freed node by node along
+ * with the contents of it. Both versions are set to NULL after freeing.
+ * 
+ * @param minishell contains the environment that needs to be freed.
+ */
+static void	free_environment(t_minishell *minishell)
+{
+	t_env	*store;
+
+	free_split(minishell->envp, minishell->envp_count);
+	minishell->envp = NULL;
+	while (minishell->env_variables)
+	{
+		store = minishell->env_variables->next;
+		free(minishell->env_variables->key);
+		free(minishell->env_variables->value);
+		free(minishell->env_variables);
+		minishell->env_variables = store;
+	}
+	minishell->env_variables = NULL;
+}
 
 /**
  * @brief Creates the matrix duplicate of the environment variables.
@@ -21,7 +47,7 @@
  * @param minishell is used to store the matrix duplication.
  * @param env is used to create the matrix duplication from.
  */
-static void	create_matrix(t_minishell *minishell, char **env)
+static bool	create_matrix(t_minishell *minishell, char **env)
 {
 	int	i;
 
@@ -29,15 +55,16 @@ static void	create_matrix(t_minishell *minishell, char **env)
 		minishell->envp_count++;
 	minishell->envp = ft_calloc(minishell->envp_count + 1, sizeof(char *));
 	if (!minishell->envp)
-		ft_putendl_fd("Malloc failed while setting up the env variables", 2);	// exit required
+		return (false);
 	i = -1;
 	while (++i < minishell->envp_count)
 	{
 		minishell->envp[i] = ft_strdup(env[i]);
 		if (!minishell->envp[i])
-			ft_putendl_fd("Malloc failed while setting up the env variables", 2);	// exit required
+			return (free_split(minishell->envp, minishell->envp_count), false);
 	}
 	minishell->envp[minishell->envp_count] = NULL;
+	return (true);
 }
 
 /**
@@ -93,7 +120,8 @@ void	setup_environment(t_minishell *minishell, char **env)
 	int		len;
 	t_env	*var;
 
-	create_matrix(minishell, env);
+	if (!create_matrix(minishell, env))
+		return (ft_putendl_fd("Malloc fail in env variables set up.", 2));
 	env = sort_environment_variables(env, minishell->envp_count);
 	while (*env)
 	{
@@ -112,5 +140,5 @@ void	setup_environment(t_minishell *minishell, char **env)
 	}
 	if (!*env)
 		return ;
-	ft_putendl_fd("Malloc failed while setting up the env variables", 2);	// exit required
+	free_environment(minishell);
 }

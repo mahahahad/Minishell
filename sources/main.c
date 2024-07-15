@@ -30,6 +30,8 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 	g_status_code = 0;
 	ft_memset(&minishell, 0, sizeof(minishell));
 	setup_environment(&minishell, env);
+	if (!minishell.envp)
+		return (1);
 	while (true)
 	{
 		receive_signal(PARENT);
@@ -47,6 +49,5 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 		}
 		free(line);
 	}
-	ft_putendl_fd("exit", 1);
-	return (g_status_code);
+	return (ft_putendl_fd("exit", 1), g_status_code);
 }

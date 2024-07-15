@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 15:29:04 by mdanish           #+#    #+#             */
-/*   Updated: 2024/06/27 20:28:40 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/15 12:26:52 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 # define HEX_UP "0123456789ABCDEF"
 # define DECIMAL "0123456789"
 
+void	free_split(char **split, size_t word_count);
 void	*ft_calloc(size_t count, size_t size);
 char	*ft_c_strjoin_free(char *s1, char *s2, char c, int free_string);
 char	*ft_char_strjoin(char const *s1, char const *s2, char const c);
@@ -52,5 +53,7 @@ size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize);
 size_t	ft_strlen(const char *str);
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
+size_t	word_counter(char const *string, char delimiter);
+size_t	word_length(char const *string, char delimiter);
 
 #endif

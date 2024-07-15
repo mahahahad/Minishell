@@ -5,69 +5,70 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/07/17 13:14:03 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/26 16:43:35 by mdanish          ###   ########.fr       */
+/*   Created: 2023/07/15 19:48:44 by mdanish           #+#    #+#             */
+/*   Updated: 2024/07/15 12:26:20 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static int	count_words(const char *s, const char c)
+size_t	word_length(char const *string, char delimiter)
 {
-	int	words;
-	int	word_found;
-	int	i;
+	size_t	length;
 
-	words = 0;
-	word_found = 0;
-	i = -1;
-	while (s[++i])
-	{
-		if (s[i] != c && !word_found)
-		{
-			word_found = 1;
-			words++;
-		}
-		if (s[i] == c)
-			word_found = 0;
-	}
-	return (words);
+	length = 0;
+	while (*string && *string++ != delimiter)
+		length++;
+	return (length);
 }
 
-/// @brief
-// Splits a string 's' by using 'c' as a delimiter
-// All instances of the char 'c' are ignored
-/// @param s
-// The string to split
-/// @param c
-// The character to split based on
-/// @return
-// An array of the newly obtained strings
-char	**ft_split(char const *s, char c)
+size_t	word_counter(char const *string, char delimiter)
 {
-	int		word_start_index;
-	size_t	i;
-	int		j;
-	char	**strings;
+	size_t	ctr;
 
-	if (!s)
-		return (NULL);
-	strings = ft_calloc((count_words(s, c) + 1), sizeof(char *));
-	if (!strings)
-		return (NULL);
-	word_start_index = -1;
-	i = -1;
-	j = 0;
-	while (++i != ft_strlen(s) + 1)
+	ctr = 0;
+	while (*string)
 	{
-		if ((s[i] == c || i == ft_strlen(s)) && word_start_index >= 0)
-		{
-			strings[j++] = ft_substr(s, word_start_index, i - word_start_index);
-			word_start_index = -1;
-		}
-		if (s[i] != c && word_start_index < 0)
-			word_start_index = i;
+		while (*string == delimiter && *string)
+			string++;
+		if (*string)
+			ctr++;
+		while (*string != delimiter && *string)
+			string++;
 	}
-	strings[j] = NULL;
-	return (strings);
+	return (ctr);
+}
+
+void	free_split(char **split, size_t word_count)
+{
+	while (split && word_count--)
+		free(*(split + word_count));
+	free(split);
+}
+
+char	**ft_split(char const *string, char delimiter)
+{
+	char	**split;
+	char	**result;
+	size_t	word_count;
+	size_t	word_len;
+
+	word_count = word_counter(string, delimiter);
+	result = malloc((word_count + 1) * sizeof(char *));
+	if (!result)
+		return (NULL);
+	split = result;
+	while (word_count--)
+	{
+		while (*string == delimiter && *string)
+			string++;
+		word_len = word_length(string, delimiter);
+		*result = ft_substr(string, 0, word_len);
+		if (!(*result))
+			return (free_split(split, result - split), NULL);
+		string += word_len;
+		result++;
+	}
+	*result = NULL;
+	return (split);
 }
