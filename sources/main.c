@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/21 17:04:40 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/21 21:38:46 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 			free_cmd(cmd);
 		}
 		free_tokens(&minishell.tokens_head);
+		minishell.tokens = NULL;
 		free(line);
 	}
 	free_environment(&minishell);
