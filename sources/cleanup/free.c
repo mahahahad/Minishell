@@ -3,43 +3,80 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:38:52 by maabdull          #+#    #+#             */
-/*   Updated: 2024/06/27 17:47:17 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/20 18:20:05 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	free_tokens(t_minishell *minishell)
+/**
+ * @brief Frees up the token list.
+ * 
+ * Simply goes through the list and frees the content and the node itself.
+ * It can be used in case of malloc fail or when performing a general cleanup.
+ * 
+ * @param list is the list of tokens.
+ */
+void	free_tokens(t_token **tokens)
 {
-	int	i;
+	t_token	*current;
+	t_token	*next;
 
-	i = 0;
-	while (minishell->tokens[i].content)
+	current = *tokens;
+	while (current)
 	{
-		free(minishell->tokens[i].content);
-		i++;
+		next = current->next;
+		free(current->content);
+		free(current);
+		current = next;
 	}
-	free(minishell->tokens);
+	*tokens = NULL;
 }
 
-// void	free_cmd(t_cmd *cmd)
-// {
-// 	t_cmd_exec	*cmd_exec;
-// 	int			i;
+void	free_cmd(t_cmd *cmd)
+{
+	if (!cmd)
+		return ;
+	if (cmd->type == CMD_PIPE || cmd->type == CMD_AND || cmd->type == CMD_OR)
+	{
+		free_cmd(((t_cmd_expr *)cmd)->cmd_left);
+		free_cmd(((t_cmd_expr *)cmd)->cmd_right);
+	}
+	else if (cmd->type == CMD_LESS || cmd->type == CMD_GREAT || \
+		cmd->type == CMD_DBL_GREAT)
+		free_cmd(((t_cmd_redir *)cmd)->cmd);
+	else if (cmd->type == CMD_HEREDOC)
+		free_cmd(((t_cmd_heredoc *)cmd)->cmd);
+	else if (cmd->type == CMD_EXEC)
+		free_tokens(&((t_cmd_exec *)cmd)->tokens);
+	free(cmd);
+}
 
-// 	i = 0;
-// 	if (cmd->type == CMD_EXEC)
-// 	{
-// 		cmd_exec = (t_cmd_exec *) cmd;
-// 		while (cmd_exec->tokens[i])
-// 		{
-// 			free(cmd_exec->tokens[i]);
-// 			i++;
-// 		}
-// 		free(cmd_exec->tokens);
-// 		free(cmd_exec);
-// 	}
-// }
+/**
+ * @brief Cleanup of the environment in case of any malloc fail.
+ * 
+ * The function calls free_split() on the char double pointer version of the
+ * environment variables. The list version of it is freed node by node along
+ * with the contents of it. Both versions are set to NULL after freeing.
+ * 
+ * @param minishell contains the environment that needs to be freed.
+ */
+void	free_environment(t_minishell *minishell)
+{
+	t_env	*store;
+
+	free_split(minishell->envp, minishell->envp_count);
+	minishell->envp = NULL;
+	while (minishell->env_variables)
+	{
+		store = minishell->env_variables->next;
+		free(minishell->env_variables->key);
+		free(minishell->env_variables->value);
+		free(minishell->env_variables);
+		minishell->env_variables = store;
+	}
+	minishell->env_variables = NULL;
+}

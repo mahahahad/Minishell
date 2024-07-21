@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 17:04:29 by mdanish           #+#    #+#             */
-/*   Updated: 2024/06/26 16:41:22 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/21 16:38:49 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,8 @@ static char	*expand_the_key(char *token, char *value, int start, int *end)
 	{
 		expanded = ft_calloc((tok_len + val_len) - (*end - start) + 1, 1);
 		if (!expanded)
-			ft_putendl_fd("Malloc failed while expanding variables.", 2);
+			return (ft_putendl_fd("Malloc failed during token expansion.", 2), \
+				g_status_code = 1, free(token), NULL);
 		ft_memcpy(expanded, token, start);
 		ft_memcpy(expanded + start, value, val_len);
 		ft_memcpy(expanded + val_len + start, token + *end, tok_len - *end + 1);
@@ -83,7 +84,8 @@ static char	*expand_status_code(char *token, int start, int end, int digits)
 	tok_len = ft_strlen(token);
 	expanded = ft_calloc(tok_len + digits - 1, sizeof(char));
 	if (!expanded)
-		ft_putendl_fd("Malloc failed while expanding variables.", 2);
+		return (ft_putendl_fd("Malloc fail during token expansion.", 2), \
+			g_status_code = 1, free(token), NULL);
 	ft_memcpy(expanded, token, start);
 	count = digits;
 	while (count--)
@@ -205,7 +207,7 @@ char	*dollar_expansion(char *token, t_env *list)
 
 	token_length = ft_strlen(token);
 	start = 0;
-	while (token[start])
+	while (token && token[start])
 	{
 		if (invalid_key(&token, &start, &end, token_length))
 			continue ;
@@ -216,7 +218,8 @@ char	*dollar_expansion(char *token, t_env *list)
 				break ;
 			store = store->next;
 		}
-		if (!store && ft_memcpy(token + --start, token + end, token_length))
+		if (!store && ft_memcpy(token + --start, token + end, \
+			token_length - end + 1))
 			continue ;
 		token = expand_the_key(token, store->value, start - 1, &end);
 		start = end;

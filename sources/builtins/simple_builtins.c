@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/29 13:21:03 by mdanish           #+#    #+#             */
-/*   Updated: 2024/07/06 23:20:51 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/21 12:55:25 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,16 +102,15 @@ void	ft_env(char **args, char **envp)
  */
 void	ft_pwd(char **args)
 {
-	char	*current_working_directory;
+	char	current_working_directory[PATH_MAX];
 
 	if (args[1] && args[1][0] == '-')
 	{
-		ft_putendl_fd("pwd does not accecpt options.", 2);
 		g_status_code = 1;
-		return ;
+		return (ft_putendl_fd("pwd does not accecpt options.", 2));
 	}
-	current_working_directory = getcwd(NULL, 0);
+	current_working_directory[0] = '\0';
+	getcwd(current_working_directory, PATH_MAX);
 	ft_putendl_fd(current_working_directory, 1);
-	free(current_working_directory);
 	g_status_code = 0;
 }

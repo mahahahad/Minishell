@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/13 14:41:59 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/20 19:19:25 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,7 +169,8 @@ t_cmd	*parse(t_minishell *minishell, char *line);
 t_cmd	*parse_exec(t_minishell *minishell);
 t_cmd	*parse_expr(t_minishell *minishell);
 t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell);
-void	*print_exec_parse_err(t_tkn_type type);
+void	*print_exec_parse_err(t_tkn_type type, t_cmd *cmd);
+t_token	*tokendup(t_token *token);
 bool	valid_brackets(char *line);
 t_token	*wildcards(char *token);
 
@@ -180,7 +181,7 @@ bool	is_builtin(char *str);
 void	run_cmd(t_cmd *cmd, char **env);
 
 // Built-ins
-void	add_to_matrix(t_minishell *minishell, char *new_var);
+bool	add_to_matrix(t_minishell *minishell, char *new_var);
 void	create_new_variable(t_env *new_var, int *length, char *string);
 void	ft_cd(char **cmd, t_minishell *minishell);
 void	ft_echo(char **cmd);
@@ -192,7 +193,8 @@ bool	is_argument_valid(const char *string);
 
 // Cleanup
 void	free_cmd(t_cmd *cmd);
-void	free_tokens(t_minishell *minishell);
+void	free_tokens(t_token **list);
+void	free_environment(t_minishell *minishell);
 
 // Setup
 void	setup_environment(t_minishell *minishell, char **env);

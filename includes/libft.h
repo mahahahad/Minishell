@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 15:29:04 by mdanish           #+#    #+#             */
-/*   Updated: 2024/07/15 12:26:52 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/21 16:40:27 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int		ft_isalpha(int letter);
 int		ft_isdigit(int character);
 bool	ft_isspace(char c);
 char	*ft_join(char **tab);
-void	*ft_memcpy(void *destination, void const *source, size_t bytes);
+void	*ft_memcpy(void *destination, void *source, size_t bytes);
 void	*ft_memset(void *array, int character, size_t bytes);
 int		ft_printarr(char **tab);
 void	ft_putchar_fd(char character, int fd);

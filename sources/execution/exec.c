@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/10 18:39:33 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/19 17:59:13 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -256,7 +256,7 @@ void	exec_heredoc(t_cmd_heredoc *cmd, char **env)
 	while (true)
 	{
 		line = readline("> ");
-		if (ft_strncmp(line, cmd->delimiter, get_longer_length(line, cmd->delimiter)) == 0)
+		if (ft_strncmp(line, cmd->delimiter, !get_longer_length(line, cmd->delimiter)))
 			break ;
 		ft_putendl_fd(line, fd[1]);
 		free(line);
@@ -270,7 +270,6 @@ void	exec_heredoc(t_cmd_heredoc *cmd, char **env)
 
 void	run_cmd(t_cmd *cmd, char **env)
 {
-	t_cmd_exec	*cmd_exec;
 	int	pid;
 
 	if (!cmd)
@@ -283,21 +282,20 @@ void	run_cmd(t_cmd *cmd, char **env)
 	{
 		if (cmd->type == CMD_EXEC)
 		{
-			cmd_exec = (t_cmd_exec *) cmd;
 			// Builtin checks go here
-			exec_cmd(convert_cmd_exec(cmd_exec->tokens), env);
+			exec_cmd(convert_cmd_exec(((t_cmd_exec *)cmd)->tokens), env);
 		}
 		else if (cmd->type == CMD_PIPE)
-			exec_pipe((t_cmd_expr *) cmd, env);
+			exec_pipe((t_cmd_expr *)cmd, env);
 		else if (cmd->type == CMD_AND)
-			exec_pipe((t_cmd_expr *) cmd, env);
+			exec_pipe((t_cmd_expr *)cmd, env);
 		else if (cmd->type == CMD_OR)
-			exec_pipe((t_cmd_expr *) cmd, env);
+			exec_pipe((t_cmd_expr *)cmd, env);
 		else if (cmd->type == CMD_DBL_GREAT || cmd->type == CMD_GREAT \
 			|| cmd->type == CMD_LESS)
-			exec_redir((t_cmd_redir *) cmd, env);
+			exec_redir((t_cmd_redir *)cmd, env);
 		else if (cmd->type == CMD_HEREDOC)
-			exec_heredoc((t_cmd_heredoc *) cmd, env);
+			exec_heredoc((t_cmd_heredoc *)cmd, env);
 		exit(0);
 	}
 	waitpid(pid, NULL, 0);
@@ -311,7 +309,6 @@ void	run_cmd(t_cmd *cmd, char **env)
  */
 void	exec_cmd(char **cmd, char **env)
 {
-	int		status;
 	int		pid;
 	char	*absolute_cmd;
 	char	*cmd_original;
@@ -357,7 +354,7 @@ void	exec_cmd(char **cmd, char **env)
 		g_status_code = 127;
 		exit(127);
 	}
-	waitpid(pid, &status, 0);
+	waitpid(pid, &g_status_code, 0);
 	free(cmd_original);
 	// free(absolute_cmd);
 }

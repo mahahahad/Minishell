@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:34:36 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/14 00:40:01 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/20 20:32:17 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,9 @@ t_cmd	*create_redir_cmd(t_cmd *cmd, t_cmd_type type, char *file)
 	t_cmd_redir	*redir_cmd;
 
 	redir_cmd = ft_calloc(1, sizeof(t_cmd_redir));
+	if (!redir_cmd)
+		return (ft_putendl_fd("Malloc failed in tokenisation.", 2), \
+			g_status_code = 1, free_cmd(cmd), NULL);
 	redir_cmd->cmd = cmd;
 	redir_cmd->type = type;
 	redir_cmd->file = file;
@@ -52,6 +55,9 @@ t_cmd	*create_expr_cmd(t_cmd_type type, t_cmd *cmd_left, t_cmd *cmd_right)
 	t_cmd_expr	*expr_cmd;
 
 	expr_cmd = ft_calloc(1, sizeof(t_cmd_expr));
+	if (!expr_cmd)
+		return (ft_putendl_fd("Malloc failed in tokenisation.", 2), \
+			g_status_code = 1, free_cmd(cmd_left), free_cmd(cmd_right), NULL);
 	expr_cmd->type = type;
 	expr_cmd->cmd_left = cmd_left;
 	expr_cmd->cmd_right = cmd_right;
@@ -63,6 +69,9 @@ t_cmd	*create_heredoc(t_cmd *cmd, char *delimiter)
 	t_cmd_heredoc	*heredoc_cmd;
 
 	heredoc_cmd = ft_calloc(1, sizeof(t_cmd_heredoc));
+	if (!heredoc_cmd)
+		return (ft_putendl_fd("Malloc failed in tokenisation.", 2), \
+			g_status_code = 1, free_cmd(cmd), NULL);
 	heredoc_cmd->cmd = cmd;
 	heredoc_cmd->type = CMD_HEREDOC;
 	heredoc_cmd->delimiter = delimiter;

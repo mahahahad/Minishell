@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/13 14:53:14 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/20 20:42:04 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,8 @@ t_cmd	*parse(t_minishell *minishell, char *line)
 	{
 		add_token_back(&minishell->tokens, \
 			new_token(get_token(&line), minishell->env_variables));
-		// if (!minishell->tokens) ------> malloc fail handling required!!!
+		if (!minishell->tokens)
+			return (NULL);
 	}
 	minishell->tokens_head = minishell->tokens;
 	return (parse_expr(minishell));
@@ -158,9 +159,11 @@ t_cmd	*parse_exec(t_minishell *minishell)
 {
 	t_cmd		*node;
 	t_cmd_exec	*cmd;
-	t_token		*current_token;
 
 	node = ft_calloc(1, sizeof(t_cmd_exec));
+	if (!node)
+		return (ft_putendl_fd("Malloc failed during tokenisation.", 2), \
+			g_status_code = 1, NULL);
 	cmd = (t_cmd_exec *)node;
 	while (minishell->tokens)
 	{
@@ -170,13 +173,13 @@ t_cmd	*parse_exec(t_minishell *minishell)
 		if (is_exec_delimiter(minishell->tokens->type))
 		{
 			if (!cmd->tokens)
-				return (print_exec_parse_err(minishell->tokens->type));
+				return (print_exec_parse_err(minishell->tokens->type, node));
 			break ;
 		}
-		current_token = minishell->tokens;
+		add_token_back(&cmd->tokens, tokendup(minishell->tokens));
+		if (!cmd->tokens)
+			return (free_cmd(node), (node = NULL), free(cmd), NULL);
 		minishell->tokens = minishell->tokens->next;
-		current_token->next = NULL;
-		add_token_back(&cmd->tokens, current_token);
 	}
 	return (node);
 }

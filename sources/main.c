@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/10 17:13:41 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/21 17:04:40 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,12 +42,15 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 		if (cmd)
 		{
 			add_history(line);
-			run_cmd(cmd, env);
+			// run_cmd(cmd, env);
 			//! FOR DEBUGGING:
-			// PRINT_CMD(cmd);
-			// free_cmd(cmd);
+			PRINT_CMD(cmd);
+			free_cmd(cmd);
 		}
+		free_tokens(&minishell.tokens_head);
 		free(line);
 	}
+	free_environment(&minishell);
+	rl_clear_history();
 	return (ft_putendl_fd("exit", 1), g_status_code);
 }

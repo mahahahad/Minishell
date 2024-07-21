@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 19:45:08 by mdanish           #+#    #+#             */
-/*   Updated: 2024/07/06 20:12:55 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/20 20:07:18 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,17 +139,22 @@ void	ft_export(t_minishell *minishell, char **args)
 	if (!args[1])
 		return (ft_print_export(minishell->env_variables));
 	if (args[1][0] == '-')
-		return (ft_putendl_fd("Export does not accept options", 2));
+		return (g_status_code = 2, \
+			ft_putendl_fd("Export does not accept options", 2));
 	while (*args)
 	{
 		if (!is_argument_valid(*args) && args++)
 			continue ;
 		var = ft_calloc(1, sizeof(t_env));
 		if (!var)
-			ft_putendl_fd("Malloc failed while exporting a variable.", 2);	// exit required
+			return (g_status_code = 1, \
+				ft_putendl_fd("Malloc failed during export.", 2));
 		create_new_variable(var, &length, *args);
+		if (!var->key)
+			return (free(var));
 		add_to_list(minishell, var, length);
-		add_to_matrix(minishell, *args);
+		if (!add_to_matrix(minishell, *args))
+			return ;
 		args++;
 	}
 }

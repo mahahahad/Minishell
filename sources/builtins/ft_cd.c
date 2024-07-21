@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/06 20:11:28 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/20 20:08:41 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,8 @@ static char	*make_value(char *key, char *value, int total_length)
 	index = 0;
 	matrix_index = ft_calloc(total_length + 1, sizeof(char));
 	if (!matrix_index)
-		ft_putendl_fd("Malloc fail while changing directory", 2);	// exit requried
+		return (ft_putendl_fd("Malloc failed during cd", 2), \
+			g_status_code = 1, NULL);
 	while (index < total_length - 1 && *key)
 		matrix_index[index++] = *key++;
 	while (index < total_length - 1 && *value)
@@ -110,10 +111,8 @@ static void	chg_dir(char **args, t_env *old, t_env *new, t_minishell *minishell)
 
 	var = getcwd(NULL, 0);
 	if (chdir(args[1]))
-	{
-		g_status_code = 1;
-		return (ft_putendl_fd("cd: can not change directory", 2));
-	}
+		return (g_status_code = 1, \
+			ft_putendl_fd("cd: can not change directory", 2));
 	if (old)
 	{
 		free(old->value);

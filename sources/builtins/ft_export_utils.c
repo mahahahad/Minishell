@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 20:21:11 by mdanish           #+#    #+#             */
-/*   Updated: 2024/06/26 16:45:02 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/20 20:30:40 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,8 @@ static bool	update_the_matrix(t_minishell *minishell, char *new_var)
 		free(minishell->envp[index]);
 		minishell->envp[index] = ft_strdup(new_var);
 		if (!minishell->envp[index])
-			ft_putendl_fd("Malloc failed while exporting a variable.", 2);	// exit required
+			return (ft_putendl_fd("Malloc failed during export.", 2), \
+				g_status_code = 1, false);
 		return (true);
 	}
 	return (false);
@@ -61,16 +62,21 @@ static bool	update_the_matrix(t_minishell *minishell, char *new_var)
  * @param len is the length of the key of the new node.
  * 
  */
-void	add_to_matrix(t_minishell *minishell, char *new_var)
+bool	add_to_matrix(t_minishell *minishell, char *new_var)
 {
 	char	**env_store;
 	int		index;
 
+	if (!new_var)
+		return (false);
 	if (!ft_strchr(new_var, '=') || update_the_matrix(minishell, new_var))
-		return ;
+		return (true);
+	if (g_status_code)
+		return (false);
 	env_store = ft_calloc(minishell->envp_count + 2, sizeof(char *));
 	if (!env_store)
-		ft_putendl_fd("Malloc failed while exporting a variable.", 2);	// exit required
+		return (ft_putendl_fd("Malloc failed during export.", 2), \
+			g_status_code = 1, false);
 	index = -1;
 	while (++index < minishell->envp_count)
 		env_store[index] = minishell->envp[index];
@@ -78,7 +84,9 @@ void	add_to_matrix(t_minishell *minishell, char *new_var)
 	minishell->envp = env_store;
 	minishell->envp[minishell->envp_count] = ft_strdup(new_var);
 	if (!minishell->envp[index])
-		ft_putendl_fd("Malloc failed while exporting a variable.", 2);	// exit required
+		return (ft_putendl_fd("Malloc failed during export.", 2), \
+			g_status_code = 1, false);
+	return (true);
 }
 
 /**
@@ -95,25 +103,28 @@ void	add_to_matrix(t_minishell *minishell, char *new_var)
  * @param string contains the new key and value to be added.
  * 
  */
-void	create_new_variable(t_env *new_var, int *length, char *string)
+void	create_new_variable(t_env *var, int *length, char *string)
 {
 	if (!ft_strchr(string, '='))
 	{
-		new_var->key = ft_strdup(string);
-		if (!new_var->key)
-			ft_putendl_fd("Malloc failed while exporting a variable.", 2);	// exit required
-		*length = ft_strlen(new_var->key);
+		var->key = ft_strdup(string);
+		if (!var->key)
+			return (g_status_code = 1, \
+				ft_putendl_fd("Malloc failed during export.", 2));
+		*length = ft_strlen(var->key);
 	}
 	else
 	{
 		*length = ft_strchr(string, '=') - string;
-		new_var->key = ft_substr(string, 0, *length);
-		if (!new_var->key)
-			ft_putendl_fd("Malloc failed while exporting a variable.", 2);	// exit required
-		new_var->value = ft_substr(string, *length + 1, \
+		var->key = ft_substr(string, 0, *length);
+		if (!var->key)
+			return (g_status_code = 1, \
+				ft_putendl_fd("Malloc failed during export.", 2));
+		var->value = ft_substr(string, *length + 1, \
 				ft_strlen(string) - (*length + 1));
-		if (!new_var->value)
-			ft_putendl_fd("Malloc failed while exporting a variable.", 2);	// exit required
+		if (!var->value)
+			return (g_status_code = 1, free(var->key), var->key = NULL, \
+				ft_putendl_fd("Malloc failed during export.", 2));
 	}
 }
 

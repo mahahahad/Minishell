@@ -1,6 +1,6 @@
 NAME := minishell
 CC := cc
-CFLAGS := -Wall -Werror -Wextra -Iincludes
+CFLAGS := -Wall -Werror -Wextra -Iincludes -g3
 ADDITIONAL_FLAGS := -lreadline -I/usr/include
 # ADDITIONAL_FLAGS += -I/opt/vagrant/embedded/include/ -l/opt/vagrant/embedded/share/
 

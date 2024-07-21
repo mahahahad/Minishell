@@ -6,37 +6,11 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 10:07:41 by mdanish           #+#    #+#             */
-/*   Updated: 2024/07/15 12:52:04 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/20 20:42:40 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-/**
- * @brief Cleanup of the environment in case of any malloc fail.
- * 
- * The function calls free_split() on the char double pointer version of the
- * environment variables. The list version of it is freed node by node along
- * with the contents of it. Both versions are set to NULL after freeing.
- * 
- * @param minishell contains the environment that needs to be freed.
- */
-static void	free_environment(t_minishell *minishell)
-{
-	t_env	*store;
-
-	free_split(minishell->envp, minishell->envp_count);
-	minishell->envp = NULL;
-	while (minishell->env_variables)
-	{
-		store = minishell->env_variables->next;
-		free(minishell->env_variables->key);
-		free(minishell->env_variables->value);
-		free(minishell->env_variables);
-		minishell->env_variables = store;
-	}
-	minishell->env_variables = NULL;
-}
 
 /**
  * @brief Creates the matrix duplicate of the environment variables.
@@ -121,7 +95,8 @@ void	setup_environment(t_minishell *minishell, char **env)
 	t_env	*var;
 
 	if (!create_matrix(minishell, env))
-		return (ft_putendl_fd("Malloc fail in env variables set up.", 2));
+		return (g_status_code = 1, \
+			ft_putendl_fd("Malloc fail in env variables set up.", 2));
 	env = sort_environment_variables(env, minishell->envp_count);
 	while (*env)
 	{

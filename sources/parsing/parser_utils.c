@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 22:36:59 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/13 14:41:38 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/20 20:39:18 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,33 @@
  */
 
 /**
+ * @brief Duplicate the node provided as the argument.
+ *
+ * @param token is the node that needs to be duplicated.
+ * @return the duplicate of the token node.
+ */
+t_token	*tokendup(t_token *token)
+{
+	t_token	*token_copy;
+
+	token_copy = ft_calloc(1, sizeof(t_token));
+	if (!token_copy)
+		return (NULL);
+	token_copy->content = ft_strdup(token->content);
+	if (!token_copy->content)
+		return (free(token_copy), NULL);
+	token_copy->type = token->type;
+	return (token_copy);
+}
+
+/**
  * @brief Print the appropriate error message indicating a symbol was found
  * in a location it should not have been in.
  *
  * @param minishell
  * @return NULL
  */
-void	*print_exec_parse_err(t_tkn_type type)
+void	*print_exec_parse_err(t_tkn_type type, t_cmd *cmd)
 {
 	g_status_code = 2;
 	if (type == PIPE)
@@ -32,6 +52,7 @@ void	*print_exec_parse_err(t_tkn_type type)
 		ft_putendl_fd("Syntax error near unexpected token `&&'", 2);
 	else if (type == OR)
 		ft_putendl_fd("Syntax error near unexpected token `||'", 2);
+	free_cmd(cmd);
 	return (NULL);
 }
 
@@ -227,30 +248,6 @@ int	count_tokens(char *input)
 }
 
 /**
- * @brief Frees up the token list.
- * 
- * Simply goes through the list and frees the content and the node itself.
- * It can be used in case of malloc fail or when performing a general cleanup.
- * 
- * @param list is the list of tokens.
- */
-void	clear_tokens(t_token **list)
-{
-	t_token	*current;
-	t_token	*next;
-
-	current = *list;
-	while (current)
-	{
-		next = current->next;
-		free(current->content);
-		free(current);
-		current = next;
-	}
-	*list = NULL;
-}
-
-/**
  * @brief Add the specified token to the end of the tokens list
  * 
  * @param t_token**
@@ -261,11 +258,8 @@ void	add_token_back(t_token **tokens_list, t_token *token)
 	t_token	*current;
 
 	if (!token)
-	{
-		ft_putendl_fd("Malloc while tokenising the prompt failed.", 2);
-		clear_tokens(tokens_list);
-		return ;
-	}
+		return (ft_putendl_fd("Malloc failed during tokenisation.", 2), \
+			g_status_code = 1, free_tokens(tokens_list));
 	current = (*tokens_list);
 	if (!current)
 	{
@@ -297,6 +291,7 @@ char	*quote_trimming(char *token)
 
 	token_index = 0;
 	quote_index = 0;
+	quote = '\0';
 	while (token[quote_index])
 	{
 		if ((token[quote_index] == '"' || token[quote_index] == '\'') && !quote)
@@ -333,12 +328,14 @@ t_token	*new_token(char *content, t_env *list)
 		return (NULL);
 	token = ft_calloc(1, sizeof(t_token));
 	if (!token)
-		return (NULL);
+		return (free(content), g_status_code = 1, NULL);
 	token->content = content;
 	token->type = get_token_type(token->content);
 	if (token->type == WORD && list)
 	{
 		token->content = dollar_expansion(token->content, list);
+		if (!token->content)
+			return (NULL);
 		store = wildcards(token->content);
 		if (store)
 		{
