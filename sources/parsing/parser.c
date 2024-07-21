@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/20 20:42:04 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/21 21:23:56 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,9 +214,11 @@ t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell)
 		type = minishell->tokens->type;
 		if (!(type > PIPE && type < OR))
 			break ;
-		content = minishell->tokens->next->content;
+		if (minishell->tokens->next)
+			content = minishell->tokens->next->content;
 		if (!minishell->tokens->next || minishell->tokens->next->type != WORD)
-			return (ft_putendl_fd("No file for redirection found", 2), NULL);
+			return (ft_putendl_fd("No file for redirection found", 2), \
+				free_cmd(cmd), NULL);
 		if (type == LESS)
 			cmd = create_redir_cmd(cmd, CMD_LESS, content);
 		else if (type == GREAT)
