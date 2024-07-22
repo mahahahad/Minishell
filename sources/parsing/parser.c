@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/21 21:23:56 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/22 11:24:59 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,10 @@ t_cmd	*parse(t_minishell *minishell, char *line)
 		if (!minishell->tokens)
 			return (NULL);
 	}
+	minishell->tokens_head = minishell->tokens;
+	minishell->token_count = 0;
+	while (minishell->tokens_head && ++minishell->token_count)
+		minishell->tokens_head = minishell->tokens_head->next;
 	minishell->tokens_head = minishell->tokens;
 	return (parse_expr(minishell));
 }
