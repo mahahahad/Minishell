@@ -47,30 +47,26 @@ char	*find_cmd(char *cmd)
 
 char	**convert_cmd_exec(t_token *tokens)
 {
-	int	i;
 	t_token *current;
 	char	**str_tokens;
+	int		token_count[2];
 
-	i = 0;
+	token_count[0] = 0;
+	token_count[1] = 0;
 	current = tokens;
-	while (current)
-	{
-		i++;
+	while (current && ++token_count[0])
 		current = current->next;
-	}
-	str_tokens = ft_calloc(i + 1, sizeof(char *));
-	// TODO: Handle malloc fail properly
+	str_tokens = ft_calloc(++token_count[0], sizeof(char *));
 	if (!str_tokens)
-		exit(1);
-	i = 0;
+		return (NULL);
 	current = tokens;
 	while (current)
 	{
-		str_tokens[i] = ft_strdup(current->content);
+		str_tokens[token_count[1]] = ft_strdup(current->content);
+		if (!str_tokens[token_count[1]++])
+			return (free_split(str_tokens, token_count[0]), NULL);
 		current = current->next;
-		i++;
 	}
-	str_tokens[i] = NULL;
 	return (str_tokens);
 }
 
@@ -256,7 +252,8 @@ void	exec_heredoc(t_cmd_heredoc *cmd, char **env)
 	while (true)
 	{
 		line = readline("> ");
-		if (ft_strncmp(line, cmd->delimiter, !get_longer_length(line, cmd->delimiter)))
+		if (line && !ft_strncmp(line, cmd->delimiter, \
+			get_longer_length(line, cmd->delimiter)))
 			break ;
 		ft_putendl_fd(line, fd[1]);
 		free(line);
