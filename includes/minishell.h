@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/20 19:19:25 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/23 15:43:52 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,6 +192,7 @@ void	ft_unset(t_minishell *minishell, char **variable);
 bool	is_argument_valid(const char *string);
 
 // Cleanup
+bool	free_char_cmd(char **cmd, char *original);
 void	free_cmd(t_cmd *cmd);
 void	free_tokens(t_token **list);
 void	free_environment(t_minishell *minishell);

@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:38:52 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/21 17:57:53 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/22 15:13:56 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,11 @@ void	free_tokens(t_token **tokens)
 	*tokens = NULL;
 }
 
+/**
+ * @brief Frees the linked list version of the command.
+ * 
+ * @param cmd is the list of the command.
+ */
 void	free_cmd(t_cmd *cmd)
 {
 	if (!cmd)
@@ -53,6 +58,26 @@ void	free_cmd(t_cmd *cmd)
 	else if (cmd->type == CMD_EXEC)
 		free_tokens(&((t_cmd_exec *)cmd)->tokens);
 	free(cmd);
+}
+
+/**
+ * @brief Frees the char double pointer version of the command.
+ * 
+ * @param cmd is the double pointer of the command.
+ * 
+ * @return true for successful frees
+ */
+bool	free_char_cmd(char **cmd, char *original)
+{
+	int	cmd_count;
+
+	cmd_count = -1;
+	while (cmd[++cmd_count])
+		free(cmd[cmd_count]);
+	free(cmd[cmd_count]);
+	free(cmd);
+	free(original);
+	return (true);
 }
 
 /**

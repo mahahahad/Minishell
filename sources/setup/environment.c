@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 10:07:41 by mdanish           #+#    #+#             */
-/*   Updated: 2024/07/20 20:42:40 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/23 13:30:38 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,9 +73,6 @@ static char	**sort_environment_variables(char **env, int env_count)
 	}
 	return (env);
 }
-
-// We still need to come up with a proper cleanup.
-// The cleanup will require a listclear function as well.
 
 /**
  * @brief Creates a duplicate of the environment variable in the form of a
