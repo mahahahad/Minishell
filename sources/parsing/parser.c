@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/22 11:24:59 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/22 21:54:49 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,6 +169,7 @@ t_cmd	*parse_exec(t_minishell *minishell)
 		return (ft_putendl_fd("Malloc failed during tokenisation.", 2), \
 			g_status_code = 1, NULL);
 	cmd = (t_cmd_exec *)node;
+	node = parse_paranthesis(node, minishell);
 	while (minishell->tokens)
 	{
 		node = parse_redir(node, minishell);
@@ -235,3 +236,52 @@ t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell)
 	}
 	return (cmd);
 }
+
+/*
+Ensure valid brackets by checking for && or || within them.
+Split expr and pipe parsing since pipe is different and expr can be for both && 
+	and || then.
+Having brackets around an expression would affect the command tree. Ex:
+	a && b || c && d
+		would produce: a, b, d. But:
+	a && b || (c && d)
+		would produce: a, b only.
+
+*/
+t_cmd	*parse_paranthesis(t_cmd *cmd, t_minishell *minishell)
+{
+	t_cmd		*conditional_cmd;
+	t_cmd	*cmd_left;
+	t_cmd	*cmd_right;
+	t_cmd_type	type;
+	// int			i;
+	
+	// i = 0;
+	if (minishell->tokens->type != PARAN_OPEN)
+		return (cmd);
+	minishell->tokens = minishell->tokens->next;
+	cmd_left = parse_exec(minishell);
+	if (!cmd_left)
+		return (ft_putendl_fd("Syntax error near unexpected token `)'", 2), NULL);
+	if (minishell->tokens->type == AND)
+		type = CMD_AND;
+	else if (minishell->tokens->type == OR)
+		type = CMD_OR;
+	minishell->tokens = minishell->tokens->next;
+	cmd_right = parse_exec(minishell);
+	conditional_cmd = create_expr_cmd(type, cmd_left, cmd_right);
+	PRINT_CMD(conditional_cmd);
+	return (conditional_cmd);
+}
+
+/**
+ * @brief Parse a conditional command.
+ * 
+ * This function ensures the correct format is followed for conditional 
+ * commands (&& and ||).
+ * It is different from parse_expr because it does not check for pipes.
+ * 
+ * Simply checks if every token before and after the operator is a word
+ * since more complicated tokens would just evolve into subshells at one point.
+ */
+t_cmd	*parse_conditional(t_minishell *minishell);

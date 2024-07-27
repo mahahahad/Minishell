@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/19 17:59:13 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/22 22:07:02 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -265,18 +265,27 @@ void	exec_heredoc(t_cmd_heredoc *cmd, char **env)
 	run_cmd(cmd->cmd, env);
 }
 
+void	exec_expr(t_cmd_expr *cmd, char **env)
+{
+	run_cmd(cmd->cmd_left, env);
+	if (cmd->type == CMD_AND && g_status_code == 0)
+		run_cmd(cmd->cmd_right, env);
+	else if (cmd->type == CMD_OR && g_status_code != 0)
+		run_cmd(cmd->cmd_right, env);
+}
+
 void	run_cmd(t_cmd *cmd, char **env)
 {
-	int	pid;
+	// int	pid;
 
 	if (!cmd)
 		return ;
-	receive_signal(CHILD);
-	pid = fork();
-	if (pid < 0)
-		perror("fork");
-	else if (pid == 0)
-	{
+	// receive_signal(CHILD);
+	// pid = fork();
+	// if (pid < 0)
+	// 	perror("fork");
+	// else if (pid == 0)
+	// {
 		if (cmd->type == CMD_EXEC)
 		{
 			// Builtin checks go here
@@ -284,18 +293,16 @@ void	run_cmd(t_cmd *cmd, char **env)
 		}
 		else if (cmd->type == CMD_PIPE)
 			exec_pipe((t_cmd_expr *)cmd, env);
-		else if (cmd->type == CMD_AND)
-			exec_pipe((t_cmd_expr *)cmd, env);
-		else if (cmd->type == CMD_OR)
-			exec_pipe((t_cmd_expr *)cmd, env);
+		else if (cmd->type == CMD_AND || cmd->type == CMD_OR)
+			exec_expr((t_cmd_expr *)cmd, env);
 		else if (cmd->type == CMD_DBL_GREAT || cmd->type == CMD_GREAT \
 			|| cmd->type == CMD_LESS)
 			exec_redir((t_cmd_redir *)cmd, env);
 		else if (cmd->type == CMD_HEREDOC)
 			exec_heredoc((t_cmd_heredoc *)cmd, env);
-		exit(0);
-	}
-	waitpid(pid, NULL, 0);
+		// exit(0);
+	// }
+	// waitpid(pid, NULL, 0);
 }
 
 /**

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/21 21:38:46 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/22 21:48:55 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,6 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 	g_status_code = 0;
 	ft_memset(&minishell, 0, sizeof(minishell));
 	setup_environment(&minishell, env);
-	if (!minishell.envp)
-		return (1);
 	while (true)
 	{
 		receive_signal(PARENT);
@@ -42,16 +40,13 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 		if (cmd)
 		{
 			add_history(line);
-			// run_cmd(cmd, env);
+			run_cmd(cmd, env);
 			//! FOR DEBUGGING:
-			PRINT_CMD(cmd);
+			// PRINT_CMD(cmd);
 			free_cmd(cmd);
 		}
-		free_tokens(&minishell.tokens_head);
-		minishell.tokens = NULL;
 		free(line);
 	}
-	free_environment(&minishell);
-	rl_clear_history();
-	return (ft_putendl_fd("exit", 1), g_status_code);
+	ft_putendl_fd("exit", 1);
+	return (g_status_code);
 }

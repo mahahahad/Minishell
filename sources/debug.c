@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 12:31:23 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/05 17:07:18 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/22 18:52:38 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,6 +152,8 @@ void	print_heredoc_cmd(t_cmd_heredoc *cmd, int node_depth, char *prefix)
  */
 void	print_cmd(t_cmd *cmd, int node_depth, char *prefix)
 {
+	if (!cmd)
+		return ;
 	switch (cmd->type)
 	{
 		case CMD_EXEC:
