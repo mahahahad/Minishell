@@ -35,7 +35,7 @@
 # include <time.h>
 
 /** GLOBAL VARIABLE **/
-extern int					g_status_code;
+extern int					g_code;
 
 /** STRUCTURES **/
 typedef struct s_minishell	t_minishell;
@@ -106,7 +106,7 @@ struct s_minishell
 	int			envp_count;
 	t_env		*env_variables;
 	t_token		*tokens;
-	t_token		*tokens_head; //! can be removed
+	t_token		*tokens_head;
 };
 
 /*
@@ -192,10 +192,11 @@ void	ft_unset(t_minishell *minishell, char **variable);
 bool	is_argument_valid(const char *string);
 
 // Cleanup
-bool	free_char_cmd(char **cmd, char *original);
+void	free_char_cmd(char **cmd, char *original);
 void	free_cmd(t_cmd *cmd);
-void	free_tokens(t_token **list);
 void	free_environment(t_minishell *minishell);
+void	free_parsing(t_minishell *minishell);
+void	free_tokens(t_token **list);
 
 // Setup
 void	setup_environment(t_minishell *minishell, char **env);

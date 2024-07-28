@@ -166,8 +166,7 @@ t_cmd	*parse_exec(t_minishell *minishell)
 
 	node = ft_calloc(1, sizeof(t_cmd_exec));
 	if (!node)
-		return (ft_putendl_fd("Malloc failed during tokenisation.", 2), \
-			g_status_code = 1, NULL);
+		return (perror("Tokenisation"), g_code = 1, NULL);
 	cmd = (t_cmd_exec *)node;
 	while (minishell->tokens)
 	{

@@ -64,10 +64,8 @@ void	free_cmd(t_cmd *cmd)
  * @brief Frees the char double pointer version of the command.
  * 
  * @param cmd is the double pointer of the command.
- * 
- * @return true for successful frees
  */
-bool	free_char_cmd(char **cmd, char *original)
+void	free_char_cmd(char **cmd, char *original)
 {
 	int	cmd_count;
 
@@ -77,7 +75,21 @@ bool	free_char_cmd(char **cmd, char *original)
 	free(cmd[cmd_count]);
 	free(cmd);
 	free(original);
-	return (true);
+}
+
+/**
+ * @brief General command to free up the entirety of parsing
+ * 
+ * Calls the free_tokens() and the free_cmd() functions to cleanup the command
+ * and the token list. It also sets the pointer to tokens to NULL;
+ * 
+ * @param cmd is the double pointer of the command.
+ */
+void	free_parsing(t_minishell *minishell)
+{
+	free_cmd(minishell->cmd);
+	free_tokens(&minishell->tokens_head);
+	minishell->tokens = NULL;
 }
 
 /**

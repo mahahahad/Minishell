@@ -92,8 +92,7 @@ void	setup_environment(t_minishell *minishell, char **env)
 	t_env	*var;
 
 	if (!create_matrix(minishell, env))
-		return (g_status_code = 1, \
-			ft_putendl_fd("Malloc fail in env variables set up.", 2));
+		return (g_code = 1, perror("Environment setup"));
 	env = sort_environment_variables(env, minishell->envp_count);
 	while (*env)
 	{

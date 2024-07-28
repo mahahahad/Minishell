@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:51:40 by mdanish           #+#    #+#             */
-/*   Updated: 2024/07/12 18:55:27 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/28 17:43:54 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,8 @@ static bool	wildcards_are_present(char *token, int *location, DIR **cwd)
 			errno = 0;
 			return (true);
 		}
-		ft_putendl_fd("Directory can not be opened", 2);
+		perror("getcwd() in wildcard expansion");
+		g_code = WEXITSTATUS(errno);
 	}
 	return (false);
 }
@@ -222,9 +223,8 @@ t_token	*wildcards(char *token_string)
 		files = readdir(cwd_stream);
 	}
 	closedir(cwd_stream);
+	g_code = WEXITSTATUS(errno);
 	if (errno)
-		ft_putendl_fd("Directory can not be read", 2);
-	else if (!errno && token)
-		return (token);
-	return (NULL);
+		return (perror("Wildcard expansion"), free_tokens(&token), NULL);
+	return (token);
 }

@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/29 13:34:56 by mdanish           #+#    #+#             */
-/*   Updated: 2024/06/06 14:30:56 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/27 19:11:40 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ static void	ft_unset_from_list(t_minishell *minishell, char *var, int var_len)
  * After that, it uses ft_unset_from_list to delete the matching node from the
  * linked list of variables.
  * 
- * Upon completion, it sets g_status_code to 0.
+ * Upon completion, it sets g_code to 0.
  * 
  * @param minishell is used to access the matrix and list to delete variables.
  * @param variable are the variables that need to be unset. (NULL terminated)
@@ -98,5 +98,5 @@ void	ft_unset(t_minishell *minishell, char **variable)
 		ft_unset_from_list(minishell, *variable, var_len);
 		variable++;
 	}
-	g_status_code = 0;
+	g_code = 0;
 }

@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-int	g_status_code;
+int	g_code;
 
 /*
  * Loops until EOF is detected and reads user input using readline
@@ -27,7 +27,7 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 
 	if (argc != 1)
 		return (ft_putendl_fd("Minishell does not accept arguments.", 2), 1);
-	g_status_code = 0;
+	g_code = 0;
 	ft_memset(&minishell, 0, sizeof(minishell));
 	setup_environment(&minishell, env);
 	if (!minishell.envp)
@@ -36,8 +36,6 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 	{
 		receive_signal(PARENT);
 		line = readline(B_YELLOW "minishell$ " RESET);
-		if (!line)
-			break ;
 		cmd = parse(&minishell, line);
 		if (cmd)
 		{
@@ -45,13 +43,11 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 			// run_cmd(cmd, env);
 			//! FOR DEBUGGING:
 			PRINT_CMD(cmd);
-			free_cmd(cmd);
 		}
-		free_tokens(&minishell.tokens_head);
-		minishell.tokens = NULL;
+		free_parsing(&minishell);
 		free(line);
 	}
 	free_environment(&minishell);
 	rl_clear_history();
-	return (ft_putendl_fd("exit", 1), g_status_code);
+	return (ft_putendl_fd("exit", 1), g_code);
 }

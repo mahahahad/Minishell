@@ -19,30 +19,32 @@
 
 // Mallocs the full path to a command
 // or returns NULL if no command was found
-char	*find_cmd(char *cmd)
+char	*find_cmd(char *cmd, t_env *env)
 {
 	char	*final_cmd;
-	char	**dirs;
-	char	*path;
+	char	**paths;
 	int		j;
 
 	final_cmd = NULL;
-	path = getenv("PATH");
-	if (!path)
-		return (NULL);
-	dirs = ft_split(path, ':');
-	j = 0;
-	while (dirs[j])
+	while (env && ft_strncmp(env->key, "PATH", 5))
+		env = env->next;
+	if (!env)
+		return (perror("Finding the command"), NULL);
+	paths = ft_split(env->key, ':');
+	if (!paths)
+		return (perror("Finding the command"), NULL);
+	j = -1;
+	while (paths[++j])
 	{
-		final_cmd = ft_char_strjoin(dirs[j], cmd, '/');
+		final_cmd = ft_char_strjoin(paths[j], cmd, '/');
+		if (!final_cmd)
+			return (ft_free_2d_arr(paths), perror("Finding the command"), NULL);
 		if (access(final_cmd, X_OK) == 0)
 			break ;
 		free(final_cmd);
 		final_cmd = NULL;
-		j++;
 	}
-	ft_free_2d_arr(dirs);
-	return (final_cmd);
+	return (ft_free_2d_arr(paths), final_cmd);
 }
 
 char	**convert_cmd_exec(t_token *tokens)
@@ -73,16 +75,15 @@ char	**convert_cmd_exec(t_token *tokens)
 void	exec_pipe(t_cmd_expr *cmd, char **env)
 {
 	int	fd[2];
-	int	pid1;
-	int	pid2;
+	int	pid;
 
-	if (pipe(fd) < 0)
-		return (ft_putendl_fd("pipe creation", 2));
+	if (pipe(minishell->pipe_fds) < 0)
+		return (perror("pipe"));
 	receive_signal(CHILD);
-	pid1 = fork();
-	if (pid1 < 0)
-		return (ft_putendl_fd("fork", 2));
-	else if (pid1 == 0)
+	pid = fork();
+	if (pid < 0)
+		return (perror("fork"));
+	else if (!pid)
 	{
 		dup2(fd[1], STDOUT_FILENO);
 		close(fd[0]);
@@ -91,10 +92,10 @@ void	exec_pipe(t_cmd_expr *cmd, char **env)
 		exit(0);
 	}
 	receive_signal(CHILD);
-	pid2 = fork();
-	if (pid2 < 0)
-		return (ft_putendl_fd("fork", 2));
-	else if (pid2 == 0)
+	pid = fork();
+	if (pid < 0)
+		return (perror("fork"));
+	else if (!pid)
 	{
 		dup2(fd[0], STDIN_FILENO);
 		close(fd[0]);
@@ -104,8 +105,7 @@ void	exec_pipe(t_cmd_expr *cmd, char **env)
 	}
 	close(fd[0]);
 	close(fd[1]);
-	waitpid(pid1, NULL, 0);
-	waitpid(pid2, NULL, 0);
+	waitpid(pid, NULL, 0);
 }
 
 /**
@@ -247,7 +247,7 @@ void	exec_heredoc(t_cmd_heredoc *cmd, char **env)
 	int		fd[2];
 
 	if (pipe(fd) < 0)
-		perror("pipe creation");
+		perror("pipe");
 	ft_putendl_fd("Running heredoc", 1);
 	while (true)
 	{
@@ -307,53 +307,41 @@ void	run_cmd(t_cmd *cmd, char **env)
 void	exec_cmd(char **cmd, char **env)
 {
 	int		pid;
-	char	*absolute_cmd;
 	char	*cmd_original;
+	int		exit_code;
 
-	cmd_original = cmd[0];
+	// Builtin checks go here;
 	if (!ft_strchr(cmd[0], '/'))
 	{
-		absolute_cmd = find_cmd(cmd[0]);
-		if (!absolute_cmd)
-		{
-			ft_putstr_fd(cmd_original, 2);
-			ft_putendl_fd(": command not found", 2);
-			g_status_code = 127;
-			return ;
-		}
-		cmd[0] = absolute_cmd;
+		cmd_original = cmd[0];
+		cmd[0] = find_cmd(cmd[0]);
+		if (!cmd[0])
+			return (free_char_cmd(cmd, NULL), ft_putstr_fd(cmd_original, 2), \
+				g_code = 127, ft_putendl_fd(": command not found", 2));
 	}
 	else
 	{
+		cmd_original = NULL;
 		if (access(cmd[0], F_OK) == -1)
-		{
-			ft_putstr_fd(cmd_original, 2);
-			ft_putendl_fd(": no such file or directory", 2);
-			g_status_code = 127;
-			return ;
-		}
+			return (free_char_cmd(cmd, NULL), ft_putstr_fd(cmd_original, 2), \
+			g_code = 127, ft_putendl_fd(": no such file or directory", 2));
 		else if (access(cmd[0], X_OK) == -1)
-		{
-			ft_putstr_fd(cmd_original, 2);
-			ft_putendl_fd(": permission denied", 2);
-			g_status_code = 126;
-			return ;
-		}
+			return (free_char_cmd(cmd, NULL), ft_putstr_fd(cmd_original, 2), \
+				g_code = 126, ft_putendl_fd(": permission denied", 2));
 	}
 	receive_signal(CHILD);
 	pid = fork();
 	if (pid == 0)
 	{
 		execve(cmd[0], cmd, env);
-		ft_putstr_fd(cmd_original, 2);
-		ft_putendl_fd(": command not found", 2);
-		free(cmd_original);
-		g_status_code = 127;
-		exit(127);
+		perror("execve() failed");
+		free_char_cmd(cmd, cmd_original);
+		free_parsing(minishell);
+		exit(WEXITSTATUS(errno));
 	}
-	waitpid(pid, &g_status_code, 0);
-	free(cmd_original);
-	// free(absolute_cmd);
+	waitpid(pid, &exit_code, 0);
+	free_char_cmd(cmd, cmd_original);
+	g_code = WEXITSTATUS(exit_code);
 }
 
 /**

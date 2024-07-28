@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/20 20:08:41 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/27 19:11:40 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
  * It checks whether there are multiple arguments or any options provided to cd.
  * 
  * If any of the two are detected, it prints an error message explaining the
- * error and sets g_status_code to 1.
+ * error and sets g_code to 1.
  * 
  * If there are no arguments provided to cd, it checks through the list of
  * environment variables to identify the value stored in the HOME variable.
@@ -54,7 +54,7 @@ static bool	check_invalid_args(char **args, t_env *list)
 		}
 	}
 	if (error_flag)
-		g_status_code = 1;
+		g_code = 1;
 	return (error_flag);
 }
 
@@ -79,8 +79,7 @@ static char	*make_value(char *key, char *value, int total_length)
 	index = 0;
 	matrix_index = ft_calloc(total_length + 1, sizeof(char));
 	if (!matrix_index)
-		return (ft_putendl_fd("Malloc failed during cd", 2), \
-			g_status_code = 1, NULL);
+		return (perror("cd"), g_code = 1, NULL);
 	while (index < total_length - 1 && *key)
 		matrix_index[index++] = *key++;
 	while (index < total_length - 1 && *value)
@@ -94,7 +93,7 @@ static char	*make_value(char *key, char *value, int total_length)
  * @brief Changes the directory and updates env stores.
  * 
  * This function changes the directory using a function call to chdir(). In case
- * of failure, it prints an error message and set g_status_code to 1. Upon
+ * of failure, it prints an error message and set g_code to 1. Upon
  * success, it changes the node of the list if available and then uses
  * make_value() to create the argument for add_to_matrix(). Doing so will update
  * both the matrix and the list stores of the environment variables.
@@ -111,8 +110,7 @@ static void	chg_dir(char **args, t_env *old, t_env *new, t_minishell *minishell)
 
 	var = getcwd(NULL, 0);
 	if (chdir(args[1]))
-		return (g_status_code = 1, \
-			ft_putendl_fd("cd: can not change directory", 2));
+		return (g_code = 1, perror("cd"));
 	if (old)
 	{
 		free(old->value);
@@ -142,7 +140,7 @@ static void	chg_dir(char **args, t_env *old, t_env *new, t_minishell *minishell)
  * Once stores have been made, the chg_dir() function changes the current
  * working directory.
  * 
- * Upon completion, it sets g_status_code to 0.
+ * Upon completion, it sets g_code to 0.
  * 
  * @param args contain the path to which the directory will be changed to.
  * @param minishell contains the env stores that will be updated on success.
@@ -159,7 +157,7 @@ void	ft_cd(char **args, t_minishell *minishell)
 	list = minishell->env_variables;
 	if (check_invalid_args(args, list))
 		return ;
-	g_status_code = 0;
+	g_code = 0;
 	while (list)
 	{
 		if (!ft_strncmp(list->key, "OLDPWD", 7))
