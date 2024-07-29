@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:38:52 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/22 15:13:56 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/28 15:58:32 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,11 +50,13 @@ void	free_cmd(t_cmd *cmd)
 		free_cmd(((t_cmd_expr *)cmd)->cmd_left);
 		free_cmd(((t_cmd_expr *)cmd)->cmd_right);
 	}
-	else if (cmd->type == CMD_LESS || cmd->type == CMD_GREAT || \
-		cmd->type == CMD_DBL_GREAT)
+	else if (cmd->type == CMD_GREAT || cmd->type == CMD_DBL_GREAT || \
+		cmd->type == CMD_LESS || cmd->type == CMD_HEREDOC)
+	{
+		if (((t_cmd_redir *)cmd)->fd > -1)
+			close(((t_cmd_redir *)cmd)->fd);
 		free_cmd(((t_cmd_redir *)cmd)->cmd);
-	else if (cmd->type == CMD_HEREDOC)
-		free_cmd(((t_cmd_heredoc *)cmd)->cmd);
+	}
 	else if (cmd->type == CMD_EXEC)
 		free_tokens(&((t_cmd_exec *)cmd)->tokens);
 	free(cmd);

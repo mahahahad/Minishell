@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/22 11:24:59 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/29 11:23:57 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,31 +40,33 @@
  * @param line the raw user input line
  * @return t_cmd* the parsed command tree 
  */
-t_cmd	*parse(t_minishell *minishell, char *line)
+void	parse(t_minishell *minishell, char *line, char *store)
 {
 	int		i;
 
 	if (!line || !line[0] || count_quotations(line) || !valid_brackets(line))
-		return (NULL);
+		return ;
+	minishell->pipe_fds[0] = -1;
+	minishell->pipe_fds[1] = -1;
+	minishell->pipe_read_store = -1;
 	minishell->token_count = count_tokens(line);
-	//! For debugging purposes
-	// ft_putstr_fd("There are ", 1);
-	// ft_putnbr_fd(minishell->token_count, 1);
-	// ft_putendl_fd(" tokens in your input", 1);
 	i = -1;
 	while (++i < minishell->token_count)
 	{
 		add_token_back(&minishell->tokens, \
 			new_token(get_token(&line), minishell->env_variables));
 		if (!minishell->tokens)
-			return (NULL);
+			return ;
 	}
 	minishell->tokens_head = minishell->tokens;
 	minishell->token_count = 0;
 	while (minishell->tokens_head && ++minishell->token_count)
 		minishell->tokens_head = minishell->tokens_head->next;
 	minishell->tokens_head = minishell->tokens;
-	return (parse_expr(minishell));
+	minishell->cmd = parse_expr(minishell);
+	if (minishell->cmd)
+		add_history(store);
+	free(store);
 }
 
 /**
@@ -229,7 +231,7 @@ t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell)
 		else if (type == DBL_GREAT)
 			cmd = create_redir_cmd(cmd, CMD_DBL_GREAT, content);
 		else if (type == DBL_LESS)
-			cmd = create_heredoc(cmd, content);
+			cmd = create_redir_cmd(cmd, CMD_HEREDOC, content);
 		minishell->tokens = minishell->tokens->next->next;
 	}
 	return (cmd);

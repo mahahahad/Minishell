@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 10:07:41 by mdanish           #+#    #+#             */
-/*   Updated: 2024/07/23 13:30:38 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/28 16:02:06 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,7 @@ void	setup_environment(t_minishell *minishell, char **env)
 	int		len;
 	t_env	*var;
 
+	ft_memset(minishell, 0, sizeof(t_minishell));
 	if (!create_matrix(minishell, env))
 		return (g_code = 1, perror("Environment setup"));
 	env = sort_environment_variables(env, minishell->envp_count);

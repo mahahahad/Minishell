@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/19 17:59:13 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/29 11:05:17 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,9 +72,8 @@ char	**convert_cmd_exec(t_token *tokens)
 	return (str_tokens);
 }
 
-void	exec_pipe(t_cmd_expr *cmd, char **env)
+void	exec_pipe(t_minishell *minishell, t_cmd_expr *cmd, char **env)
 {
-	int	fd[2];
 	int	pid;
 
 	if (pipe(minishell->pipe_fds) < 0)
@@ -85,10 +84,10 @@ void	exec_pipe(t_cmd_expr *cmd, char **env)
 		return (perror("fork"));
 	else if (!pid)
 	{
-		dup2(fd[1], STDOUT_FILENO);
-		close(fd[0]);
-		close(fd[1]);
-		run_cmd(cmd->cmd_left, env);
+		dup2(minishell->pipe_fds[1], STDOUT_FILENO);
+		close(minishell->pipe_fds[0]);
+		close(minishell->pipe_fds[1]);
+		run_cmd(minishell, cmd->cmd_left, env);
 		exit(0);
 	}
 	receive_signal(CHILD);
@@ -97,14 +96,14 @@ void	exec_pipe(t_cmd_expr *cmd, char **env)
 		return (perror("fork"));
 	else if (!pid)
 	{
-		dup2(fd[0], STDIN_FILENO);
-		close(fd[0]);
-		close(fd[1]);
-		run_cmd(cmd->cmd_right, env);
+		dup2(minishell->pipe_fds[0], STDIN_FILENO);
+		close(minishell->pipe_fds[0]);
+		close(minishell->pipe_fds[1]);
+		run_cmd(minishell, cmd->cmd_right, env);
 		exit(0);
 	}
-	close(fd[0]);
-	close(fd[1]);
+	close(minishell->pipe_fds[0]);
+	close(minishell->pipe_fds[1]);
 	waitpid(pid, NULL, 0);
 }
 
@@ -150,30 +149,30 @@ bool	is_redirection_cmd(t_cmd *cmd)
  * @param cmd 
  * @return t_cmd*
  */
-t_cmd_redir	*open_files(t_cmd_redir *cmd)
-{
-	t_cmd_redir	*final_cmd;
-
-	if (!is_redirection_cmd(cmd->cmd))
-	{
-		if (cmd->type == CMD_DBL_GREAT)
-			open(cmd->file, O_WRONLY|O_CREAT|O_APPEND, 0666);
-		else if (cmd->type == CMD_GREAT)
-			open(cmd->file, O_WRONLY|O_CREAT|O_TRUNC, 0666);
-		else if (cmd->type == CMD_LESS)
-			open(cmd->file, O_RDONLY);
-		return (cmd);
-	}
-	else
-		final_cmd = open_files((t_cmd_redir *) cmd->cmd);
-	if (cmd->type == CMD_DBL_GREAT)
-		open(cmd->file, O_WRONLY|O_CREAT|O_APPEND, 0666);
-	else if (cmd->type == CMD_GREAT)
-		open(cmd->file, O_WRONLY|O_CREAT|O_TRUNC, 0666);
-	else if (cmd->type == CMD_LESS)
-		open(cmd->file, O_RDONLY);
-	return (final_cmd);
-}
+// t_cmd_redir	*open_files(t_cmd_redir *cmd)
+// {
+// 	t_cmd_redir	*final_cmd;
+// 
+// 	if (!is_redirection_cmd(cmd->cmd))
+// 	{
+// 		if (cmd->type == CMD_DBL_GREAT)
+// 			open(cmd->file, O_WRONLY|O_CREAT|O_APPEND, 0666);
+// 		else if (cmd->type == CMD_GREAT)
+// 			open(cmd->file, O_WRONLY|O_CREAT|O_TRUNC, 0666);
+// 		else if (cmd->type == CMD_LESS)
+// 			open(cmd->file, O_RDONLY);
+// 		return (cmd);
+// 	}
+// 	else
+// 		final_cmd = open_files((t_cmd_redir *) cmd->cmd);
+// 	if (cmd->type == CMD_DBL_GREAT)
+// 		open(cmd->file, O_WRONLY|O_CREAT|O_APPEND, 0666);
+// 	else if (cmd->type == CMD_GREAT)
+// 		open(cmd->file, O_WRONLY|O_CREAT|O_TRUNC, 0666);
+// 	else if (cmd->type == CMD_LESS)
+// 		open(cmd->file, O_RDONLY);
+// 	return (final_cmd);
+// }
 
 /**
  * @brief Execute a redirection command.
@@ -190,23 +189,23 @@ t_cmd_redir	*open_files(t_cmd_redir *cmd)
  * @param cmd
  * @param env
  */
-void	exec_redir(t_cmd_redir *cmd, char **env)
-{
-	int	fd_redirect;
-	t_cmd_redir *cmd_head;
-
-	fd_redirect = 0;
-	cmd_head = cmd;
-	cmd = open_files(cmd);
-	if (cmd_head->type == CMD_DBL_GREAT)
-		fd_redirect = open(cmd_head->file, O_WRONLY|O_CREAT|O_APPEND, 0666);
-	else if (cmd_head->type == CMD_GREAT)
-		fd_redirect = open(cmd_head->file, O_WRONLY|O_CREAT|O_TRUNC, 0666);
-	else if (cmd_head->type == CMD_LESS)
-		fd_redirect = open(cmd_head->file, O_RDONLY);
-	dup2(fd_redirect, cmd->fd);
-	run_cmd(cmd->cmd, env);
-}
+// void	exec_redir(t_minishell *minishell, t_cmd_redir *cmd, char **env)
+// {
+// 	int	fd_redirect;
+// 	t_cmd_redir *cmd_head;
+// 
+// 	fd_redirect = 0;
+// 	cmd_head = cmd;
+// 	cmd = open_files(cmd);
+// 	if (cmd_head->type == CMD_DBL_GREAT)
+// 		fd_redirect = open(cmd_head->file, O_WRONLY|O_CREAT|O_APPEND, 0666);
+// 	else if (cmd_head->type == CMD_GREAT)
+// 		fd_redirect = open(cmd_head->file, O_WRONLY|O_CREAT|O_TRUNC, 0666);
+// 	else if (cmd_head->type == CMD_LESS)
+// 		fd_redirect = open(cmd_head->file, O_RDONLY);
+// 	dup2(fd_redirect, cmd->stdfd);
+// 	run_cmd(minishell, cmd->cmd, env);
+// }
 
 /**
  * @brief Get the length of the longer string out of the provided two strings
@@ -241,61 +240,87 @@ int	get_longer_length(char *str1, char *str2)
  * @param cmd 
  * @param env 
  */
-void	exec_heredoc(t_cmd_heredoc *cmd, char **env)
+// void	exec_heredoc(t_minishell *minishell, t_cmd_heredoc *cmd, char **env)
+// {
+// 	char	*line;
+// 	int		fd[2];
+// 
+// 	if (pipe(fd) < 0)
+// 		perror("pipe");
+// 	ft_putendl_fd("Running heredoc", 1);
+// 	while (true)
+// 	{
+// 		line = readline("> ");
+// 		if (line && !ft_strncmp(line, cmd->delimiter, \
+// 			get_longer_length(line, cmd->delimiter)))
+// 			break ;
+// 		ft_putendl_fd(line, fd[1]);
+// 		free(line);
+// 	}
+// 	free(line);
+// 	dup2(fd[0], STDIN_FILENO);
+// 	close(fd[0]);
+// 	close(fd[1]);
+// 	run_cmd(minishell, cmd->cmd, env);
+// }
+
+void	run_cmd(t_minishell *minishell, t_cmd *cmd, char **env)
 {
-	char	*line;
-	int		fd[2];
-
-	if (pipe(fd) < 0)
-		perror("pipe");
-	ft_putendl_fd("Running heredoc", 1);
-	while (true)
-	{
-		line = readline("> ");
-		if (line && !ft_strncmp(line, cmd->delimiter, \
-			get_longer_length(line, cmd->delimiter)))
-			break ;
-		ft_putendl_fd(line, fd[1]);
-		free(line);
-	}
-	free(line);
-	dup2(fd[0], STDIN_FILENO);
-	close(fd[0]);
-	close(fd[1]);
-	run_cmd(cmd->cmd, env);
-}
-
-void	run_cmd(t_cmd *cmd, char **env)
-{
-	int	pid;
-
 	if (!cmd)
 		return ;
 	receive_signal(CHILD);
-	pid = fork();
-	if (pid < 0)
-		perror("fork");
-	else if (pid == 0)
+	if (cmd->type == CMD_EXEC)
+		exec_cmd(minishell, convert_cmd_exec(((t_cmd_exec *)cmd)->tokens), env);
+	else if (cmd->type == CMD_PIPE)
+		exec_pipe(minishell, (t_cmd_expr *)cmd, env);
+	else if (cmd->type == CMD_AND)
+		exec_pipe(minishell, (t_cmd_expr *)cmd, env);
+	else if (cmd->type == CMD_OR)
+		exec_pipe(minishell, (t_cmd_expr *)cmd, env);
+	// else if (cmd->type == CMD_DBL_GREAT || cmd->type == CMD_GREAT \
+	// 	|| cmd->type == CMD_LESS)
+	// 	exec_redir(minishell, (t_cmd_redir *)cmd, env);
+	// else if (cmd->type == CMD_HEREDOC)
+	// 	exec_heredoc(minishell, (t_cmd_heredoc *)cmd, env);
+}
+
+/**
+ * @brief Duplicates the fds as necessary.
+ * 
+ * The function goes through the command tree and identifies the first instance
+ * of a redirection and duplicates it. It duplicates to the STDOUT or STDIN on
+ * the basis of the command type. While it goes through the tree of the
+ * redirections, it closes every single open fd to prevent fd leaks.
+ * 
+ * @param cmd is the tree to identify redirection from.
+ * @param minishell contains flags for the duplication.
+ * @param read is a flag to indicate which end of the pipe to duplicate.
+ */
+void	duplicate_fds(t_cmd	*cmd, t_minishell *minishell, bool read)
+{
+	while (cmd->type == CMD_DBL_GREAT || cmd->type == CMD_GREAT || \
+		cmd->type == CMD_LESS || cmd->type == CMD_HEREDOC)
 	{
-		if (cmd->type == CMD_EXEC)
-		{
-			// Builtin checks go here
-			exec_cmd(convert_cmd_exec(((t_cmd_exec *)cmd)->tokens), env);
-		}
-		else if (cmd->type == CMD_PIPE)
-			exec_pipe((t_cmd_expr *)cmd, env);
-		else if (cmd->type == CMD_AND)
-			exec_pipe((t_cmd_expr *)cmd, env);
-		else if (cmd->type == CMD_OR)
-			exec_pipe((t_cmd_expr *)cmd, env);
-		else if (cmd->type == CMD_DBL_GREAT || cmd->type == CMD_GREAT \
-			|| cmd->type == CMD_LESS)
-			exec_redir((t_cmd_redir *)cmd, env);
-		else if (cmd->type == CMD_HEREDOC)
-			exec_heredoc((t_cmd_heredoc *)cmd, env);
-		exit(0);
+		if ((cmd->type == CMD_GREAT || cmd->type == CMD_DBL_GREAT) && \
+			!minishell->output_fd && dup2(((t_cmd_redir *)cmd)->fd, 1))
+			minishell->output_fd = true;
+		else if ((cmd->type == CMD_LESS || cmd->type == CMD_HEREDOC) && \
+			!minishell->input_fd && dup2(((t_cmd_redir *)cmd)->fd, 0))
+			minishell->input_fd = true;
+		if (((t_cmd_redir *)cmd)->fd > -1)
+			close(((t_cmd_redir *)cmd)->fd);
+		cmd = ((t_cmd_redir *)cmd)->cmd;
 	}
-	waitpid(pid, NULL, 0);
+	if (!minishell->output_fd && !read && minishell->pipe_fds[1] > -1)
+		dup2(minishell->pipe_fds[1], STDOUT_FILENO);
+	if (!minishell->input_fd && read && minishell->pipe_read_store > -1)
+		dup2(minishell->pipe_read_store, STDIN_FILENO);
+	if (minishell->pipe_fds[0] > -1)
+		close(minishell->pipe_fds[0]);
+	if (minishell->pipe_fds[1] > -1)
+		close(minishell->pipe_fds[1]);
+	if (minishell->pipe_read_store > -1)
+		close(minishell->pipe_read_store);
 }
 
 /**
@@ -304,7 +329,7 @@ void	run_cmd(t_cmd *cmd, char **env)
  * following the format:
  * {command, options}
  */
-void	exec_cmd(char **cmd, char **env)
+void	exec_cmd(t_minishell *minishell, char **cmd, char **env)
 {
 	int		pid;
 	char	*cmd_original;
@@ -314,7 +339,7 @@ void	exec_cmd(char **cmd, char **env)
 	if (!ft_strchr(cmd[0], '/'))
 	{
 		cmd_original = cmd[0];
-		cmd[0] = find_cmd(cmd[0]);
+		cmd[0] = find_cmd(cmd[0], minishell->env_variables);
 		if (!cmd[0])
 			return (free_char_cmd(cmd, NULL), ft_putstr_fd(cmd_original, 2), \
 				g_code = 127, ft_putendl_fd(": command not found", 2));
@@ -330,7 +355,7 @@ void	exec_cmd(char **cmd, char **env)
 				g_code = 126, ft_putendl_fd(": permission denied", 2));
 	}
 	receive_signal(CHILD);
-	pid = fork();
+		pid = fork();
 	if (pid == 0)
 	{
 		execve(cmd[0], cmd, env);

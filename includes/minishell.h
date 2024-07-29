@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/23 15:43:52 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/29 11:06:25 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ typedef struct s_cmd		t_cmd;
 typedef struct s_cmd_exec	t_cmd_exec;
 typedef struct s_cmd_redir	t_cmd_redir;
 typedef struct s_cmd_expr	t_cmd_expr;
-typedef struct s_cmd_hdoc	t_cmd_heredoc;
+// typedef struct s_cmd_hdoc	t_cmd_heredoc;
 
 enum e_token_types
 {
@@ -101,10 +101,15 @@ struct s_env
 
 struct s_minishell
 {
+	bool		input_fd;
+	bool		output_fd;
 	char		**envp;
-	int			token_count;
 	int			envp_count;
+	int			pipe_fds[2];
+	int			pipe_read_store;
+	int			token_count;
 	t_env		*env_variables;
+	t_cmd		*cmd;
 	t_token		*tokens;
 	t_token		*tokens_head;
 };
@@ -133,6 +138,7 @@ struct s_cmd_redir
 	t_cmd		*cmd;
 	char		*file;
 	int			fd;
+	// int			stdfd;
 };
 
 struct s_cmd_expr
@@ -142,12 +148,12 @@ struct s_cmd_expr
 	t_cmd		*cmd_right;
 };
 
-struct s_cmd_hdoc
-{
-	t_cmd_type	type;
-	t_cmd		*cmd;
-	char		*delimiter;
-};
+// struct s_cmd_hdoc
+// {
+// 	t_cmd_type	type;
+// 	t_cmd		*cmd;
+// 	char		*delimiter;
+// };
 
 /** FUNCTIONS **/
 
@@ -157,7 +163,6 @@ void	receive_signal(t_sig_rec receiver);
 // Parsing
 void	add_token_back(t_token **tokens_list, t_token *token);
 t_cmd	*create_expr_cmd(t_cmd_type type, t_cmd *cmd_left, t_cmd *cmd_right);
-t_cmd	*create_heredoc(t_cmd *cmd, char *delimiter);
 t_cmd	*create_redir_cmd(t_cmd *cmd, t_cmd_type type, char *file);
 bool	count_quotations(char *line);
 int		count_tokens(char *input);
@@ -165,7 +170,7 @@ char	*dollar_expansion(char *token, t_env *list);
 char	*get_token(char **input);
 bool	is_exec_delimiter(t_tkn_type type);
 t_token	*new_token(char *content, t_env *list);
-t_cmd	*parse(t_minishell *minishell, char *line);
+void	parse(t_minishell *minishell, char *line, char *store);
 t_cmd	*parse_exec(t_minishell *minishell);
 t_cmd	*parse_expr(t_minishell *minishell);
 t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell);
@@ -176,9 +181,9 @@ t_token	*wildcards(char *token);
 
 // Execution
 void	exec_builtin(char **cmd, t_minishell *minishell);
-void	exec_cmd(char **cmd, char **env);
+void	exec_cmd(t_minishell *minishell, char **cmd, char **env);
 bool	is_builtin(char *str);
-void	run_cmd(t_cmd *cmd, char **env);
+void	run_cmd(t_minishell *minishell, t_cmd *cmd, char **env);
 
 // Built-ins
 bool	add_to_matrix(t_minishell *minishell, char *new_var);

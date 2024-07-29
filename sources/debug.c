@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   debug.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 12:31:23 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/05 17:07:18 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/27 14:09:54 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,9 @@ void	print_redir_cmd(t_cmd_redir *cmd, int node_depth, char *prefix)
 		case CMD_DBL_GREAT:
 			print_tab_str("Output Redirection (Append)", node_depth, prefix);
 			break;
+		case CMD_HEREDOC:
+			print_tab_str("Heredoc", node_depth, prefix);
+			break;
 		default:
 			break;
 	}
@@ -132,14 +135,14 @@ void	print_expr_cmd(t_cmd_expr *cmd, int node_depth, char *prefix)
 	print_cmd(cmd->cmd_right, node_depth + 2, prefix);
 }
 
-void	print_heredoc_cmd(t_cmd_heredoc *cmd, int node_depth, char *prefix)
-{
-	print_tab_str("Heredoc", node_depth, prefix);
-	print_tab_str("Delimiter", node_depth + 1, prefix);
-	print_tab_str(cmd->delimiter, node_depth + 2, prefix);
-	print_tab_str("Command", node_depth + 1, prefix);
-	print_cmd(cmd->cmd, node_depth + 2, prefix);
-}
+// void	print_heredoc_cmd(t_cmd_heredoc *cmd, int node_depth, char *prefix)
+// {
+// 	print_tab_str("Heredoc", node_depth, prefix);
+// 	print_tab_str("Delimiter", node_depth + 1, prefix);
+// 	print_tab_str(cmd->delimiter, node_depth + 2, prefix);
+// 	print_tab_str("Command", node_depth + 1, prefix);
+// 	print_cmd(cmd->cmd, node_depth + 2, prefix);
+// }
 
 /**
  * @brief Command struct printing function. Useful for debugging the 
@@ -162,12 +165,13 @@ void	print_cmd(t_cmd *cmd, int node_depth, char *prefix)
 			__attribute__ ((fallthrough));
 		case CMD_LESS:
 		case CMD_GREAT:
+		case CMD_HEREDOC:
 			print_redir_cmd((t_cmd_redir *) cmd, node_depth, prefix);
 			break;
 
-		case CMD_HEREDOC:
-			print_heredoc_cmd((t_cmd_heredoc *) cmd, node_depth, prefix);
-			break;
+		// case CMD_HEREDOC:
+		// 	print_heredoc_cmd((t_cmd_heredoc *) cmd, node_depth, prefix);
+		// 	break;
 
 		case CMD_AND:
 			__attribute__((fallthrough));

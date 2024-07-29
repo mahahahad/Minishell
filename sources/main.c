@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/21 21:38:46 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/28 19:37:48 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,10 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 {
 	char		*line;
 	t_minishell	minishell;
-	t_cmd	*cmd;
 
 	if (argc != 1)
 		return (ft_putendl_fd("Minishell does not accept arguments.", 2), 1);
 	g_code = 0;
-	ft_memset(&minishell, 0, sizeof(minishell));
 	setup_environment(&minishell, env);
 	if (!minishell.envp)
 		return (1);
@@ -36,16 +34,13 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 	{
 		receive_signal(PARENT);
 		line = readline(B_YELLOW "minishell$ " RESET);
-		cmd = parse(&minishell, line);
-		if (cmd)
-		{
-			add_history(line);
-			// run_cmd(cmd, env);
-			//! FOR DEBUGGING:
-			PRINT_CMD(cmd);
-		}
+		minishell.input_fd = false;
+		minishell.output_fd = false;
+		parse(&minishell, line, line);
+		// run_cmd(&minishell, minishell.cmd, minishell.envp);
+		//! FOR DEBUGGING:
+		PRINT_CMD(minishell.cmd);
 		free_parsing(&minishell);
-		free(line);
 	}
 	free_environment(&minishell);
 	rl_clear_history();
