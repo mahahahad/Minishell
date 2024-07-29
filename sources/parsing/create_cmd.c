@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:34:36 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/28 20:17:42 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/29 13:28:23 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ t_cmd	*create_expr_cmd(t_cmd_type type, t_cmd *cmd_left, t_cmd *cmd_right)
 // 
 // 	heredoc_cmd = ft_calloc(1, sizeof(t_cmd_heredoc));
 // 	if (!heredoc_cmd)
-// 		return (ft_putendl_fd("Malloc failed in tokenisation.", 2), \
+// 		return (ft_putendl_fd("Malloc failed in tokenisation.", 2), 
 // 			g_status_code = 1, free_cmd(cmd), NULL);
 // 	heredoc_cmd->cmd = cmd;
 // 	heredoc_cmd->type = CMD_HEREDOC;

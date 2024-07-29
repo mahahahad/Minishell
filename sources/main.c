@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/28 19:37:48 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/29 13:46:51 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,11 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 	{
 		receive_signal(PARENT);
 		line = readline(B_YELLOW "minishell$ " RESET);
+		if (!line)
+			break ;
 		minishell.input_fd = false;
 		minishell.output_fd = false;
+		minishell.cmd = NULL;
 		parse(&minishell, line, line);
 		// run_cmd(&minishell, minishell.cmd, minishell.envp);
 		//! FOR DEBUGGING:

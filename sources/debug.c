@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 12:31:23 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/27 14:09:54 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/29 13:31:57 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,6 +155,8 @@ void	print_expr_cmd(t_cmd_expr *cmd, int node_depth, char *prefix)
  */
 void	print_cmd(t_cmd *cmd, int node_depth, char *prefix)
 {
+	if (!cmd)
+		return ;
 	switch (cmd->type)
 	{
 		case CMD_EXEC:

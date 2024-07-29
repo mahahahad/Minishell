@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/29 11:05:17 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/29 13:29:03 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -251,7 +251,7 @@ int	get_longer_length(char *str1, char *str2)
 // 	while (true)
 // 	{
 // 		line = readline("> ");
-// 		if (line && !ft_strncmp(line, cmd->delimiter, \
+// 		if (line && !ft_strncmp(line, cmd->delimiter, 
 // 			get_longer_length(line, cmd->delimiter)))
 // 			break ;
 // 		ft_putendl_fd(line, fd[1]);
@@ -277,7 +277,7 @@ void	run_cmd(t_minishell *minishell, t_cmd *cmd, char **env)
 		exec_pipe(minishell, (t_cmd_expr *)cmd, env);
 	else if (cmd->type == CMD_OR)
 		exec_pipe(minishell, (t_cmd_expr *)cmd, env);
-	// else if (cmd->type == CMD_DBL_GREAT || cmd->type == CMD_GREAT \
+	// else if (cmd->type == CMD_DBL_GREAT || cmd->type == CMD_GREAT 
 	// 	|| cmd->type == CMD_LESS)
 	// 	exec_redir(minishell, (t_cmd_redir *)cmd, env);
 	// else if (cmd->type == CMD_HEREDOC)
