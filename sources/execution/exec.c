@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/30 15:26:59 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/30 17:40:36 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,40 +75,44 @@ char	**convert_cmd(t_cmd *cmd)
 	return (str_tokens);
 }
 
-void	exec_pipe(t_minishell *minishell, t_cmd_expr *cmd, char **env)
-{
-	int	pid;
+// void	exec_pipe(t_minishell *minishell, char **env)
+// {
+// 	int	pid;
+// 	t_cmd_expr *cmd;
 
-	if (pipe(minishell->pipe_fds) < 0)
-		return (perror("pipe"));
-	receive_signal(CHILD);
-	pid = fork();
-	if (pid < 0)
-		return (perror("fork"));
-	else if (!pid)
-	{
-		dup2(minishell->pipe_fds[1], STDOUT_FILENO);
-		close(minishell->pipe_fds[0]);
-		close(minishell->pipe_fds[1]);
-		run_cmd(minishell, cmd->cmd_left, env);
-		exit(0);
-	}
-	receive_signal(CHILD);
-	pid = fork();
-	if (pid < 0)
-		return (perror("fork"));
-	else if (!pid)
-	{
-		dup2(minishell->pipe_fds[0], STDIN_FILENO);
-		close(minishell->pipe_fds[0]);
-		close(minishell->pipe_fds[1]);
-		run_cmd(minishell, cmd->cmd_right, env);
-		exit(0);
-	}
-	close(minishell->pipe_fds[0]);
-	close(minishell->pipe_fds[1]);
-	waitpid(pid, NULL, 0);
-}
+// 	if (pipe(minishell->pipe_fds) < 0)
+// 		return (perror("pipe"));
+// 	cmd = (t_cmd_expr *)minishell->cmd;
+// 	receive_signal(CHILD);
+// 	pid = fork();
+// 	if (pid < 0)
+// 		return (perror("fork"));
+// 	else if (!pid)
+// 	{
+// 		dup2(minishell->pipe_fds[1], STDOUT_FILENO);
+// 		close(minishell->pipe_fds[0]);
+// 		close(minishell->pipe_fds[1]);
+// 		minishell->cmd = cmd->cmd_left;
+// 		run_cmd(minishell, env);
+// 		exit(0);
+// 	}
+// 	receive_signal(CHILD);
+// 	pid = fork();
+// 	if (pid < 0)
+// 		return (perror("fork"));
+// 	else if (!pid)
+// 	{
+// 		dup2(minishell->pipe_fds[0], STDIN_FILENO);
+// 		close(minishell->pipe_fds[0]);
+// 		close(minishell->pipe_fds[1]);
+// 		minishell->cmd = cmd->cmd_right;
+// 		run_cmd(minishell, env);
+// 		exit(0);
+// 	}
+// 	close(minishell->pipe_fds[0]);
+// 	close(minishell->pipe_fds[1]);
+// 	waitpid(pid, NULL, 0);
+// }
 
 /**
  * @brief Check if the provided command is of a redirection type
@@ -322,12 +326,13 @@ void	run_cmd(t_minishell *minishell, char **env)
 	// receive_signal(CHILD);
 	if (cmd->type == CMD_EXEC)
 		exec_cmd(minishell, convert_cmd(cmd));
-	else if (cmd->type == CMD_PIPE)
-		exec_pipe(minishell, env);
-	else if (cmd->type == CMD_AND)
-		exec_pipe(minishell, env);
-	else if (cmd->type == CMD_OR)
-		exec_pipe(minishell, env);
+	(void)env;
+	// else if (cmd->type == CMD_PIPE)
+	// 	exec_pipe(minishell, env);
+	// else if (cmd->type == CMD_AND)
+	// 	exec_pipe(minishell, env);
+	// else if (cmd->type == CMD_OR)
+	// 	exec_pipe(minishell, env);
 	// else if (cmd->type == CMD_DBL_GREAT || cmd->type == CMD_GREAT 
 	// 	|| cmd->type == CMD_LESS)
 	// 	exec_redir(minishell, (t_cmd_redir *)cmd, env);
