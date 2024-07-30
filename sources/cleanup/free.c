@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:38:52 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/21 17:57:53 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/28 15:58:32 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,11 @@ void	free_tokens(t_token **tokens)
 	*tokens = NULL;
 }
 
+/**
+ * @brief Frees the linked list version of the command.
+ * 
+ * @param cmd is the list of the command.
+ */
 void	free_cmd(t_cmd *cmd)
 {
 	if (!cmd)
@@ -45,14 +50,47 @@ void	free_cmd(t_cmd *cmd)
 		free_cmd(((t_cmd_expr *)cmd)->cmd_left);
 		free_cmd(((t_cmd_expr *)cmd)->cmd_right);
 	}
-	else if (cmd->type == CMD_LESS || cmd->type == CMD_GREAT || \
-		cmd->type == CMD_DBL_GREAT)
+	else if (cmd->type == CMD_GREAT || cmd->type == CMD_DBL_GREAT || \
+		cmd->type == CMD_LESS || cmd->type == CMD_HEREDOC)
+	{
+		if (((t_cmd_redir *)cmd)->fd > -1)
+			close(((t_cmd_redir *)cmd)->fd);
 		free_cmd(((t_cmd_redir *)cmd)->cmd);
-	else if (cmd->type == CMD_HEREDOC)
-		free_cmd(((t_cmd_heredoc *)cmd)->cmd);
+	}
 	else if (cmd->type == CMD_EXEC)
 		free_tokens(&((t_cmd_exec *)cmd)->tokens);
 	free(cmd);
+}
+
+/**
+ * @brief Frees the char double pointer version of the command.
+ * 
+ * @param cmd is the double pointer of the command.
+ */
+void	free_char_cmd(char **cmd)
+{
+	int	cmd_count;
+
+	cmd_count = -1;
+	while (cmd[++cmd_count])
+		free(cmd[cmd_count]);
+	free(cmd[cmd_count]);
+	free(cmd);
+}
+
+/**
+ * @brief General command to free up the entirety of parsing
+ * 
+ * Calls the free_tokens() and the free_cmd() functions to cleanup the command
+ * and the token list. It also sets the pointer to tokens to NULL;
+ * 
+ * @param cmd is the double pointer of the command.
+ */
+void	free_parsing(t_minishell *minishell)
+{
+	free_cmd(minishell->cmd);
+	free_tokens(&minishell->tokens_head);
+	minishell->tokens = NULL;
 }
 
 /**

@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 19:45:08 by mdanish           #+#    #+#             */
-/*   Updated: 2024/07/20 20:07:18 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/28 19:15:30 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ static void	ft_print_export(t_env *env)
  * It then sends it to the add_to_list() and add_to_matrix() functions to add
  * that node to the list and matrix respectively.
  * 
- * Upon completion, it sets g_status_code to 0.
+ * Upon completion, it sets g_code to 0.
  * 
  * @param minishell is used to access the matrix and list to add variables.
  * @param new_variables will be exported individually. (NULL terminated)
@@ -135,20 +135,18 @@ void	ft_export(t_minishell *minishell, char **args)
 	t_env	*var;
 	int		length;
 
-	g_status_code = 0;
+	g_code = 0;
 	if (!args[1])
 		return (ft_print_export(minishell->env_variables));
 	if (args[1][0] == '-')
-		return (g_status_code = 2, \
-			ft_putendl_fd("Export does not accept options", 2));
+		return (g_code = 2, ft_putendl_fd("Export does not accept options", 2));
 	while (*args)
 	{
 		if (!is_argument_valid(*args) && args++)
 			continue ;
 		var = ft_calloc(1, sizeof(t_env));
 		if (!var)
-			return (g_status_code = 1, \
-				ft_putendl_fd("Malloc failed during export.", 2));
+			return (g_code = 1, perror("export"));
 		create_new_variable(var, &length, *args);
 		if (!var->key)
 			return (free(var));

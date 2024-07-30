@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 22:36:59 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/22 18:53:39 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/30 19:11:56 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ t_token	*tokendup(t_token *token)
  */
 void	*print_exec_parse_err(t_tkn_type type, t_cmd *cmd)
 {
-	g_status_code = 2;
+	g_code = 2;
 	if (type == PIPE)
 		ft_putendl_fd("Syntax error near unexpected token `|'", 2);
 	else if (type == AND)
@@ -96,6 +96,8 @@ bool	count_quotations(char *line)
 	}
 	if (count % 2)
 		ft_putstr_fd(RED "Open quotes detected, command rejected.\n" RESET, 2);
+	if (count % 2)
+		g_code = 2;
 	return (count % 2);
 }
 
@@ -111,21 +113,22 @@ bool	count_quotations(char *line)
 bool	valid_brackets(char *line)
 {
 	int		count;
-	int		index;
 
-	index = -1;
 	count = 0;
-	while (line[++index] && (!count || count == 1))
+	while (*line && (!count || count == 1))
 	{
-		if (ft_is_quotation(line[index]))
+		if (ft_is_quotation(*line) && line++)
 			continue ;
-		if (line[index] == '(')
+		if (*line == '(' && line++)
 			count++;
-		else if (line[index] == ')')
+		else if (*line == ')' && line++)
 			count--;
+		line++;
 	}
 	if (count)
 		ft_putstr_fd(RED "Bad brackets detected, command rejected.\n" RESET, 2);
+	if (count)
+		g_code = 2;
 	return (!count);
 }
 
@@ -262,8 +265,8 @@ void	add_token_back(t_token **tokens_list, t_token *token)
 	t_token	*current;
 
 	if (!token)
-		return (ft_putendl_fd("Malloc failed during tokenisation.", 2), \
-			g_status_code = 1, free_tokens(tokens_list));
+		return (perror("Tokenisation"), g_code = 1, \
+			free_tokens(tokens_list));
 	current = (*tokens_list);
 	if (!current)
 	{
@@ -332,7 +335,7 @@ t_token	*new_token(char *content, t_env *list)
 		return (NULL);
 	token = ft_calloc(1, sizeof(t_token));
 	if (!token)
-		return (free(content), g_status_code = 1, NULL);
+		return (free(content), g_code = 1, NULL);
 	token->content = content;
 	token->type = get_token_type(token->content);
 	if (token->type == WORD && list)

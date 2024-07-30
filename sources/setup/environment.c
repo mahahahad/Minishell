@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 10:07:41 by mdanish           #+#    #+#             */
-/*   Updated: 2024/07/20 20:42:40 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/28 16:02:06 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,9 +74,6 @@ static char	**sort_environment_variables(char **env, int env_count)
 	return (env);
 }
 
-// We still need to come up with a proper cleanup.
-// The cleanup will require a listclear function as well.
-
 /**
  * @brief Creates a duplicate of the environment variable in the form of a
  * char ** matrix as well as a linked list.
@@ -94,9 +91,9 @@ void	setup_environment(t_minishell *minishell, char **env)
 	int		len;
 	t_env	*var;
 
+	ft_memset(minishell, 0, sizeof(t_minishell));
 	if (!create_matrix(minishell, env))
-		return (g_status_code = 1, \
-			ft_putendl_fd("Malloc fail in env variables set up.", 2));
+		return (g_code = 1, perror("Environment setup"));
 	env = sort_environment_variables(env, minishell->envp_count);
 	while (*env)
 	{

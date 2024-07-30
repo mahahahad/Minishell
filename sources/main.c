@@ -6,13 +6,13 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/28 16:48:43 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/30 19:11:37 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	g_status_code;
+int	g_code;
 
 /*
  * Loops until EOF is detected and reads user input using readline
@@ -23,12 +23,10 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 {
 	char		*line;
 	t_minishell	minishell;
-	t_cmd	*cmd;
 
 	if (argc != 1)
 		return (ft_putendl_fd("Minishell does not accept arguments.", 2), 1);
-	g_status_code = 0;
-	ft_memset(&minishell, 0, sizeof(minishell));
+	g_code = 0;
 	setup_environment(&minishell, env);
 	while (true)
 	{
@@ -36,17 +34,16 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 		line = readline(B_YELLOW "minishell$ " RESET);
 		if (!line)
 			break ;
-		cmd = parse(&minishell, line);
-		if (cmd)
-		{
-			add_history(line);
-			run_cmd(cmd, env);
-			//! FOR DEBUGGING:
-			// PRINT_CMD(cmd);
-			free_cmd(cmd);
-		}
-		free(line);
+		minishell.input_fd = false;
+		minishell.output_fd = false;
+		minishell.cmd = NULL;
+		parse(&minishell, line, line);
+		// run_cmd(&minishell, -1);
+		//! FOR DEBUGGING:
+		PRINT_CMD(minishell.cmd);
+		free_parsing(&minishell);
 	}
-	ft_putendl_fd("exit", 1);
-	return (g_status_code);
+	free_environment(&minishell);
+	rl_clear_history();
+	return (ft_putendl_fd("exit", 1), g_code);
 }

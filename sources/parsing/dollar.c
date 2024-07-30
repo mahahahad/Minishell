@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 17:04:29 by mdanish           #+#    #+#             */
-/*   Updated: 2024/07/21 16:38:49 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/27 19:11:40 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,8 @@ static char	*expand_the_key(char *token, char *value, int start, int *end)
 	{
 		expanded = ft_calloc((tok_len + val_len) - (*end - start) + 1, 1);
 		if (!expanded)
-			return (ft_putendl_fd("Malloc failed during token expansion.", 2), \
-				g_status_code = 1, free(token), NULL);
+			return (perror("Dollar Expansion"), g_code = 1, \
+				free(token), NULL);
 		ft_memcpy(expanded, token, start);
 		ft_memcpy(expanded + start, value, val_len);
 		ft_memcpy(expanded + val_len + start, token + *end, tok_len - *end + 1);
@@ -80,12 +80,12 @@ static char	*expand_status_code(char *token, int start, int end, int digits)
 	int		status;
 	int		tok_len;
 
-	status = g_status_code;
+	status = g_code;
 	tok_len = ft_strlen(token);
 	expanded = ft_calloc(tok_len + digits - 1, sizeof(char));
 	if (!expanded)
-		return (ft_putendl_fd("Malloc fail during token expansion.", 2), \
-			g_status_code = 1, free(token), NULL);
+		return (perror("Dollar Expansion"), g_code = 1, free(token), \
+			NULL);
 	ft_memcpy(expanded, token, start);
 	count = digits;
 	while (count--)
@@ -119,19 +119,19 @@ static void	replace_status_code(char **token, int start, int end, int length)
 	int		status;
 	int		digits;
 
-	status = g_status_code;
+	status = g_code;
 	digits = 1;
 	while (status / 10 && digits++)
 		status /= 10;
 	if (digits == 1)
 	{
-		token[0][start] = g_status_code + 48;
+		token[0][start] = g_code + 48;
 		ft_memcpy(token[0] + end, token[0] + end + 1, length - end);
 	}
 	else if (digits == 2)
 	{
-		token[0][start] = (g_status_code / 10) + 48;
-		token[0][end] = (g_status_code % 10) + 48;
+		token[0][start] = (g_code / 10) + 48;
+		token[0][end] = (g_code % 10) + 48;
 	}
 	else
 		token[0] = expand_status_code(token[0], start, end, digits);
