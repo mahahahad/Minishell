@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/22 14:08:21 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/07/30 17:23:16 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,7 +169,9 @@ bool	is_exec_delimiter(t_tkn_type type);
 t_token	*new_token(char *content, t_env *list);
 t_cmd	*parse(t_minishell *minishell, char *line);
 t_cmd	*parse_exec(t_minishell *minishell);
-t_cmd	*parse_expr(t_minishell *minishell);
+t_cmd	*parse_expr(t_cmd *cmd_left, t_minishell *minishell);
+t_cmd	*parse_logical_expr(t_cmd *cmd_left, t_minishell *minishell);
+t_cmd	*parse_paranthesis(t_cmd *cmd, t_minishell *minishell);
 t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell);
 t_cmd	*parse_paranthesis(t_cmd *cmd, t_minishell *minishell);
 void	*print_exec_parse_err(t_tkn_type type, t_cmd *cmd);
