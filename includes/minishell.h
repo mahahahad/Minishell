@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/29 11:06:25 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/29 18:45:07 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ typedef struct s_token		t_token;
 typedef enum e_token_types	t_tkn_type;
 typedef enum e_cmd_types	t_cmd_type;
 typedef enum e_sig_rec		t_sig_rec;
+typedef enum e_bltn			t_bltn;
 typedef struct dirent		t_dir;
 typedef struct s_env		t_env;
 
@@ -85,6 +86,20 @@ enum e_sig_rec
 	PARENT
 };
 
+# undef ECHO
+
+enum e_bltn
+{
+	CD,
+	ECHO,
+	ENV,
+	EXIT,
+	EXPORT,
+	PWD,
+	UNSET,
+	NONE
+};
+
 struct s_token
 {
 	t_tkn_type	type;
@@ -108,6 +123,7 @@ struct s_minishell
 	int			pipe_fds[2];
 	int			pipe_read_store;
 	int			token_count;
+	t_bltn		builin;
 	t_env		*env_variables;
 	t_cmd		*cmd;
 	t_token		*tokens;
@@ -180,10 +196,10 @@ bool	valid_brackets(char *line);
 t_token	*wildcards(char *token);
 
 // Execution
-void	exec_builtin(char **cmd, t_minishell *minishell);
-void	exec_cmd(t_minishell *minishell, char **cmd, char **env);
-bool	is_builtin(char *str);
-void	run_cmd(t_minishell *minishell, t_cmd *cmd, char **env);
+bool	exec_builtin(char **cmd, t_minishell *minishell);
+t_bltn	is_builtin(char *str);
+void	run_cmd(t_minishell *minishell, char **env);
+void	run_command(t_minishell *minishell, int read);
 
 // Built-ins
 bool	add_to_matrix(t_minishell *minishell, char *new_var);
@@ -197,7 +213,7 @@ void	ft_unset(t_minishell *minishell, char **variable);
 bool	is_argument_valid(const char *string);
 
 // Cleanup
-void	free_char_cmd(char **cmd, char *original);
+void	free_char_cmd(char **cmd);
 void	free_cmd(t_cmd *cmd);
 void	free_environment(t_minishell *minishell);
 void	free_parsing(t_minishell *minishell);

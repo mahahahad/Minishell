@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:34:36 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/29 13:28:23 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/30 14:35:25 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,10 +74,10 @@ t_cmd	*create_redir_cmd(t_cmd *cmd, t_cmd_type type, char *file)
 	redir_cmd->type = type;
 	redir_cmd->file = file;
 	redir_cmd->fd = -1;
-	if (type == CMD_DBL_GREAT)
-		redir_cmd->fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 666);
-	else if (type == CMD_GREAT)
-		redir_cmd->fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 666);
+	if (type == CMD_GREAT)
+		redir_cmd->fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	else if (type == CMD_DBL_GREAT)
+		redir_cmd->fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0666);
 	else if (type == CMD_LESS)
 		redir_cmd->fd = open(file, O_RDONLY);
 	else if (type == CMD_HEREDOC)

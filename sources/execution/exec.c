@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/29 13:29:03 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/30 15:26:59 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ char	*find_cmd(char *cmd, t_env *env)
 		env = env->next;
 	if (!env)
 		return (perror("Finding the command"), NULL);
-	paths = ft_split(env->key, ':');
+	paths = ft_split(env->value, ':');
 	if (!paths)
 		return (perror("Finding the command"), NULL);
 	j = -1;
@@ -47,7 +47,7 @@ char	*find_cmd(char *cmd, t_env *env)
 	return (ft_free_2d_arr(paths), final_cmd);
 }
 
-char	**convert_cmd_exec(t_token *tokens)
+char	**convert_cmd(t_cmd *cmd)
 {
 	t_token *current;
 	char	**str_tokens;
@@ -55,18 +55,21 @@ char	**convert_cmd_exec(t_token *tokens)
 
 	token_count[0] = 0;
 	token_count[1] = 0;
-	current = tokens;
+	while (cmd->type > CMD_PIPE && cmd->type < CMD_AND)
+		cmd = ((t_cmd_redir *)cmd)->cmd;
+	current = ((t_cmd_exec *)cmd)->tokens;
 	while (current && ++token_count[0])
 		current = current->next;
 	str_tokens = ft_calloc(++token_count[0], sizeof(char *));
 	if (!str_tokens)
-		return (NULL);
-	current = tokens;
+		return (perror("Command conversion"), NULL);
+	current = ((t_cmd_exec *)cmd)->tokens;
 	while (current)
 	{
 		str_tokens[token_count[1]] = ft_strdup(current->content);
 		if (!str_tokens[token_count[1]++])
-			return (free_split(str_tokens, token_count[0]), NULL);
+			return (free_split(str_tokens, token_count[0]), \
+				perror("Command conversion"), NULL);
 		current = current->next;
 	}
 	return (str_tokens);
@@ -264,19 +267,67 @@ int	get_longer_length(char *str1, char *str2)
 // 	run_cmd(minishell, cmd->cmd, env);
 // }
 
-void	run_cmd(t_minishell *minishell, t_cmd *cmd, char **env)
+/**
+ * @brief Creates a child process and executes the specified command
+ * Accepts an array of strings as input that will be passed to execve
+ * following the format:
+ * {command, options}
+ */
+void	exec_cmd(t_minishell *minishell, char **cmd)
 {
+	int		pid;
+	char	*cmd_original;
+	int		exit_code;
+
+	// Builtin checks go here;
+	if (!ft_strchr(cmd[0], '/'))
+	{
+		cmd_original = cmd[0];
+		cmd[0] = find_cmd(cmd[0], minishell->env_variables);
+		if (!cmd[0])
+			return (g_code = 127, *cmd = cmd_original, ft_putstr_fd(*cmd, 2), \
+			free_char_cmd(cmd), ft_putendl_fd(": command not found", 2));
+	}
+	else
+	{
+		if (access(cmd[0], F_OK) == -1)
+			return (ft_putstr_fd(cmd[0], 2), free_char_cmd(cmd), \
+				g_code = 127, ft_putendl_fd(": no such file or directory", 2));
+		else if (access(cmd[0], X_OK) == -1)
+			return (ft_putstr_fd(cmd[0], 2), free_char_cmd(cmd), \
+				g_code = 126, ft_putendl_fd(": permission denied", 2));
+	}
+	receive_signal(CHILD);
+		pid = fork();
+	if (pid == 0)
+	{
+		execve(cmd[0], cmd, minishell->envp);
+		perror("execve() failed");
+		free_char_cmd(cmd);
+		free_parsing(minishell);
+		exit(WEXITSTATUS(errno));
+	}
+	waitpid(pid, &exit_code, 0);
+	free_char_cmd(cmd);
+	g_code = WEXITSTATUS(exit_code);
+}
+
+void	run_cmd(t_minishell *minishell, char **env)
+{
+	t_cmd	*cmd;
+
+	cmd = minishell->cmd;
 	if (!cmd)
 		return ;
-	receive_signal(CHILD);
+	// receive_signal(CHILD);
 	if (cmd->type == CMD_EXEC)
-		exec_cmd(minishell, convert_cmd_exec(((t_cmd_exec *)cmd)->tokens), env);
+		exec_cmd(minishell, convert_cmd(cmd));
 	else if (cmd->type == CMD_PIPE)
-		exec_pipe(minishell, (t_cmd_expr *)cmd, env);
+		exec_pipe(minishell, env);
 	else if (cmd->type == CMD_AND)
-		exec_pipe(minishell, (t_cmd_expr *)cmd, env);
+		exec_pipe(minishell, env);
 	else if (cmd->type == CMD_OR)
-		exec_pipe(minishell, (t_cmd_expr *)cmd, env);
+		exec_pipe(minishell, env);
 	// else if (cmd->type == CMD_DBL_GREAT || cmd->type == CMD_GREAT 
 	// 	|| cmd->type == CMD_LESS)
 	// 	exec_redir(minishell, (t_cmd_redir *)cmd, env);
@@ -323,51 +374,6 @@ void	duplicate_fds(t_cmd	*cmd, t_minishell *minishell, bool read)
 		close(minishell->pipe_read_store);
 }
 
-/**
- * @brief Creates a child process and executes the specified command
- * Accepts an array of strings as input that will be passed to execve
- * following the format:
- * {command, options}
- */
-void	exec_cmd(t_minishell *minishell, char **cmd, char **env)
-{
-	int		pid;
-	char	*cmd_original;
-	int		exit_code;
-
-	// Builtin checks go here;
-	if (!ft_strchr(cmd[0], '/'))
-	{
-		cmd_original = cmd[0];
-		cmd[0] = find_cmd(cmd[0], minishell->env_variables);
-		if (!cmd[0])
-			return (free_char_cmd(cmd, NULL), ft_putstr_fd(cmd_original, 2), \
-				g_code = 127, ft_putendl_fd(": command not found", 2));
-	}
-	else
-	{
-		cmd_original = NULL;
-		if (access(cmd[0], F_OK) == -1)
-			return (free_char_cmd(cmd, NULL), ft_putstr_fd(cmd_original, 2), \
-			g_code = 127, ft_putendl_fd(": no such file or directory", 2));
-		else if (access(cmd[0], X_OK) == -1)
-			return (free_char_cmd(cmd, NULL), ft_putstr_fd(cmd_original, 2), \
-				g_code = 126, ft_putendl_fd(": permission denied", 2));
-	}
-	receive_signal(CHILD);
-		pid = fork();
-	if (pid == 0)
-	{
-		execve(cmd[0], cmd, env);
-		perror("execve() failed");
-		free_char_cmd(cmd, cmd_original);
-		free_parsing(minishell);
-		exit(WEXITSTATUS(errno));
-	}
-	waitpid(pid, &exit_code, 0);
-	free_char_cmd(cmd, cmd_original);
-	g_code = WEXITSTATUS(exit_code);
-}
 
 /**
  * @brief Checks if the command is a builtin.
@@ -381,23 +387,23 @@ void	exec_cmd(t_minishell *minishell, char **cmd, char **env)
  * @return true if the command name is a builtin and false it it not.
  *
  */
-bool	is_builtin(char *str)
+t_bltn	is_builtin(char *str)
 {
-	if (!ft_strncmp(str, "echo", 5))
-		return (true);
-	else if (!ft_strncmp(str, "cd", 3))
-		return (true);
-	else if (!ft_strncmp(str, "pwd", 4))
-		return (true);
-	else if (!ft_strncmp(str, "export", 7))
-		return (true);
-	else if (!ft_strncmp(str, "unset", 6))
-		return (true);
+	if (!ft_strncmp(str, "cd", 3))
+		return (CD);
+	else if (!ft_strncmp(str, "echo", 5))
+		return (ECHO);
 	else if (!ft_strncmp(str, "env", 4))
-		return (true);
+		return (ENV);
 	else if (!ft_strncmp(str, "exit", 5))
-		return (true);
-	return (false);
+		return (EXIT);
+	else if (!ft_strncmp(str, "export", 7))
+		return (EXPORT);
+	else if (!ft_strncmp(str, "pwd", 4))
+		return (PWD);
+	else if (!ft_strncmp(str, "unset", 6))
+		return (UNSET);
+	return (NONE);
 }
 
 /**
@@ -409,23 +415,22 @@ bool	is_builtin(char *str)
  *
  * @param cmd contains the name of the command that will be compared.
  * @param minishell is sent to the builtins as required.
- *
- *
-void	exec_builtin(char **cmd, t_minishell *minishell)
+bool	exec_builtin(char **cmd, t_minishell *minishell)
 {
-	if (!ft_strncmp(*cmd, "echo", 5))
-		ft_echo(cmd);
-	else if (!ft_strncmp(*cmd, "cd", 3))
-		ft_cd(cmd, minishell);
-	else if (!ft_strncmp(*cmd, "pwd", 4))
-		ft_pwd(cmd);
-	else if (!ft_strncmp(*cmd, "export", 7))
-		ft_export(minishell, cmd);
-	else if (!ft_strncmp(*cmd, "unset", 6))
-		ft_unset(minishell, cmd);
-	else if (!ft_strncmp(*cmd, "env", 4))
-		ft_env(cmd, minishell->envp);
-	// else if (!ft_strncmp(*cmd, "exit", 5))
-	// 	return (true);
+	if (minishell->builin == CD)
+		return (ft_cd(cmd, minishell), true);
+	else if (minishell->builin == ECHO)
+		return (ft_echo(cmd), true);
+	else if (minishell->builin == ENV)
+		return (ft_env(cmd, minishell->envp), true);
+	// else if (minishell->builin_command == EXIT)
+	// 	return (ft_exit(cmd, minishell), true);
+	else if (minishell->builin == EXPORT)
+		return (ft_export(minishell, cmd), true);
+	else if (minishell->builin == PWD)
+		return (ft_pwd(cmd), true);
+	else if (minishell->builin == UNSET)
+		return (ft_unset(minishell, cmd), true);
+	return (false);
 }
 */

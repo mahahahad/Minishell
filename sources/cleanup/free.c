@@ -67,7 +67,7 @@ void	free_cmd(t_cmd *cmd)
  * 
  * @param cmd is the double pointer of the command.
  */
-void	free_char_cmd(char **cmd, char *original)
+void	free_char_cmd(char **cmd)
 {
 	int	cmd_count;
 
@@ -76,7 +76,6 @@ void	free_char_cmd(char **cmd, char *original)
 		free(cmd[cmd_count]);
 	free(cmd[cmd_count]);
 	free(cmd);
-	free(original);
 }
 
 /**
