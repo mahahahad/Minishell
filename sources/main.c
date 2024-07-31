@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/30 15:27:52 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/30 19:11:37 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,6 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 		return (ft_putendl_fd("Minishell does not accept arguments.", 2), 1);
 	g_code = 0;
 	setup_environment(&minishell, env);
-	if (!minishell.envp)
-		return (1);
 	while (true)
 	{
 		receive_signal(PARENT);

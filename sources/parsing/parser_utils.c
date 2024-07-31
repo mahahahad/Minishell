@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 22:36:59 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/28 19:53:04 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/30 19:11:56 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void	*print_exec_parse_err(t_tkn_type type, t_cmd *cmd)
  */
 bool	is_exec_delimiter(t_tkn_type type)
 {
-	return (type == PIPE || type == AND || type == OR);
+	return (type == PIPE || type == AND || type == OR || type == PARAN_CLOSE);
 }
 
 /**
@@ -199,6 +199,10 @@ int	get_token_type(char *content)
 			return (GREAT);
 		if (content[0] == '<')
 			return (LESS);
+		if (content[0] == '(')
+			return (PARAN_OPEN);
+		if (content[0] == ')')
+			return (PARAN_CLOSE);
 	}
 	else if (!content[2])
 	{

@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/30 20:58:08 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/31 19:06:01 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,8 @@ enum e_token_types
 	OR,
 	AND,
 	WORD,
+	PARAN_OPEN,
+	PARAN_CLOSE,
 	ERR
 };
 
@@ -188,8 +190,11 @@ bool	is_exec_delimiter(t_tkn_type type);
 t_token	*new_token(char *content, t_env *list);
 void	parse(t_minishell *minishell, char *line, char *store);
 t_cmd	*parse_exec(t_minishell *minishell);
-t_cmd	*parse_expr(t_minishell *minishell);
+t_cmd	*parse_expr(t_cmd *cmd_left, t_minishell *minishell);
+t_cmd	*parse_logical_expr(t_cmd *cmd_left, t_minishell *minishell);
+t_cmd	*parse_paranthesis(t_cmd *cmd, t_minishell *minishell);
 t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell);
+t_cmd	*parse_paranthesis(t_cmd *cmd, t_minishell *minishell);
 void	*print_exec_parse_err(t_tkn_type type, t_cmd *cmd);
 t_token	*tokendup(t_token *token);
 bool	valid_brackets(char *line);

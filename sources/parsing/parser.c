@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/29 11:23:57 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/30 19:11:15 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ void	parse(t_minishell *minishell, char *line, char *store)
 	while (minishell->tokens_head && ++minishell->token_count)
 		minishell->tokens_head = minishell->tokens_head->next;
 	minishell->tokens_head = minishell->tokens;
-	minishell->cmd = parse_expr(minishell);
+	minishell->cmd = parse_expr(NULL, minishell);
 	if (minishell->cmd)
 		add_history(store);
 	free(store);
@@ -97,14 +97,20 @@ void	parse(t_minishell *minishell, char *line, char *store)
  * remaining tokens which ensures a valid right command.
  * Returns this command structure.
  * 
+ * @param cmd_left The command to be used as the cmd_left for the expression 
+ * struct. This is necessary for properly parsing the OR operator (see the 
+ * parse_logical_expr function)
  * @param minishell
  * @return t_cmd*
  */
-t_cmd	*parse_expr(t_minishell *minishell)
+t_cmd	*parse_expr(t_cmd *cmd_left, t_minishell *minishell)
 {
 	t_cmd	*cmd;
 
-	cmd = parse_exec(minishell);
+	if (cmd_left)
+		cmd = cmd_left;
+	else
+		cmd = parse_exec(minishell);
 	if (!cmd)
 		return (NULL);
 	if (!minishell->tokens)
@@ -112,17 +118,15 @@ t_cmd	*parse_expr(t_minishell *minishell)
 	if (minishell->tokens->type == PIPE)
 	{
 		minishell->tokens = minishell->tokens->next;
-		cmd = create_expr_cmd(CMD_PIPE, cmd, parse_expr(minishell));
+		if (!minishell->tokens)
+			return (ft_putendl_fd("Syntax error (while parsing pipe)", 2), NULL);
+		cmd = create_expr_cmd(CMD_PIPE, cmd, parse_expr(NULL, minishell));
 	}
-	else if (minishell->tokens->type == AND)
+	else if (minishell->tokens->type == AND || minishell->tokens->type == OR)
 	{
-		minishell->tokens = minishell->tokens->next;
-		cmd = create_expr_cmd(CMD_AND, cmd, parse_expr(minishell));
-	}
-	else if (minishell->tokens->type == OR)
-	{
-		minishell->tokens = minishell->tokens->next;
-		cmd = create_expr_cmd(CMD_OR, cmd, parse_expr(minishell));
+		cmd = parse_logical_expr(cmd, minishell);
+		if (!cmd)
+			ft_putendl_fd("Syntax error (while parsing logical expr)", 2);
 	}
 	return (cmd);
 }
@@ -143,6 +147,8 @@ t_cmd	*parse_expr(t_minishell *minishell)
  * which it then updates through the loop.
  * 
  * Creates an empty command structure which will be filled with tokens
+ * Calls the parse_paranthesis function on the very first token to ensure it is
+ * not an opening paranthesis as this is the only place where this is valid.
  * Checks if the starting token is a redirection token and parses accordingly
  * by calling the parse_redir function.
  * Starts a loop until all the tokens have finished and performs the following
@@ -170,6 +176,7 @@ t_cmd	*parse_exec(t_minishell *minishell)
 	if (!node)
 		return (perror("Tokenisation"), g_code = 1, NULL);
 	cmd = (t_cmd_exec *)node;
+	node = parse_paranthesis(node, minishell);
 	while (minishell->tokens)
 	{
 		node = parse_redir(node, minishell);
@@ -234,5 +241,78 @@ t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell)
 			cmd = create_redir_cmd(cmd, CMD_HEREDOC, content);
 		minishell->tokens = minishell->tokens->next->next;
 	}
+	return (cmd);
+}
+
+/**
+ * @brief Parse a pair of paranthesis.
+ * 
+ * This function ensures that commands that are within brackets
+ * follow the proper format:
+ * <PARAN_OPEN> <CMD_LEFT> <OPERATOR> <CMD_RIGHT> <PARAN_CLOSE>
+ * It also throws an error if an operator is not detected after the first
+ * command.
+ * 
+ * Checks if the first token is an opening paranthesis.
+ * Moves the tokens list to the next token if it is and performs various checks.
+ * Calls the parse_logical_expr function that checks if the tokens are in the 
+ * form needed for logical expressions. This function returns NULL when a non 
+ * logical token type is found.
+ * Moves the tokens list to the next token to skip the closing paranthesis.
+ * 
+ * 
+ * @param cmd The created command structure that will hold the executable
+ * @param minishell The minishell datastruct
+ * @return t_cmd* The parsed logical command tree
+ */
+t_cmd	*parse_paranthesis(t_cmd *cmd, t_minishell *minishell)
+{
+	if (minishell->tokens->type != PARAN_OPEN)
+		return (cmd);
+	minishell->tokens = minishell->tokens->next;
+	cmd = parse_logical_expr(NULL, minishell);
+	if (!cmd)
+		return (ft_putendl_fd("Syntax error (while parsing logical expr)", 2), NULL);
+	minishell->tokens = minishell->tokens->next;
+	return (cmd);
+}
+
+/**
+ * @brief Parse a logical expression command.
+ * 
+ * This function ensures the correct format is followed for logical expressions.
+ * <CMD_LEFT> <OPERATOR> <CMD_RIGHT>
+ * 
+ * @param cmd_left The command to be used as the cmd_left for the expression 
+ * struct. It is needed here to parse logical commands within brackets.
+ * @param minishell
+ * @return t_cmd*
+ */
+t_cmd	*parse_logical_expr(t_cmd *cmd_left, t_minishell *minishell)
+{
+	t_cmd	*cmd;
+
+	if (!cmd_left)
+		cmd = parse_exec(minishell);
+	else
+		cmd = cmd_left;
+	if (minishell->tokens->type == AND)
+	{
+		minishell->tokens = minishell->tokens->next;
+		if (!minishell->tokens || minishell->tokens->type == PARAN_CLOSE)
+			return (NULL);
+		cmd = create_expr_cmd(CMD_AND, cmd, parse_expr(NULL, minishell));
+	}
+	else if (minishell->tokens->type == OR)
+	{
+		minishell->tokens = minishell->tokens->next;
+		if (!minishell->tokens || minishell->tokens->type == PARAN_CLOSE)
+			return (NULL);
+		cmd = create_expr_cmd(CMD_OR, cmd, parse_exec(minishell));
+		if (minishell->tokens)
+			cmd = parse_expr(cmd, minishell);
+	}
+	else
+		return (NULL);
 	return (cmd);
 }
