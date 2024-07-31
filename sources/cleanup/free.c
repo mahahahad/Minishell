@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:38:52 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/28 15:58:32 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/30 20:26:58 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,15 +67,15 @@ void	free_cmd(t_cmd *cmd)
  * 
  * @param cmd is the double pointer of the command.
  */
-void	free_char_cmd(char **cmd)
+void	free_char_command(char **command)
 {
 	int	cmd_count;
 
 	cmd_count = -1;
-	while (cmd[++cmd_count])
-		free(cmd[cmd_count]);
-	free(cmd[cmd_count]);
-	free(cmd);
+	while (command[++cmd_count])
+		free(command[cmd_count]);
+	free(command[cmd_count]);
+	free(command);
 }
 
 /**

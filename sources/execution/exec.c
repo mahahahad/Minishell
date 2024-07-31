@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/30 17:40:36 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/30 20:57:33 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ char	*find_cmd(char *cmd, t_env *env)
 	return (ft_free_2d_arr(paths), final_cmd);
 }
 
-char	**convert_cmd(t_cmd *cmd)
+char	**convert_command(t_cmd *cmd)
 {
 	t_token *current;
 	char	**str_tokens;
@@ -290,15 +290,15 @@ void	exec_cmd(t_minishell *minishell, char **cmd)
 		cmd[0] = find_cmd(cmd[0], minishell->env_variables);
 		if (!cmd[0])
 			return (g_code = 127, *cmd = cmd_original, ft_putstr_fd(*cmd, 2), \
-			free_char_cmd(cmd), ft_putendl_fd(": command not found", 2));
+			free_char_command(cmd), ft_putendl_fd(": command not found", 2));
 	}
 	else
 	{
 		if (access(cmd[0], F_OK) == -1)
-			return (ft_putstr_fd(cmd[0], 2), free_char_cmd(cmd), \
+			return (ft_putstr_fd(cmd[0], 2), free_char_command(cmd), \
 				g_code = 127, ft_putendl_fd(": no such file or directory", 2));
 		else if (access(cmd[0], X_OK) == -1)
-			return (ft_putstr_fd(cmd[0], 2), free_char_cmd(cmd), \
+			return (ft_putstr_fd(cmd[0], 2), free_char_command(cmd), \
 				g_code = 126, ft_putendl_fd(": permission denied", 2));
 	}
 	receive_signal(CHILD);
@@ -307,12 +307,12 @@ void	exec_cmd(t_minishell *minishell, char **cmd)
 	{
 		execve(cmd[0], cmd, minishell->envp);
 		perror("execve() failed");
-		free_char_cmd(cmd);
+		free_char_command(cmd);
 		free_parsing(minishell);
 		exit(WEXITSTATUS(errno));
 	}
 	waitpid(pid, &exit_code, 0);
-	free_char_cmd(cmd);
+	free_char_command(cmd);
 	g_code = WEXITSTATUS(exit_code);
 }
 
@@ -325,7 +325,7 @@ void	run_cmd(t_minishell *minishell, char **env)
 		return ;
 	// receive_signal(CHILD);
 	if (cmd->type == CMD_EXEC)
-		exec_cmd(minishell, convert_cmd(cmd));
+		exec_cmd(minishell, convert_command(cmd));
 	(void)env;
 	// else if (cmd->type == CMD_PIPE)
 	// 	exec_pipe(minishell, env);
@@ -392,23 +392,23 @@ void	duplicate_fds(t_cmd	*cmd, t_minishell *minishell, bool read)
  * @return true if the command name is a builtin and false it it not.
  *
  */
-t_bltn	is_builtin(char *str)
+bool	is_builtin(t_bltn *builtin, char *str)
 {
 	if (!ft_strncmp(str, "cd", 3))
-		return (CD);
+		return (*builtin = CD, true);
 	else if (!ft_strncmp(str, "echo", 5))
-		return (ECHO);
+		return (*builtin = ECHO, true);
 	else if (!ft_strncmp(str, "env", 4))
-		return (ENV);
+		return (*builtin = ENV, true);
 	else if (!ft_strncmp(str, "exit", 5))
-		return (EXIT);
+		return (*builtin = EXIT, true);
 	else if (!ft_strncmp(str, "export", 7))
-		return (EXPORT);
+		return (*builtin = EXPORT, true);
 	else if (!ft_strncmp(str, "pwd", 4))
-		return (PWD);
+		return (*builtin = PWD, true);
 	else if (!ft_strncmp(str, "unset", 6))
-		return (UNSET);
-	return (NONE);
+		return (*builtin = UNSET, true);
+	return (*builtin = NONE, false);
 }
 
 /**

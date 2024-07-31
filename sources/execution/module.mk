@@ -1,2 +1,2 @@
-EXEC_SRCS := $(addprefix $(EXEC_DIR)/, exec.c)
+EXEC_SRCS := $(addprefix $(EXEC_DIR)/, new_exec.c)
 SRCS += $(EXEC_SRCS)

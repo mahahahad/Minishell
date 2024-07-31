@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/29 18:45:07 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/07/30 20:58:08 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,7 @@ struct s_minishell
 	int			pipe_fds[2];
 	int			pipe_read_store;
 	int			token_count;
-	t_bltn		builin;
+	t_bltn		bltin;
 	t_env		*env_variables;
 	t_cmd		*cmd;
 	t_token		*tokens;
@@ -197,7 +197,7 @@ t_token	*wildcards(char *token);
 
 // Execution
 bool	exec_builtin(char **cmd, t_minishell *minishell);
-t_bltn	is_builtin(char *str);
+bool	is_builtin(t_bltn *builtin, char *str);
 void	run_cmd(t_minishell *minishell, char **env);
 void	run_command(t_minishell *minishell, int read);
 
@@ -213,7 +213,7 @@ void	ft_unset(t_minishell *minishell, char **variable);
 bool	is_argument_valid(const char *string);
 
 // Cleanup
-void	free_char_cmd(char **cmd);
+void	free_char_command(char **cmd);
 void	free_cmd(t_cmd *cmd);
 void	free_environment(t_minishell *minishell);
 void	free_parsing(t_minishell *minishell);

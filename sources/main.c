@@ -40,7 +40,7 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 		minishell.output_fd = false;
 		minishell.cmd = NULL;
 		parse(&minishell, line, line);
-		// run_cmd(&minishell, -1);
+		run_command(&minishell, -1);
 		//! FOR DEBUGGING:
 		PRINT_CMD(minishell.cmd);
 		free_parsing(&minishell);
