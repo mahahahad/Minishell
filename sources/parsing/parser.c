@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/30 19:11:15 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/08/01 12:15:43 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void	parse(t_minishell *minishell, char *line, char *store)
 	while (++i < minishell->token_count)
 	{
 		add_token_back(&minishell->tokens, \
-			new_token(get_token(&line), minishell->env_variables));
+			new_token(get_token(&line), minishell->env_variables, true));
 		if (!minishell->tokens)
 			return ;
 	}

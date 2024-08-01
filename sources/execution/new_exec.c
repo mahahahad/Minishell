@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 12:05:36 by mdanish           #+#    #+#             */
-/*   Updated: 2024/07/30 21:31:15 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/01 11:30:05 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	duplicate_fds(t_cmd	*cmd, t_minishell *minishell, int read)
 			!minishell->output_fd && dup2(((t_cmd_redir *)cmd)->fd, 1))
 			minishell->output_fd = true;
 		else if ((cmd->type == CMD_LESS || cmd->type == CMD_HEREDOC) && \
-			!minishell->input_fd && dup2(((t_cmd_redir *)cmd)->fd, 0))
+			!minishell->input_fd && !dup2(((t_cmd_redir *)cmd)->fd, 0))
 			minishell->input_fd = true;
 		if (((t_cmd_redir *)cmd)->fd > -1)
 			close(((t_cmd_redir *)cmd)->fd);
@@ -61,16 +61,16 @@ char	*find_cmd(char *cmd, t_env *env)
 	while (env && ft_strncmp(env->key, "PATH", 5))
 		env = env->next;
 	if (!env)
-		return (ft_putendl_fd("PATH is not found.", 2), cmd);
+		return (NULL);
 	paths = ft_split(env->value, ':');
 	if (!paths)
-		return (perror("Finding the command"), cmd);
+		return (perror("Finding the command"), NULL);
 	index = -1;
 	while (paths[++index])
 	{
 		final_cmd = ft_char_strjoin(paths[index], cmd, '/');
 		if (!final_cmd)
-			return (ft_free_2d_arr(paths), perror("Finding the command"), cmd);
+			return (ft_free_2d_arr(paths), perror("Finding the command"), NULL);
 		if (!access(final_cmd, X_OK))
 			break ;
 		free(final_cmd);

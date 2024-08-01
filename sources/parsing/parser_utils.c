@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 22:36:59 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/30 19:11:56 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/08/01 12:15:32 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -326,7 +326,7 @@ char	*quote_trimming(char *token)
  * 
  * @return the token created and NULL in case of error.
  */
-t_token	*new_token(char *content, t_env *list)
+t_token	*new_token(char *content, t_env *list, bool expand)
 {
 	t_token	*token;
 	t_token	*store;
@@ -338,7 +338,7 @@ t_token	*new_token(char *content, t_env *list)
 		return (free(content), g_code = 1, NULL);
 	token->content = content;
 	token->type = get_token_type(token->content);
-	if (token->type == WORD && list)
+	if (token->type == WORD && expand)
 	{
 		token->content = dollar_expansion(token->content, list);
 		if (!token->content)

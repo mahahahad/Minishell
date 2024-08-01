@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/31 19:06:01 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/01 12:14:48 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -187,7 +187,7 @@ int		count_tokens(char *input);
 char	*dollar_expansion(char *token, t_env *list);
 char	*get_token(char **input);
 bool	is_exec_delimiter(t_tkn_type type);
-t_token	*new_token(char *content, t_env *list);
+t_token	*new_token(char *content, t_env *list, bool expand);
 void	parse(t_minishell *minishell, char *line, char *store);
 t_cmd	*parse_exec(t_minishell *minishell);
 t_cmd	*parse_expr(t_cmd *cmd_left, t_minishell *minishell);
