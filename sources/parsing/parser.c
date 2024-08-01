@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/01 12:15:43 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/01 20:39:39 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,13 +177,15 @@ t_cmd	*parse_exec(t_minishell *minishell)
 		return (perror("Tokenisation"), g_code = 1, NULL);
 	cmd = (t_cmd_exec *)node;
 	node = parse_paranthesis(node, minishell);
-	while (minishell->tokens)
+	while (minishell->tokens && minishell->tokens->type != PARAN_CLOSE)
 	{
 		node = parse_redir(node, minishell);
 		if (!node || !minishell->tokens)
 			return (node);
 		if (is_exec_delimiter(minishell->tokens->type))
 		{
+			if (!are_tokens_same(minishell->tokens_head, minishell->tokens))
+				return (node);
 			if (!cmd->tokens)
 				return (print_exec_parse_err(minishell->tokens->type, node));
 			break ;

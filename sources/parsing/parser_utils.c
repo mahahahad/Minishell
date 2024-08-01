@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 22:36:59 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/01 12:15:32 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/01 20:35:42 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,14 +115,20 @@ bool	valid_brackets(char *line)
 	int		count;
 
 	count = 0;
-	while (*line && (!count || count == 1))
+	while (*line)
 	{
 		if (ft_is_quotation(*line) && line++)
 			continue ;
 		if (*line == '(' && line++)
+		{
 			count++;
+			continue ;
+		}
 		else if (*line == ')' && line++)
+		{
 			count--;
+			continue ;
+		}
 		line++;
 	}
 	if (count)
@@ -165,7 +171,7 @@ char	*get_token(char **input)
 			continue ;
 		if (ft_strchr("|<>()&", (*input)[i]))
 		{
-			if ((*input)[i] == (*input)[i + 1] && !i)
+			if (!ft_strchr("()", (*input)[i]) && (*input)[i] == (*input)[i + 1] && !i)
 				i = 2;
 			if (!i)
 				i = 1;
@@ -246,7 +252,7 @@ int	count_tokens(char *input)
 			extra_token = false;
 			if (i > 0 && !ft_isspace(input[i - 1]))
 				extra_token = true;
-			if (input[i] == input[i + 1])
+			if (!ft_strchr("()", input[i]) && input[i] == input[i + 1])
 				i++;
 			return (count_tokens(input + i + 1) + 1 + extra_token);
 		}
@@ -353,4 +359,22 @@ t_token	*new_token(char *content, t_env *list, bool expand)
 		token->content = quote_trimming(token->content);
 	}
 	return (token);
+}
+
+bool	are_tokens_same(t_token *token_1, t_token *token_2)
+{
+	int	len_1;
+	int	len_2;
+	int	bigger_len;
+
+	if (token_1->type != token_2->type)
+		return (false);
+	len_1 = ft_strlen(token_1->content);
+	len_2 = ft_strlen(token_2->content);
+	bigger_len = len_2;
+	if (len_1 > len_2)
+		bigger_len = len_1;
+	if (ft_strncmp(token_1->content, token_2->content, bigger_len) == 0)
+		return (true);
+	return (false);
 }
