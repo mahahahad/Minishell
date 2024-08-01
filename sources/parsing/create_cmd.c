@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   create_cmd.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:34:36 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/30 14:35:25 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/01 23:38:14 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,12 @@ static int	heredoc_creation(char *delimiter)
 	while (true)
 	{
 		line = readline("> ");
+		if (!line)
+		{
+			ft_putendl_fd("Warning: heredoc delimited by end-of-file", 2);
+			g_code = 130;
+			break ;
+		}
 		len2 = ft_strlen(line);
 		if (len2 > len1)
 			len1 = len2;
