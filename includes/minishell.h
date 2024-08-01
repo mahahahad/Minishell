@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/01 12:14:48 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/01 20:31:41 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,6 +180,7 @@ void	receive_signal(t_sig_rec receiver);
 
 // Parsing
 void	add_token_back(t_token **tokens_list, t_token *token);
+bool	are_tokens_same(t_token *token_1, t_token *token_2);
 t_cmd	*create_expr_cmd(t_cmd_type type, t_cmd *cmd_left, t_cmd *cmd_right);
 t_cmd	*create_redir_cmd(t_cmd *cmd, t_cmd_type type, char *file);
 bool	count_quotations(char *line);
