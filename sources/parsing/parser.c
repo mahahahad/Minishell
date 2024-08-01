@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/01 21:04:53 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/08/01 23:27:45 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,38 +107,28 @@ t_cmd	*parse_expr(t_cmd *cmd_left, t_minishell *minishell)
 {
 	t_cmd	*cmd;
 
-	if (cmd_left)
-		cmd = cmd_left;
-	else
+	if (!cmd_left)
 		cmd = parse_exec(minishell);
+	else
+		cmd = cmd_left;
 	if (!cmd)
 		return (NULL);
 	if (!minishell->tokens)
 		return (cmd);
 	if (minishell->tokens->type == PIPE)
 	{
+		if (!minishell->tokens->next)
+			return (ft_print_error(SYNTAX, "|", NULL), NULL);
 		minishell->tokens = minishell->tokens->next;
-		if (!minishell->tokens)
-			return (ft_putendl_fd("Syntax error (while parsing pipe)", 2), NULL);
 		cmd = create_expr_cmd(CMD_PIPE, cmd, parse_expr(NULL, minishell));
 	}
 	else if (minishell->tokens->type == AND || minishell->tokens->type == OR)
 	{
 		cmd = parse_logical_expr(cmd, minishell);
 		if (!cmd)
-			ft_putendl_fd("Syntax error (while parsing logical expr)", 2);
+			return (NULL);
 	}
 	return (cmd);
-}
-
-void	ft_print_error(t_err_type type, char *err)
-{
-	if (type == SYNTAX)
-	{
-		ft_putstr_fd("Syntax error near unknown token `", 2);
-		ft_putstr_fd(err, 2);
-		ft_putendl_fd("'",2 );
-	}
 }
 
 /**
@@ -186,20 +176,25 @@ t_cmd	*parse_exec(t_minishell *minishell)
 	if (!node)
 		return (perror("Tokenisation"), g_code = 1, NULL);
 	cmd = (t_cmd_exec *)node;
-	node = parse_paranthesis(node, minishell);
-	while (minishell->tokens && minishell->tokens->type != PARAN_CLOSE)
+	if (minishell->tokens->type == PARAN_OPEN)
+		return (parse_paranthesis(node, minishell));
+	while (minishell->tokens)
 	{
 		node = parse_redir(node, minishell);
 		if (!node || !minishell->tokens)
 			return (node);
 		if (minishell->tokens->type == PARAN_OPEN)
-			return (ft_print_error(SYNTAX, minishell->tokens->next->content), NULL);
+			return (ft_print_error(SYNTAX, \
+				minishell->tokens->next->content, \
+				NULL), \
+				NULL);
 		if (is_exec_delimiter(minishell->tokens->type))
 		{
-			if (!are_tokens_same(minishell->tokens_head, minishell->tokens))
-				return (node);
 			if (!cmd->tokens)
-				return (print_exec_parse_err(minishell->tokens->type, node));
+				return (ft_print_error(SYNTAX, \
+					minishell->tokens->content, \
+					NULL), \
+					free_cmd(node), NULL);
 			break ;
 		}
 		add_token_back(&cmd->tokens, tokendup(minishell->tokens));
@@ -286,7 +281,7 @@ t_cmd	*parse_paranthesis(t_cmd *cmd, t_minishell *minishell)
 	minishell->tokens = minishell->tokens->next;
 	cmd = parse_logical_expr(NULL, minishell);
 	if (!cmd)
-		return (ft_putendl_fd("Syntax error (while parsing logical expr)", 2), NULL);
+		return (NULL);
 	minishell->tokens = minishell->tokens->next;
 	return (cmd);
 }
@@ -310,23 +305,27 @@ t_cmd	*parse_logical_expr(t_cmd *cmd_left, t_minishell *minishell)
 		cmd = parse_exec(minishell);
 	else
 		cmd = cmd_left;
+	if (!cmd)
+		return (NULL);
 	if (minishell->tokens->type == AND)
 	{
+		if (!minishell->tokens->next \
+			|| minishell->tokens->next->type == PARAN_CLOSE)
+			return (ft_print_error(SYNTAX, "&&", NULL), NULL);
 		minishell->tokens = minishell->tokens->next;
-		if (!minishell->tokens || minishell->tokens->type == PARAN_CLOSE)
-			return (NULL);
 		cmd = create_expr_cmd(CMD_AND, cmd, parse_expr(NULL, minishell));
 	}
 	else if (minishell->tokens->type == OR)
 	{
+		if (!minishell->tokens->next \
+			|| minishell->tokens->next->type == PARAN_CLOSE)
+			return (ft_print_error(SYNTAX, "||", NULL), NULL);
 		minishell->tokens = minishell->tokens->next;
-		if (!minishell->tokens || minishell->tokens->type == PARAN_CLOSE)
-			return (NULL);
 		cmd = create_expr_cmd(CMD_OR, cmd, parse_exec(minishell));
 		if (minishell->tokens)
 			cmd = parse_expr(cmd, minishell);
 	}
 	else
-		return (NULL);
+		return (ft_print_error(SYNTAX, minishell->tokens->content, NULL), NULL);
 	return (cmd);
 }
