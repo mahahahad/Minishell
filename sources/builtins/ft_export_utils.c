@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 20:21:11 by mdanish           #+#    #+#             */
-/*   Updated: 2024/07/27 19:11:40 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/01 14:01:54 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,7 @@ bool	add_to_matrix(t_minishell *minishell, char *new_var)
 	minishell->envp[minishell->envp_count] = ft_strdup(new_var);
 	if (!minishell->envp[index])
 		return (perror("export"), g_code = 1, false);
+	minishell->envp_count++;
 	return (true);
 }
 

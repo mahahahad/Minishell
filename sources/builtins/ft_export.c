@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 19:45:08 by mdanish           #+#    #+#             */
-/*   Updated: 2024/07/28 19:15:30 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/01 14:28:07 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,9 @@ static bool	check_for_existing_value(t_env *list, t_env *var, int len)
 		{
 			free(list->value);
 			list->value = var->value;
-			free(var->key);
-			free(var);
 		}
+		free(var->key);
+		free(var);
 		return (true);
 	}
 	return (false);
@@ -66,7 +66,7 @@ static void	add_to_list(t_minishell *minishell, t_env *var, int len)
 	t_env	*store;
 
 	list = minishell->env_variables;
-	while (list->next)
+	while (list)
 	{
 		if (check_for_existing_value(list, var, len + 1))
 			return ;
@@ -82,7 +82,8 @@ static void	add_to_list(t_minishell *minishell, t_env *var, int len)
 		store = list;
 		list = list->next;
 	}
-	list->next = var;
+	if (!list)
+		store->next = var;
 }
 
 /**
@@ -140,9 +141,9 @@ void	ft_export(t_minishell *minishell, char **args)
 		return (ft_print_export(minishell->env_variables));
 	if (args[1][0] == '-')
 		return (g_code = 2, ft_putendl_fd("Export does not accept options", 2));
-	while (*args)
+	while (*(++args))
 	{
-		if (!is_argument_valid(*args) && args++)
+		if (!is_argument_valid(*args))
 			continue ;
 		var = ft_calloc(1, sizeof(t_env));
 		if (!var)
@@ -153,6 +154,5 @@ void	ft_export(t_minishell *minishell, char **args)
 		add_to_list(minishell, var, length);
 		if (!add_to_matrix(minishell, *args))
 			return ;
-		args++;
 	}
 }
