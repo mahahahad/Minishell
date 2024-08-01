@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/01 20:39:39 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/08/01 21:04:53 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,6 +131,16 @@ t_cmd	*parse_expr(t_cmd *cmd_left, t_minishell *minishell)
 	return (cmd);
 }
 
+void	ft_print_error(t_err_type type, char *err)
+{
+	if (type == SYNTAX)
+	{
+		ft_putstr_fd("Syntax error near unknown token `", 2);
+		ft_putstr_fd(err, 2);
+		ft_putendl_fd("'",2 );
+	}
+}
+
 /**
  * @brief Parse an executable command.
  *
@@ -182,6 +192,8 @@ t_cmd	*parse_exec(t_minishell *minishell)
 		node = parse_redir(node, minishell);
 		if (!node || !minishell->tokens)
 			return (node);
+		if (minishell->tokens->type == PARAN_OPEN)
+			return (ft_print_error(SYNTAX, minishell->tokens->next->content), NULL);
 		if (is_exec_delimiter(minishell->tokens->type))
 		{
 			if (!are_tokens_same(minishell->tokens_head, minishell->tokens))

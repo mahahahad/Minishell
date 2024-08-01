@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/01 20:31:41 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/08/01 21:01:49 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ typedef struct s_prompt		t_prompt;
 typedef struct s_token		t_token;
 typedef enum e_token_types	t_tkn_type;
 typedef enum e_cmd_types	t_cmd_type;
+typedef enum e_err_types	t_err_type;
 typedef enum e_sig_rec		t_sig_rec;
 typedef enum e_bltn			t_bltn;
 typedef struct dirent		t_dir;
@@ -86,6 +87,11 @@ enum e_sig_rec
 {
 	CHILD,
 	PARENT
+};
+
+enum e_err_types
+{
+	SYNTAX,
 };
 
 # undef ECHO

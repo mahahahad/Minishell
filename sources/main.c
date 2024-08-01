@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/01 14:08:12 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/01 20:52:18 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,9 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 		minishell.output_fd = false;
 		minishell.cmd = NULL;
 		parse(&minishell, line, line);
-		run_command(&minishell, -1);
+		// run_command(&minishell, -1);
 		//! FOR DEBUGGING:
-		// PRINT_CMD(minishell.cmd);
+		PRINT_CMD(minishell.cmd);
 		free_parsing(&minishell);
 	}
 	free_environment(&minishell);
