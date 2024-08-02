@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_print_error.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/01 22:21:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/01 22:37:47 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/08/02 17:54:45 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void	ft_print_error(t_err_type type, char *err, char *extra)
 		{
 			ft_putstr_fd("near unexpected token `", 2);
 			ft_putstr_fd(err, 2);
-			ft_putstr_fd("'",2 );
+			ft_putstr_fd("'", 2);
 		}
 		if (extra)
 			ft_putstr_fd(extra, 2);

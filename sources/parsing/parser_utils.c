@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 22:36:59 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/02 17:34:49 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/02 18:31:37 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,10 @@
  * @brief Duplicate the node provided as the argument.
  *
  * @param token is the node that needs to be duplicated.
+ * 
  * @return the duplicate of the token node.
  */
-t_token	*tokendup(t_token *token)
+t_token	*token_duplicate(t_token *token)
 {
 	t_token	*token_copy;
 
@@ -56,20 +57,6 @@ void	*print_exec_parse_err(t_tkn_type type, t_cmd *command)
 		ft_putendl_fd("Syntax error near unexpected token `||'", 2);
 	free_cmd(command);
 	return (NULL);
-}
-
-/**
- * @brief Is the current token's type one that should break the executable
- * command loop (PIPE, AND, OR)
- * 
- * @param type of the token 
- *
- * @return true
- * @return false
- */
-bool	is_exec_delimiter(t_tkn_type type)
-{
-	return (type == PIPE || type == AND || type == OR || type == PARAN_CLOSE);
 }
 
 /**
@@ -120,21 +107,16 @@ bool	valid_brackets(char *line)
 	int		count;
 
 	count = 0;
-	while (*line)
+	while (*line && count < 0)
 	{
-		if (ft_is_quotation(*line) && line++)
-			continue ;
-		if (*line == '(' && line++)
-		{
+		if (ft_is_quotation(*line))
+			line++;
+		else if (*line == '(' && line++)
 			count++;
-			continue ;
-		}
 		else if (*line == ')' && line++)
-		{
 			count--;
-			continue ;
-		}
-		line++;
+		else
+			line++;
 	}
 	if (count)
 		ft_putstr_fd(RED "Bad brackets detected, command rejected.\n" RESET, 2);
@@ -144,99 +126,14 @@ bool	valid_brackets(char *line)
 }
 
 /**
- * @brief Return the next token in the provided input string.
-
- * Skip the leading whitespace characters by moving the string head
- * pointer ahead.
- * Move the string head pointer to the start of the next token
- * or '\0' if there isn't one and return this token.
- *
- * Calling the function with the input:
- * - '       This|token '
- *
- * will result in the function returning "This" and input pointing to '|'
- *
- * Calling the function with the input:
- * - 'token'
- *
- * will result in the function returning "token" and input pointing to '\0'.
- * @param char**
- * @return char*
- */
-char	*get_token(char **input)
-{
-	int		i;
-
-	i = -1;
-	while (ft_isspace(**input))
-		(*input)++;
-	while ((*input)[++i])
-	{
-		if (ft_is_quotation((*input)[i]))
-			continue ;
-		if (ft_strchr("|<>()&", (*input)[i]))
-		{
-			if (!ft_strchr("()", (*input)[i]) && (*input)[i] == (*input)[i + 1] && !i)
-				i = 2;
-			if (!i)
-				i = 1;
-			break ;
-		}
-		if (ft_isspace((*input)[i]) && (i || ++i))
-			break ;
-	}
-	*input += i;
-	return (ft_substr(*input - i, 0, i));
-}
-
-/**
- * @brief Identify the type of the token passed using the content parameter
- *
- * Returns word by default if the content parameter doesn't satisfy any of the 
- * requirements
- * 
- * @param char*
- * @return int from e_token_types
- */
-int	get_token_type(char *content)
-{
-	if (!content || !content[0])
-		return (ERR);
-	if (!content[1])
-	{
-		if (content[0] == '|')
-			return (PIPE);
-		if (content[0] == '>')
-			return (GREAT);
-		if (content[0] == '<')
-			return (LESS);
-		if (content[0] == '(')
-			return (PARAN_OPEN);
-		if (content[0] == ')')
-			return (PARAN_CLOSE);
-	}
-	else if (!content[2])
-	{
-		if (content[0] == '>' && content[1] == '>')
-			return (DBL_GREAT);
-		if (content[0] == '<' && content[1] == '<')
-			return (DBL_LESS);
-		if (content[0] == '|' && content[1] == '|')
-			return (OR);
-		if (content[0] == '&' && content[1] == '&')
-			return (AND);
-	}
-	return (WORD);
-}
-
-/**
  * @brief Count how many tokens there are in the provided input string.
  * 
  * Uses spaces and special chars as delimiters but ignores them in quoted
  * strings.
  * 
- * @param char*
- * @return int
+ * @param input is the prompt.
+ * 
+ * @return the number of tokens present inside of the prompt.
  */
 int	count_tokens(char *input)
 {
@@ -263,105 +160,4 @@ int	count_tokens(char *input)
 		}
 	}
 	return (i != 0);
-}
-
-/**
- * @brief Add the specified token to the end of the tokens list
- * 
- * @param t_token**
- * @param t_token*
- */
-void	add_token_back(t_token **tokens_list, t_token *token)
-{
-	t_token	*current;
-
-	if (!token)
-		return (perror("Tokenisation"), g_code = 1, \
-			free_tokens(tokens_list));
-	current = (*tokens_list);
-	if (!current)
-	{
-		(*tokens_list) = token;
-		return ;
-	}
-	while (current->next)
-		current = current->next;
-	current->next = token;
-}
-
-/**
- * @brief Removes the quotes from the token.
- * 
- * For all the tokens of type [ WORD ], this function identifies any quotes in
- * the token at removes it. This is done by using two indexes and copying the
- * indexs over from within the string itself, all while ignoring the quotes that
- * are needed to be ommited.
- * 
- * @param token is the string that contains the token itself.
- * 
- * @return The token after the quotes are removed.
- */
-char	*quote_trimming(char *token)
-{
-	int		token_index;
-	int		quote_index;
-	char	quote;
-
-	token_index = 0;
-	quote_index = 0;
-	quote = '\0';
-	while (token[quote_index])
-	{
-		if ((token[quote_index] == '"' || token[quote_index] == '\'') && !quote)
-			quote = token[quote_index++];
-		else if (quote == token[quote_index] && ++quote_index)
-			quote = '\0';
-		else
-			token[token_index++] = token[quote_index++];
-	}
-	token[token_index] = token[quote_index];
-	return (token);
-}
-
-/**
- * @brief Creates a new node for the token list.
- * 
- * The function mallocs for t_token node and stores within it the content that
- * is provided as an argument. It then calls get_token_type() to identify the
- * type of the content and is stored within the token. For tokens of the type
- * [ WORD ], dollar_expansion() and wildcards() are called to take care of all
- * the expansion part of the parsing.
- * 
- * @param content is the content of the token.
- * @param list refers to the environment variables.
- * 
- * @return the token created and NULL in case of error.
- */
-t_token	*new_token(char *content, t_env *list, bool expand)
-{
-	t_token	*token;
-	t_token	*store;
-
-	if (!content)
-		return (NULL);
-	token = ft_calloc(1, sizeof(t_token));
-	if (!token)
-		return (free(content), g_code = 1, NULL);
-	token->content = content;
-	token->type = get_token_type(token->content);
-	if (token->type == WORD && expand)
-	{
-		token->content = dollar_expansion(token->content, list);
-		if (!token->content)
-			return (NULL);
-		store = wildcards(token->content);
-		if (store)
-		{
-			free(content);
-			free(token);
-			return (store);
-		}
-		token->content = quote_trimming(token->content);
-	}
-	return (token);
 }

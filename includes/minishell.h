@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/02 21:21:27 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/02 21:55:55 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,17 +58,16 @@ typedef struct s_cmd_expr	t_cmd_expr;
 
 enum e_token_types
 {
-	PIPE,
 	LESS,
 	DBL_LESS,
 	GREAT,
 	DBL_GREAT,
+	WORD,
+	PIPE,
 	OR,
 	AND,
-	WORD,
-	PARAN_OPEN,
-	PARAN_CLOSE,
-	ERR
+	P_CLOSE,
+	P_OPEN
 };
 
 enum e_cmd_types
@@ -99,12 +98,12 @@ enum e_err_types
 enum e_bltn
 {
 	CD,
+	EXIT,
+	UNSET,
 	ECHO,
 	ENV,
-	EXIT,
 	EXPORT,
 	PWD,
-	UNSET,
 	NONE
 };
 
@@ -187,26 +186,21 @@ void	receive_signal(t_sig_rec receiver);
 // Parsing
 void	add_token_back(t_token **tokens_list, t_token *token);
 t_cmd	*create_expr_cmd(t_cmd_type type, t_cmd *cmd_left, t_cmd *cmd_right);
-t_cmd	*create_redir_cmd(t_cmd *cmd, t_cmd_type type, char *file);
 bool	count_quotations(char *line);
 int		count_tokens(char *input);
 char	*dollar_expansion(char *token, t_env *list);
 void	ft_print_error(t_err_type type, char *err, char *extra);
 char	*get_token(char **input);
-bool	is_exec_delimiter(t_tkn_type type);
 t_token	*new_token(char *content, t_env *list, bool expand);
 void	parse(t_minishell *minishell, char *line, char *store);
-t_cmd	*parse_exec(t_minishell *minishell);
-t_cmd	*parse_expr(t_cmd *cmd_left, t_minishell *minishell);
-t_cmd	*parse_logical_expr(t_cmd *cmd_left, t_minishell *minishell);
-t_cmd	*parse_paranthesis(t_cmd *cmd, t_minishell *minishell);
 t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell);
 void	*print_exec_parse_err(t_tkn_type type, t_cmd *cmd);
-t_token	*tokendup(t_token *token);
-bool	valid_brackets(char *line);
-t_token	*wildcards(char *token);
+t_token	*token_duplicate(t_token *token);
+t_token	*wildcard_expansion(char *token);
 
 // Execution
+bool	confirm_command(char **cmd, t_env *environment);
+void	duplicate_fds(t_cmd	*cmd, t_minishell *minishell, int read);
 bool	exec_builtin(char **cmd, t_minishell *minishell);
 bool	is_builtin(t_bltn *builtin, char *str);
 void	run_cmd(t_minishell *minishell, char **env);

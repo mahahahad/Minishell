@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:51:40 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/01 16:10:30 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/02 17:28:35 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,7 +198,7 @@ static bool	match_pattern(char *token, int location, char *file)
  * 
  * @return the pointer to the final token.
  */
-t_token	*wildcards(char *token_string)
+t_token	*wildcard_expansion(char *token_string)
 {
 	DIR		*cwd_stream;
 	int		location;

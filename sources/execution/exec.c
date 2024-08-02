@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/02 21:33:43 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/02 21:57:52 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ char	*find_command(char *cmd, t_env *env)
 
 char	**convert_command(t_cmd *cmd)
 {
-	t_token *current;
+	t_token	*current;
 	char	**str_tokens;
 	int		token_count[2];
 
@@ -122,12 +122,8 @@ char	**convert_command(t_cmd *cmd)
  */
 bool	is_redirection_cmd(t_cmd *cmd)
 {
-	if (cmd->type == CMD_LESS || \
-		cmd->type == CMD_HEREDOC || \
-		cmd->type == CMD_GREAT || \
-		cmd->type == CMD_DBL_GREAT)
-		return (true);
-	return (false);
+	return (cmd->type == CMD_LESS || cmd->type == CMD_HEREDOC || \
+		cmd->type == CMD_GREAT || cmd->type == CMD_DBL_GREAT);
 }
 
 /**
@@ -188,10 +184,11 @@ bool	is_redirection_cmd(t_cmd *cmd)
  * It opens the file specified in the command and uses that for redirection
  *
  * Creates an empty redirection command struct to save the first command in.
- * Opens all the files it finds in the redirection tree using the open_files function.
- * Checks and opens the first commands file with the appropriate parameters.
- * dup2's the opened file descriptor to the specified file descriptor of the final command.
- * Executes the command stored in the final commands command variable using the run_cmd function.
+ * Opens all the files it finds in the redirection tree using the open_files
+ * function. Checks and opens the first commands file with the appropriate
+ * parameters. dup2's the opened file descriptor to the specified file
+ * descriptor of the final command. Executes the command stored in the final
+ * commands command variable using the run_cmd function.
  *
  * @param cmd
  * @param env
@@ -277,68 +274,67 @@ int	get_longer_length(char *str1, char *str2)
  * following the format:
  * {command, options}
  */
-void	exec_cmd(t_minishell *minishell, char **cmd)
-{
-	int		pid;
-	char	*cmd_original;
-	int		exit_code;
+// void	exec_cmd(t_minishell *minishell, char **cmd)
+// {
+// 	int		pid;
+// 	char	*cmd_original;
+// 	int		exit_code;
 
-	// Builtin checks go here;
-	if (!ft_strchr(cmd[0], '/'))
-	{
-		cmd_original = cmd[0];
-		cmd[0] = find_command(cmd[0], minishell->env_variables);
-		if (!cmd[0])
-			return (g_code = 127, *cmd = cmd_original, ft_putstr_fd(*cmd, 2), \
-			free_char_command(cmd), ft_putendl_fd(": command not found", 2));
-	}
-	else
-	{
-		if (access(cmd[0], F_OK) == -1)
-			return (ft_putstr_fd(cmd[0], 2), free_char_command(cmd), \
-				g_code = 127, ft_putendl_fd(": no such file or directory", 2));
-		else if (access(cmd[0], X_OK) == -1)
-			return (ft_putstr_fd(cmd[0], 2), free_char_command(cmd), \
-				g_code = 126, ft_putendl_fd(": permission denied", 2));
-	}
-	receive_signal(CHILD);
-		pid = fork();
-	if (pid == 0)
-	{
-		execve(cmd[0], cmd, minishell->envp);
-		perror("execve() failed");
-		free_char_command(cmd);
-		free_parsing(minishell);
-		exit(WEXITSTATUS(errno));
-	}
-	waitpid(pid, &exit_code, 0);
-	free_char_command(cmd);
-	g_code = WEXITSTATUS(exit_code);
-}
+// 	// Builtin checks go here;
+// 	if (!ft_strchr(cmd[0], '/'))
+// 	{
+// 		cmd_original = cmd[0];
+// 		cmd[0] = find_command(cmd[0], minishell->env_variables);
+// 		if (!cmd[0])
+// 			return (g_code = 127, *cmd = cmd_original, ft_putstr_fd(*cmd, 2), 
+// 			free_char_command(cmd), ft_putendl_fd(": command not found", 2));
+// 	}
+// 	else
+// 	{
+// 		if (access(cmd[0], F_OK) == -1)
+// 			return (ft_putstr_fd(cmd[0], 2), free_char_command(cmd), 
+// 				g_code = 127, ft_putendl_fd(": no such file or directory", 2));
+// 		else if (access(cmd[0], X_OK) == -1)
+// 			return (ft_putstr_fd(cmd[0], 2), free_char_command(cmd), 
+// 				g_code = 126, ft_putendl_fd(": permission denied", 2));
+// 	}
+// 	receive_signal(CHILD);
+// 		pid = fork();
+// 	if (pid == 0)
+// 	{
+// 		execve(cmd[0], cmd, minishell->envp);
+// 		perror("execve() failed");
+// 		free_char_command(cmd);
+// 		free_parsing(minishell);
+// 		exit(WEXITSTATUS(errno));
+// 	}
+// 	waitpid(pid, &exit_code, 0);
+// 	free_char_command(cmd);
+// 	g_code = WEXITSTATUS(exit_code);
+// }
 
-void	run_cmd(t_minishell *minishell, char **env)
-{
-	t_cmd	*cmd;
+// void	run_cmd(t_minishell *minishell, char **env)
+// {
+// 	t_cmd	*cmd;
 
-	cmd = minishell->cmd;
-	if (!cmd)
-		return ;
-	// receive_signal(CHILD);
-	if (cmd->type == CMD_EXEC)
-		exec_cmd(minishell, convert_command(cmd));
-	(void)env;
-	// else if (cmd->type == CMD_PIPE)
-	// 	exec_pipe(minishell, env);
-	// else if (cmd->type == CMD_AND)
-	// 	exec_pipe(minishell, env);
-	// else if (cmd->type == CMD_OR)
-	// 	exec_pipe(minishell, env);
-	// else if (cmd->type == CMD_DBL_GREAT || cmd->type == CMD_GREAT 
-	// 	|| cmd->type == CMD_LESS)
-	// 	exec_redir(minishell, (t_cmd_redir *)cmd, env);
-	// else if (cmd->type == CMD_HEREDOC)
-	// 	exec_heredoc(minishell, (t_cmd_heredoc *)cmd, env);
-}
+// 	cmd = minishell->cmd;
+// 	if (!cmd)
+// 		return ;
+// 	receive_signal(CHILD);
+// 	if (cmd->type == CMD_EXEC)
+// 		exec_cmd(minishell, convert_command(cmd));
+// 	else if (cmd->type == CMD_PIPE)
+// 		exec_pipe(minishell, env);
+// 	else if (cmd->type == CMD_AND)
+// 		exec_pipe(minishell, env);
+// 	else if (cmd->type == CMD_OR)
+// 		exec_pipe(minishell, env);
+// 	else if (cmd->type == CMD_DBL_GREAT || cmd->type == CMD_GREAT 
+// 		|| cmd->type == CMD_LESS)
+// 		exec_redir(minishell, (t_cmd_redir *)cmd, env);
+// 	else if (cmd->type == CMD_HEREDOC)
+// 		exec_heredoc(minishell, (t_cmd_heredoc *)cmd, env);
+// }
 
 /**
  * @brief Duplicates the fds as necessary.
@@ -352,33 +348,32 @@ void	run_cmd(t_minishell *minishell, char **env)
  * @param minishell contains flags for the duplication.
  * @param read is a flag to indicate which end of the pipe to duplicate.
  */
-void	duplicate_fds(t_cmd	*cmd, t_minishell *minishell, bool read)
-{
-	while (cmd->type == CMD_DBL_GREAT || cmd->type == CMD_GREAT || \
-		cmd->type == CMD_LESS || cmd->type == CMD_HEREDOC)
-	{
-		if ((cmd->type == CMD_GREAT || cmd->type == CMD_DBL_GREAT) && \
-			!minishell->output_fd && dup2(((t_cmd_redir *)cmd)->fd, 1))
-			minishell->output_fd = true;
-		else if ((cmd->type == CMD_LESS || cmd->type == CMD_HEREDOC) && \
-			!minishell->input_fd && dup2(((t_cmd_redir *)cmd)->fd, 0))
-			minishell->input_fd = true;
-		if (((t_cmd_redir *)cmd)->fd > -1)
-			close(((t_cmd_redir *)cmd)->fd);
-		cmd = ((t_cmd_redir *)cmd)->cmd;
-	}
-	if (!minishell->output_fd && !read && minishell->pipe_fds[1] > -1)
-		dup2(minishell->pipe_fds[1], STDOUT_FILENO);
-	if (!minishell->input_fd && read && minishell->pipe_read_store > -1)
-		dup2(minishell->pipe_read_store, STDIN_FILENO);
-	if (minishell->pipe_fds[0] > -1)
-		close(minishell->pipe_fds[0]);
-	if (minishell->pipe_fds[1] > -1)
-		close(minishell->pipe_fds[1]);
-	if (minishell->pipe_read_store > -1)
-		close(minishell->pipe_read_store);
-}
-
+// void	duplicate_fds(t_cmd	*cmd, t_minishell *minishell, bool read)
+// {
+// 	while (cmd->type == CMD_DBL_GREAT || cmd->type == CMD_GREAT || 
+// 		cmd->type == CMD_LESS || cmd->type == CMD_HEREDOC)
+// 	{
+// 		if ((cmd->type == CMD_GREAT || cmd->type == CMD_DBL_GREAT) && 
+// 			!minishell->output_fd && dup2(((t_cmd_redir *)cmd)->fd, 1))
+// 			minishell->output_fd = true;
+// 		else if ((cmd->type == CMD_LESS || cmd->type == CMD_HEREDOC) && 
+// 			!minishell->input_fd && dup2(((t_cmd_redir *)cmd)->fd, 0))
+// 			minishell->input_fd = true;
+// 		if (((t_cmd_redir *)cmd)->fd > -1)
+// 			close(((t_cmd_redir *)cmd)->fd);
+// 		cmd = ((t_cmd_redir *)cmd)->cmd;
+// 	}
+// 	if (!minishell->output_fd && !read && minishell->pipe_fds[1] > -1)
+// 		dup2(minishell->pipe_fds[1], STDOUT_FILENO);
+// 	if (!minishell->input_fd && read && minishell->pipe_read_store > -1)
+// 		dup2(minishell->pipe_read_store, STDIN_FILENO);
+// 	if (minishell->pipe_fds[0] > -1)
+// 		close(minishell->pipe_fds[0]);
+// 	if (minishell->pipe_fds[1] > -1)
+// 		close(minishell->pipe_fds[1]);
+// 	if (minishell->pipe_read_store > -1)
+// 		close(minishell->pipe_read_store);
+// }
 
 /**
  * @brief Checks if the command is a builtin.
@@ -392,24 +387,24 @@ void	duplicate_fds(t_cmd	*cmd, t_minishell *minishell, bool read)
  * @return true if the command name is a builtin and false it it not.
  *
  */
-bool	is_builtin(t_bltn *builtin, char *str)
-{
-	if (!ft_strncmp(str, "cd", 3))
-		return (*builtin = CD, true);
-	else if (!ft_strncmp(str, "echo", 5))
-		return (*builtin = ECHO, true);
-	else if (!ft_strncmp(str, "env", 4))
-		return (*builtin = ENV, true);
-	else if (!ft_strncmp(str, "exit", 5))
-		return (*builtin = EXIT, true);
-	else if (!ft_strncmp(str, "export", 7))
-		return (*builtin = EXPORT, true);
-	else if (!ft_strncmp(str, "pwd", 4))
-		return (*builtin = PWD, true);
-	else if (!ft_strncmp(str, "unset", 6))
-		return (*builtin = UNSET, true);
-	return (*builtin = NONE, false);
-}
+// bool	is_builtin(t_bltn *builtin, char *str)
+// {
+// 	if (!ft_strncmp(str, "cd", 3))
+// 		return (*builtin = CD, true);
+// 	else if (!ft_strncmp(str, "echo", 5))
+// 		return (*builtin = ECHO, true);
+// 	else if (!ft_strncmp(str, "env", 4))
+// 		return (*builtin = ENV, true);
+// 	else if (!ft_strncmp(str, "exit", 5))
+// 		return (*builtin = EXIT, true);
+// 	else if (!ft_strncmp(str, "export", 7))
+// 		return (*builtin = EXPORT, true);
+// 	else if (!ft_strncmp(str, "pwd", 4))
+// 		return (*builtin = PWD, true);
+// 	else if (!ft_strncmp(str, "unset", 6))
+// 		return (*builtin = UNSET, true);
+// 	return (*builtin = NONE, false);
+// }
 
 /**
  * @brief Executes the correct builtin.
