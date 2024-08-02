@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/29 13:21:03 by mdanish           #+#    #+#             */
-/*   Updated: 2024/07/27 19:11:40 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/01 16:01:29 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,10 @@
  * 
  * After completion, it sets the g_code to 0.
  * 
- * @param cmd points to the strings ft_echo needs to print. (NULL terminated)
+ * @param command points to the strings ft_echo needs to print.
  *
  */
-void	ft_echo(char **cmd)
+void	ft_echo(char **command)
 {
 	int		index;
 	int		i;
@@ -35,20 +35,20 @@ void	ft_echo(char **cmd)
 
 	index = 0;
 	option_flag = false;
-	while (cmd[++index] && cmd[index][0] == '-')
+	while (command[++index] && command[index][0] == '-')
 	{
 		i = 1;
-		while (cmd[index][i] == 'n')
+		while (command[index][i] == 'n')
 			i++;
-		if (!cmd[index][i])
+		if (!command[index][i])
 			option_flag = true;
 		else
 			break ;
 	}
-	while (cmd[index])
+	while (command[index])
 	{
-		ft_putstr_fd(cmd[index], 1);
-		if (cmd[++index])
+		ft_putstr_fd(command[index], 1);
+		if (command[++index])
 			ft_putchar_fd(' ', 1);
 	}
 	if (!option_flag)
@@ -67,13 +67,13 @@ void	ft_echo(char **cmd)
  * 
  * Upon completion, it sets the g_code to 0.
  * 
- * @param args a char ** pointing to the arguments sent by the command line.
- * @param envp a char ** pointing to the matrix ft_env needs to print.
+ * @param arguments points to the arguments sent by the command line.
+ * @param envp points to the matrix ft_env needs to print.
  *
  */
-void	ft_env(char **args, char **envp)
+void	ft_env(char **arguments, char **envp)
 {
-	if (args[1] && args[1][0])
+	if (arguments[1] && arguments[1][0])
 	{
 		g_code = 1;
 		return (ft_putendl_fd("env does not accecpt options or arguments.", 2));
@@ -97,14 +97,14 @@ void	ft_env(char **args, char **envp)
  * 
  * Upon completion, it sets the g_code to 0.
  * 
- * @param args is used to ensure that no arguments or options are provided.
+ * @param arguments is used to ensure that no arguments or options are provided.
  *
  */
-void	ft_pwd(char **args)
+void	ft_pwd(char **arguments)
 {
 	char	current_working_directory[PATH_MAX];
 
-	if (args[1] && args[1][0] == '-')
+	if (arguments[1] && arguments[1][0] == '-')
 	{
 		g_code = 1;
 		return (ft_putendl_fd("pwd does not accecpt options.", 2));

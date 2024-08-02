@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 22:36:59 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/01 23:04:27 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/08/02 17:34:49 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,12 @@ t_token	*tokendup(t_token *token)
  * @brief Print the appropriate error message indicating a symbol was found
  * in a location it should not have been in.
  *
- * @param minishell
+ * @param type used to identify the error message that is needed to be printed.
+ * @param command is sent to free_cmd() to free up.
+ *
  * @return NULL
  */
-void	*print_exec_parse_err(t_tkn_type type, t_cmd *cmd)
+void	*print_exec_parse_err(t_tkn_type type, t_cmd *command)
 {
 	g_code = 2;
 	if (type == PIPE)
@@ -52,7 +54,7 @@ void	*print_exec_parse_err(t_tkn_type type, t_cmd *cmd)
 		ft_putendl_fd("Syntax error near unexpected token `&&'", 2);
 	else if (type == OR)
 		ft_putendl_fd("Syntax error near unexpected token `||'", 2);
-	free_cmd(cmd);
+	free_cmd(command);
 	return (NULL);
 }
 
@@ -60,7 +62,8 @@ void	*print_exec_parse_err(t_tkn_type type, t_cmd *cmd)
  * @brief Is the current token's type one that should break the executable
  * command loop (PIPE, AND, OR)
  * 
- * @param minishell
+ * @param type of the token 
+ *
  * @return true
  * @return false
  */
@@ -72,7 +75,8 @@ bool	is_exec_delimiter(t_tkn_type type)
 /**
  * @brief Count the number of quotation pairs in the provided line.
  * 
- * @param char*
+ * @param line containes the token.
+ *
  * @return true if valid quotes and false if invalid quotes.
  */
 bool	count_quotations(char *line)
@@ -107,7 +111,8 @@ bool	count_quotations(char *line)
  * It goes through the line and ensures there are no open, misplaced or nested
  * brackets in the line
  * 
- * @param char*
+ * @param line is the token.
+ * 
  * @return int
  */
 bool	valid_brackets(char *line)

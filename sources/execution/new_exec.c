@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 12:05:36 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/01 11:30:05 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/02 21:33:43 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,44 +51,44 @@ void	duplicate_fds(t_cmd	*cmd, t_minishell *minishell, int read)
 	minishell->cmd = cmd;
 }
 
-char	*find_cmd(char *cmd, t_env *env)
+char	*find_command(char *command, t_env *environment)
 {
-	char	*final_cmd;
+	char	*final_command;
 	char	**paths;
 	int		index;
 
-	final_cmd = NULL;
-	while (env && ft_strncmp(env->key, "PATH", 5))
-		env = env->next;
-	if (!env)
+	final_command = NULL;
+	while (environment && ft_strncmp(environment->key, "PATH", 5))
+		environment = environment->next;
+	if (!environment)
 		return (NULL);
-	paths = ft_split(env->value, ':');
+	paths = ft_split(environment->value, ':');
 	if (!paths)
 		return (perror("Finding the command"), NULL);
 	index = -1;
 	while (paths[++index])
 	{
-		final_cmd = ft_char_strjoin(paths[index], cmd, '/');
-		if (!final_cmd)
+		final_command = ft_char_strjoin(paths[index], command, '/');
+		if (!final_command)
 			return (ft_free_2d_arr(paths), perror("Finding the command"), NULL);
-		if (!access(final_cmd, X_OK))
+		if (!access(final_command, X_OK))
 			break ;
-		free(final_cmd);
-		final_cmd = NULL;
+		free(final_command);
+		final_command = NULL;
 	}
-	return (ft_free_2d_arr(paths), final_cmd);
+	return (ft_free_2d_arr(paths), final_command);
 }
 
-char	**convert_command(t_cmd *cmd, t_token *current)
+char	**convert_command(t_cmd *command, t_token *current)
 {
 	char	**str_tokens;
 	int		token_count[2];
 
 	token_count[0] = 0;
 	token_count[1] = 0;
-	while (cmd->type > CMD_PIPE && cmd->type < CMD_AND)
-		cmd = ((t_cmd_redir *)cmd)->cmd;
-	current = ((t_cmd_exec *)cmd)->tokens;
+	while (command->type > CMD_PIPE && command->type < CMD_AND)
+		command = ((t_cmd_redir *)command)->cmd;
+	current = ((t_cmd_exec *)command)->tokens;
 	if (!current)
 		return (NULL);
 	while (current && ++token_count[0])
@@ -96,7 +96,7 @@ char	**convert_command(t_cmd *cmd, t_token *current)
 	str_tokens = ft_calloc(++token_count[0], sizeof(char *));
 	if (!str_tokens)
 		return (perror("Command conversion"), NULL);
-	current = ((t_cmd_exec *)cmd)->tokens;
+	current = ((t_cmd_exec *)command)->tokens;
 	while (current)
 	{
 		str_tokens[token_count[1]] = ft_strdup(current->content);
@@ -108,14 +108,14 @@ char	**convert_command(t_cmd *cmd, t_token *current)
 	return (str_tokens);
 }
 
-bool	confirm_command(char **cmd, t_env *env)
+bool	confirm_command(char **cmd, t_env *environment)
 {
 	char	*cmd_original;
 
 	if (!ft_strchr(*cmd, '/'))
 	{
 		cmd_original = *cmd;
-		*cmd = find_cmd(*cmd, env);
+		*cmd = find_command(*cmd, environment);
 		if (!*cmd)
 			return (ft_putstr_fd(cmd_original, 2), *cmd = cmd_original, \
 				g_code = 127, ft_putendl_fd(": command not found", 2), false);
@@ -145,21 +145,21 @@ bool	confirm_command(char **cmd, t_env *env)
  * @return true if the command name is a builtin and false it it not.
  *
  */
-bool	is_builtin(t_bltn *builtin, char *str)
+bool	is_builtin(t_bltn *builtin, char *command)
 {
-	if (!ft_strncmp(str, "cd", 3))
+	if (!ft_strncmp(command, "cd", 3))
 		return (*builtin = CD, true);
-	else if (!ft_strncmp(str, "echo", 5))
+	else if (!ft_strncmp(command, "echo", 5))
 		return (*builtin = ECHO, true);
-	else if (!ft_strncmp(str, "env", 4))
+	else if (!ft_strncmp(command, "env", 4))
 		return (*builtin = ENV, true);
-	else if (!ft_strncmp(str, "exit", 5))
+	else if (!ft_strncmp(command, "exit", 5))
 		return (*builtin = EXIT, true);
-	else if (!ft_strncmp(str, "export", 7))
+	else if (!ft_strncmp(command, "export", 7))
 		return (*builtin = EXPORT, true);
-	else if (!ft_strncmp(str, "pwd", 4))
+	else if (!ft_strncmp(command, "pwd", 4))
 		return (*builtin = PWD, true);
-	else if (!ft_strncmp(str, "unset", 6))
+	else if (!ft_strncmp(command, "unset", 6))
 		return (*builtin = UNSET, true);
 	return (*builtin = NONE, false);
 }
@@ -174,22 +174,22 @@ bool	is_builtin(t_bltn *builtin, char *str)
  * @param cmd contains the name of the command that will be compared.
  * @param minishell is sent to the builtins as required.
 */
-bool	exec_builtin(char **cmd, t_minishell *minishell)
+bool	exec_builtin(char **command, t_minishell *minishell)
 {
-	if (minishell->bltin == CD)
-		return (ft_cd(cmd, minishell), true);
-	else if (minishell->bltin == ECHO)
-		return (ft_echo(cmd), true);
-	else if (minishell->bltin == ENV)
-		return (ft_env(cmd, minishell->envp), true);
+	if (minishell->bltn == CD)
+		return (ft_cd(command, minishell), true);
+	else if (minishell->bltn == ECHO)
+		return (ft_echo(command), true);
+	else if (minishell->bltn == ENV)
+		return (ft_env(command, minishell->envp), true);
 	// else if (minishell->builin_command == EXIT)
 	// 	return (ft_exit(cmd, minishell), true);
-	else if (minishell->bltin == EXPORT)
-		return (ft_export(minishell, cmd), true);
-	else if (minishell->bltin == PWD)
-		return (ft_pwd(cmd), true);
-	else if (minishell->bltin == UNSET)
-		return (ft_unset(minishell, cmd), true);
+	else if (minishell->bltn == EXPORT)
+		return (ft_export(minishell, command), true);
+	else if (minishell->bltn == PWD)
+		return (ft_pwd(command), true);
+	else if (minishell->bltn == UNSET)
+		return (ft_unset(minishell, command), true);
 	return (false);
 }
 
@@ -199,50 +199,50 @@ bool	exec_builtin(char **cmd, t_minishell *minishell)
  * following the format:
  * {command, options}
  */
-void	exec_cmd(t_minishell *minishell, char **cmd, int read)
+void	exec_cmd(t_minishell *minishell, char **command, int read)
 {
-	int		pid;
+	int		process_id;
 	int		exit_code;
 
 	receive_signal(CHILD);
-	pid = fork();
-	if (pid == 0)
+	process_id = fork();
+	if (!process_id)
 	{
 		duplicate_fds(minishell->cmd, minishell, read);
-		if (!exec_builtin(cmd, minishell) && execve(cmd[0], cmd, minishell->envp))
+		if (!exec_builtin(command, minishell) && \
+			execve(command[0], command, minishell->envp))
 			perror("execve() failed");
-		free_char_command(cmd);
+		free_char_command(command);
 		free_parsing(minishell);
 		free_environment(minishell);
 		exit(WEXITSTATUS(errno));
 	}
-	waitpid(pid, &exit_code, 0);
+	waitpid(process_id, &exit_code, 0);
 	g_code = WEXITSTATUS(exit_code);
 }
 
 void	run_command(t_minishell *minishell, int read)
 {
-	t_cmd	*cmd1;
-	char	**cmd;
+	t_cmd	*cmd;
+	char	**command;
 
-	cmd1 = minishell->cmd;
-	if (!cmd1)
+	cmd = minishell->cmd;
+	if (!cmd)
 		return ;
-	if (cmd1->type != CMD_PIPE && cmd1->type != CMD_AND && cmd1->type != CMD_OR)
+	if (cmd->type != CMD_PIPE && cmd->type != CMD_AND && cmd->type != CMD_OR)
 	{
-		cmd = convert_command(cmd1, NULL);
-		if (!cmd)
+		command = convert_command(cmd, NULL);
+		if (!command)
 			return ;
-		is_builtin(&minishell->bltin, *cmd);
-		if (minishell->bltin == UNSET || minishell->bltin == EXIT || \
-			minishell->bltin == CD || (minishell->bltin == EXPORT && cmd[1]))
-			exec_builtin(cmd, minishell);
-		else if (minishell->bltin != NONE || \
-			confirm_command(&(*cmd), minishell->env_variables))
-			exec_cmd(minishell, cmd, read);
-		free_char_command(cmd);
+		is_builtin(&minishell->bltn, *command);
+		if (minishell->bltn == UNSET || minishell->bltn == EXIT || \
+			minishell->bltn == CD || (minishell->bltn == EXPORT && command[1]))
+			exec_builtin(command, minishell);
+		else if (minishell->bltn != NONE || \
+			confirm_command(command, minishell->env_variables))
+			exec_cmd(minishell, command, read);
+		free_char_command(command);
 	}
-	// else if (cmd1->type == CMD_PIPE || cmd1->type == CMD_AND || 
-	// 	cmd1->type == CMD_OR)
-	// 	exec_pipe(minishell, env);
+	// else
+		// exec_pipe(minishell, env);
 }

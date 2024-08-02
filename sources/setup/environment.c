@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 10:07:41 by mdanish           #+#    #+#             */
-/*   Updated: 2024/07/28 16:02:06 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/01 16:39:39 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,13 @@
  * index of env and it is then stored in the newly allocated matrix.
  * 
  * @param minishell is used to store the matrix duplication.
- * @param env is used to create the matrix duplication from.
+ * @param environment is used to create the matrix duplication from.
  */
-static bool	create_matrix(t_minishell *minishell, char **env)
+static bool	create_matrix(t_minishell *minishell, char **environment)
 {
 	int	i;
 
-	while (env[minishell->envp_count])
+	while (environment[minishell->envp_count])
 		minishell->envp_count++;
 	minishell->envp = ft_calloc(minishell->envp_count + 1, sizeof(char *));
 	if (!minishell->envp)
@@ -33,7 +33,7 @@ static bool	create_matrix(t_minishell *minishell, char **env)
 	i = -1;
 	while (++i < minishell->envp_count)
 	{
-		minishell->envp[i] = ft_strdup(env[i]);
+		minishell->envp[i] = ft_strdup(environment[i]);
 		if (!minishell->envp[i])
 			return (free_split(minishell->envp, minishell->envp_count), false);
 	}
@@ -51,27 +51,28 @@ static bool	create_matrix(t_minishell *minishell, char **env)
  * 
  * @return the final sorted matrix of the env.
  */
-static char	**sort_environment_variables(char **env, int env_count)
+static char	**sort_environment_variables(char **environment, int env_count)
 {
 	char	*store;
-	int		i;
-	int		j;
+	int		index_one;
+	int		index_two;
 
-	i = -1;
-	while (++i < env_count)
+	index_one = -1;
+	while (++index_one < env_count)
 	{
-		j = i;
-		while (++j < env_count)
+		index_two = index_one;
+		while (++index_two < env_count)
 		{
-			if (ft_strncmp(env[i], env[j], 100) > 0)
+			if (ft_strncmp(environment[index_one], \
+				environment[index_two], 100) > 0)
 			{
-				store = env[j];
-				env[j] = env[i];
-				env[i] = store;
+				store = environment[index_two];
+				environment[index_two] = environment[index_one];
+				environment[index_one] = store;
 			}
 		}
 	}
-	return (env);
+	return (environment);
 }
 
 /**

@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/31 19:05:54 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/02 21:33:43 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 
 // Mallocs the full path to a command
 // or returns NULL if no command was found
-char	*find_cmd(char *cmd, t_env *env)
+char	*find_command(char *cmd, t_env *env)
 {
 	char	*final_cmd;
 	char	**paths;
@@ -287,7 +287,7 @@ void	exec_cmd(t_minishell *minishell, char **cmd)
 	if (!ft_strchr(cmd[0], '/'))
 	{
 		cmd_original = cmd[0];
-		cmd[0] = find_cmd(cmd[0], minishell->env_variables);
+		cmd[0] = find_command(cmd[0], minishell->env_variables);
 		if (!cmd[0])
 			return (g_code = 127, *cmd = cmd_original, ft_putstr_fd(*cmd, 2), \
 			free_char_command(cmd), ft_putendl_fd(": command not found", 2));

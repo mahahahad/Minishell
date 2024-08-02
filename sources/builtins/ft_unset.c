@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/29 13:34:56 by mdanish           #+#    #+#             */
-/*   Updated: 2024/07/27 19:11:40 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/01 15:59:37 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 /**
  * @brief Deletes a variable from the linked list.
- * 
  * 
  * It goes through the list to identify the node to be deleted. If it is the
  * first node, the pointer in minishell is updated to point to the next of the
@@ -26,17 +25,17 @@
  * the node itself.
  * 
  * @param minishell is used to access the list to delete the variable.
- * @param var is the variable that needs to be unset.
- * @param var_len is the length of the variable that needs to be unset.
+ * @param variable is the variable that needs to be unset.
+ * @param length is the length of the variable that needs to be unset.
  *
  */
-static void	ft_unset_from_list(t_minishell *minishell, char *var, int var_len)
+static void	unset_from_list(t_minishell *minishell, char *variable, int length)
 {
 	t_env	*delnode;
 	t_env	*store;
 
 	delnode = minishell->env_variables;
-	if (!ft_strncmp(var, delnode->key, var_len))
+	if (!ft_strncmp(variable, delnode->key, length))
 		minishell->env_variables = minishell->env_variables->next;
 	else
 	{
@@ -44,7 +43,7 @@ static void	ft_unset_from_list(t_minishell *minishell, char *var, int var_len)
 		while (delnode)
 		{
 			delnode = delnode->next;
-			if (delnode && !ft_strncmp(var, delnode->key, var_len))
+			if (delnode && !ft_strncmp(variable, delnode->key, length))
 				break ;
 			store = store->next;
 		}
@@ -95,7 +94,7 @@ void	ft_unset(t_minishell *minishell, char **variable)
 				index++;
 			}
 		}
-		ft_unset_from_list(minishell, *variable, var_len);
+		unset_from_list(minishell, *variable, var_len);
 		variable++;
 	}
 	g_code = 0;

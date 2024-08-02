@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   create_cmd.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:34:36 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/01 23:38:14 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/08/02 21:33:43 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,15 +68,15 @@ static int	heredoc_creation(char *delimiter)
  * @param file The file to read from or write to
  * @return t_cmd* 
  */
-t_cmd	*create_redir_cmd(t_cmd *cmd, t_cmd_type type, char *file)
+t_cmd	*create_redir_cmd(t_cmd *command, t_cmd_type type, char *file)
 {
 	t_cmd_redir	*redir_cmd;
 
 	redir_cmd = ft_calloc(1, sizeof(t_cmd_redir));
 	if (!redir_cmd)
 		return (perror("Redirection Command"), g_code = 1, \
-			free_cmd(cmd), NULL);
-	redir_cmd->cmd = cmd;
+			free_cmd(command), NULL);
+	redir_cmd->cmd = command;
 	redir_cmd->type = type;
 	redir_cmd->file = file;
 	redir_cmd->fd = -1;

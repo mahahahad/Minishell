@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:51:40 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/01 12:15:03 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/01 16:10:30 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,10 +45,7 @@ static bool	wildcards_are_present(char *token, int *location, DIR **cwd)
 		getcwd(cwd_path, PATH_MAX);
 		*cwd = opendir(cwd_path);
 		if (*cwd)
-		{
-			errno = 0;
-			return (true);
-		}
+			return (errno = 0, true);
 		perror("getcwd() in wildcard expansion");
 		g_code = WEXITSTATUS(errno);
 	}

@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 20:21:11 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/01 14:01:54 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/01 15:56:01 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,24 +20,24 @@
  * If it isn't found, it will do nothing
  * 
  * @param minishell contains the matrix in which the key will be searched for.
- * @param new_var contain the key that will be searched for.
+ * @param new_variable contain the key that will be searched for.
  * 
  * @return true if the key exists, false if the key is not found in the matrix
  * 
  */
-static bool	update_the_matrix(t_minishell *minishell, char *new_var)
+static bool	update_the_matrix(t_minishell *minishell, char *new_variable)
 {
 	int	index;
 	int	length;
 
 	index = -1;
-	length = ft_strchr(new_var, '=') - new_var;
+	length = ft_strchr(new_variable, '=') - new_variable;
 	while (++index < minishell->envp_count)
 	{
-		if (ft_strncmp(minishell->envp[index], new_var, length + 1))
+		if (ft_strncmp(minishell->envp[index], new_variable, length + 1))
 			continue ;
 		free(minishell->envp[index]);
-		minishell->envp[index] = ft_strdup(new_var);
+		minishell->envp[index] = ft_strdup(new_variable);
 		if (!minishell->envp[index])
 			return (perror("export"), g_code = 1, false);
 		return (true);
@@ -57,18 +57,18 @@ static bool	update_the_matrix(t_minishell *minishell, char *new_var)
  * corresponding index.
  * 
  * @param minishell is used to access the linked list of the variables.
- * @param var is the new node that will be added to the linked list.
- * @param len is the length of the key of the new node.
- * 
+ * @param new_variable is the new node that will be added to the linked list.
+ *
  */
-bool	add_to_matrix(t_minishell *minishell, char *new_var)
+bool	add_to_matrix(t_minishell *minishell, char *new_variable)
 {
 	char	**env_store;
 	int		index;
 
-	if (!new_var)
+	if (!new_variable)
 		return (false);
-	if (!ft_strchr(new_var, '=') || update_the_matrix(minishell, new_var))
+	if (!ft_strchr(new_variable, '=') || \
+		update_the_matrix(minishell, new_variable))
 		return (true);
 	if (g_code)
 		return (false);
@@ -80,7 +80,7 @@ bool	add_to_matrix(t_minishell *minishell, char *new_var)
 		env_store[index] = minishell->envp[index];
 	free(minishell->envp);
 	minishell->envp = env_store;
-	minishell->envp[minishell->envp_count] = ft_strdup(new_var);
+	minishell->envp[minishell->envp_count] = ft_strdup(new_variable);
 	if (!minishell->envp[index])
 		return (perror("export"), g_code = 1, false);
 	minishell->envp_count++;
@@ -96,30 +96,30 @@ bool	add_to_matrix(t_minishell *minishell, char *new_var)
  * It then uses ft_substr() to create a copy of the value and also stores it in
  * the new_var node.
  * 
- * @param new_var is the node within which new data will be stored in.
+ * @param new_variable is the node within which new data will be stored in.
  * @param length is the address of the variable that will store key length.
  * @param string contains the new key and value to be added.
  * 
  */
-void	create_new_variable(t_env *var, int *length, char *string)
+void	create_new_variable(t_env *variable, int *length, char *string)
 {
 	if (!ft_strchr(string, '='))
 	{
-		var->key = ft_strdup(string);
-		if (!var->key)
+		variable->key = ft_strdup(string);
+		if (!variable->key)
 			return (g_code = 1, perror("export"));
-		*length = ft_strlen(var->key);
+		*length = ft_strlen(variable->key);
 	}
 	else
 	{
 		*length = ft_strchr(string, '=') - string;
-		var->key = ft_substr(string, 0, *length);
-		if (!var->key)
+		variable->key = ft_substr(string, 0, *length);
+		if (!variable->key)
 			return (g_code = 1, perror("export"));
-		var->value = ft_substr(string, *length + 1, \
+		variable->value = ft_substr(string, *length + 1, \
 				ft_strlen(string) - (*length + 1));
-		if (!var->value)
-			return (g_code = 1, free(var->key), var->key = NULL, \
+		if (!variable->value)
+			return (g_code = 1, free(variable->key), variable->key = NULL, \
 				perror("export"));
 	}
 }

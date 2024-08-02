@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/27 19:11:40 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/01 15:54:35 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,29 +24,29 @@
  * environment variables to identify the value stored in the HOME variable.
  * The value is then set as the argument for cd.
  * 
- * @param args contain the path to which the directory will be changed to.
- * @param list is the linked list of variable used to search for HOME directory.
+ * @param arguments contain the path to which the directory will be changed to.
+ * @param environment is the list of variable used to search for HOME directory.
  * 
  * @return true is invalid arguments are detected, false if arguments are valid.
  * 
  */
-static bool	check_invalid_args(char **args, t_env *list)
+static bool	check_invalid_args(char **arguments, t_env *environment)
 {
 	bool	error_flag;
 
 	error_flag = false;
-	if (args[1] && (args[2] || args[1][0] == '-'))
+	if (arguments[1] && (arguments[2] || arguments[1][0] == '-'))
 		error_flag = true;
-	if (args[1] && args[2])
+	if (arguments[1] && arguments[2])
 		ft_putendl_fd("cd: too many arguments", 2);
-	else if (args[1] && args[1][0] == '-')
+	else if (arguments[1] && arguments[1][0] == '-')
 		ft_putendl_fd("cd: options are not accepted", 2);
-	else if (!args[1])
+	else if (!arguments[1])
 	{
-		while (list && !ft_strncmp(list->key, "HOME", 5))
-			list = list->next;
-		if (list)
-			args[1] = list->value;
+		while (environment && !ft_strncmp(environment->key, "HOME", 5))
+			environment = environment->next;
+		if (environment)
+			arguments[1] = environment->value;
 		else
 		{
 			ft_putendl_fd("cd: HOME not set", 2);
@@ -146,7 +146,7 @@ static void	chg_dir(char **args, t_env *old, t_env *new, t_minishell *minishell)
  * @param minishell contains the env stores that will be updated on success.
  * 
  */
-void	ft_cd(char **args, t_minishell *minishell)
+void	ft_cd(char **arguments, t_minishell *minishell)
 {
 	t_env	*old;
 	t_env	*new;
@@ -155,7 +155,7 @@ void	ft_cd(char **args, t_minishell *minishell)
 	old = NULL;
 	new = NULL;
 	list = minishell->env_variables;
-	if (check_invalid_args(args, list))
+	if (check_invalid_args(arguments, list))
 		return ;
 	g_code = 0;
 	while (list)
@@ -166,5 +166,5 @@ void	ft_cd(char **args, t_minishell *minishell)
 			new = list;
 		list = list->next;
 	}
-	chg_dir(args, old, new, minishell);
+	chg_dir(arguments, old, new, minishell);
 }

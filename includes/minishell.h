@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/01 23:04:37 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/08/02 21:21:27 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,7 +131,7 @@ struct s_minishell
 	int			pipe_fds[2];
 	int			pipe_read_store;
 	int			token_count;
-	t_bltn		bltin;
+	t_bltn		bltn;
 	t_env		*env_variables;
 	t_cmd		*cmd;
 	t_token		*tokens;
@@ -244,6 +244,6 @@ void	print_cmd(t_cmd *cmd, int node_depth, char *prefix);
  * @brief alias for the print_cmd function which allows users to not specify the
  * node_depth while calling it manually. 
  */
-# define PRINT_CMD(cmd, ...) print_cmd(cmd, 0, "  ")
+// # define PRINT_CMD(cmd, ...) print_cmd(cmd, 0, "  ")
 
 #endif

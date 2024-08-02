@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/01 23:27:45 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/08/02 21:33:43 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,30 +105,32 @@ void	parse(t_minishell *minishell, char *line, char *store)
  */
 t_cmd	*parse_expr(t_cmd *cmd_left, t_minishell *minishell)
 {
-	t_cmd	*cmd;
+	t_cmd	*command;
 
-	if (!cmd_left)
-		cmd = parse_exec(minishell);
+	if (cmd_left)
+		command = cmd_left;
 	else
-		cmd = cmd_left;
-	if (!cmd)
+		command = parse_exec(minishell);
+	if (!command)
 		return (NULL);
 	if (!minishell->tokens)
-		return (cmd);
+		return (command);
 	if (minishell->tokens->type == PIPE)
 	{
 		if (!minishell->tokens->next)
 			return (ft_print_error(SYNTAX, "|", NULL), NULL);
 		minishell->tokens = minishell->tokens->next;
-		cmd = create_expr_cmd(CMD_PIPE, cmd, parse_expr(NULL, minishell));
+		if (!minishell->tokens)
+			return (ft_putendl_fd("Syntax error (while parsing pipe)", 2), NULL);
+		command = create_expr_cmd(CMD_PIPE, command, parse_expr(NULL, minishell));
 	}
 	else if (minishell->tokens->type == AND || minishell->tokens->type == OR)
 	{
-		cmd = parse_logical_expr(cmd, minishell);
-		if (!cmd)
-			return (NULL);
+		command = parse_logical_expr(command, minishell);
+		if (!command)
+			ft_putendl_fd("Syntax error (while parsing logical expr)", 2);
 	}
-	return (cmd);
+	return (command);
 }
 
 /**
@@ -170,14 +172,13 @@ t_cmd	*parse_expr(t_cmd *cmd_left, t_minishell *minishell)
 t_cmd	*parse_exec(t_minishell *minishell)
 {
 	t_cmd		*node;
-	t_cmd_exec	*cmd;
+	t_cmd_exec	*command;
 
 	node = ft_calloc(1, sizeof(t_cmd_exec));
 	if (!node)
 		return (perror("Tokenisation"), g_code = 1, NULL);
-	cmd = (t_cmd_exec *)node;
-	if (minishell->tokens->type == PARAN_OPEN)
-		return (parse_paranthesis(node, minishell));
+	command = (t_cmd_exec *)node;
+	node = parse_paranthesis(node, minishell);
 	while (minishell->tokens)
 	{
 		node = parse_redir(node, minishell);
@@ -190,16 +191,13 @@ t_cmd	*parse_exec(t_minishell *minishell)
 				NULL);
 		if (is_exec_delimiter(minishell->tokens->type))
 		{
-			if (!cmd->tokens)
-				return (ft_print_error(SYNTAX, \
-					minishell->tokens->content, \
-					NULL), \
-					free_cmd(node), NULL);
+			if (!command->tokens)
+				return (print_exec_parse_err(minishell->tokens->type, node));
 			break ;
 		}
-		add_token_back(&cmd->tokens, tokendup(minishell->tokens));
-		if (!cmd->tokens)
-			return (free_cmd(node), (node = NULL), free(cmd), NULL);
+		add_token_back(&command->tokens, tokendup(minishell->tokens));
+		if (!command->tokens)
+			return (free_cmd(node), (node = NULL), free(command), NULL);
 		minishell->tokens = minishell->tokens->next;
 	}
 	return (node);
@@ -274,16 +272,16 @@ t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell)
  * @param minishell The minishell datastruct
  * @return t_cmd* The parsed logical command tree
  */
-t_cmd	*parse_paranthesis(t_cmd *cmd, t_minishell *minishell)
+t_cmd	*parse_paranthesis(t_cmd *command, t_minishell *minishell)
 {
 	if (minishell->tokens->type != PARAN_OPEN)
-		return (cmd);
+		return (command);
 	minishell->tokens = minishell->tokens->next;
-	cmd = parse_logical_expr(NULL, minishell);
-	if (!cmd)
-		return (NULL);
+	command = parse_logical_expr(NULL, minishell);
+	if (!command)
+		return (ft_putendl_fd("Syntax error in parsing logical expr", 2), NULL);
 	minishell->tokens = minishell->tokens->next;
-	return (cmd);
+	return (command);
 }
 
 /**
@@ -299,21 +297,21 @@ t_cmd	*parse_paranthesis(t_cmd *cmd, t_minishell *minishell)
  */
 t_cmd	*parse_logical_expr(t_cmd *cmd_left, t_minishell *minishell)
 {
-	t_cmd	*cmd;
+	t_cmd	*command;
 
 	if (!cmd_left)
-		cmd = parse_exec(minishell);
+		command = parse_exec(minishell);
 	else
-		cmd = cmd_left;
-	if (!cmd)
-		return (NULL);
+		command = cmd_left;
 	if (minishell->tokens->type == AND)
 	{
 		if (!minishell->tokens->next \
 			|| minishell->tokens->next->type == PARAN_CLOSE)
 			return (ft_print_error(SYNTAX, "&&", NULL), NULL);
 		minishell->tokens = minishell->tokens->next;
-		cmd = create_expr_cmd(CMD_AND, cmd, parse_expr(NULL, minishell));
+		if (!minishell->tokens || minishell->tokens->type == PARAN_CLOSE)
+			return (NULL);
+		command = create_expr_cmd(CMD_AND, command, parse_expr(NULL, minishell));
 	}
 	else if (minishell->tokens->type == OR)
 	{
@@ -321,11 +319,13 @@ t_cmd	*parse_logical_expr(t_cmd *cmd_left, t_minishell *minishell)
 			|| minishell->tokens->next->type == PARAN_CLOSE)
 			return (ft_print_error(SYNTAX, "||", NULL), NULL);
 		minishell->tokens = minishell->tokens->next;
-		cmd = create_expr_cmd(CMD_OR, cmd, parse_exec(minishell));
+		if (!minishell->tokens || minishell->tokens->type == PARAN_CLOSE)
+			return (NULL);
+		command = create_expr_cmd(CMD_OR, command, parse_exec(minishell));
 		if (minishell->tokens)
-			cmd = parse_expr(cmd, minishell);
+			command = parse_expr(command, minishell);
 	}
 	else
-		return (ft_print_error(SYNTAX, minishell->tokens->content, NULL), NULL);
-	return (cmd);
+		return (NULL);
+	return (command);
 }
