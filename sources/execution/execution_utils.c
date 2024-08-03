@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/01 19:25:06 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/02 18:40:09 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/03 23:47:07 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
  * @param minishell contains flags for the duplication.
  * @param read is a flag to indicate which end of the pipe to duplicate.
  */
-void	duplicate_fds(t_cmd	*cmd, t_minishell *minishell, int read)
+void	duplicate_fds(t_cmd	*cmd, t_minishell *minishell)
 {
 	while (cmd->type > CMD_PIPE && cmd->type < CMD_AND)
 	{
@@ -38,9 +38,9 @@ void	duplicate_fds(t_cmd	*cmd, t_minishell *minishell, int read)
 			close(((t_cmd_redir *)cmd)->fd);
 		cmd = ((t_cmd_redir *)cmd)->cmd;
 	}
-	if (!minishell->output_fd && read == 1 && minishell->pipe_fds[1] > -1)
+	if (!minishell->output_fd && minishell->pipe_fds[1] > -1)
 		dup2(minishell->pipe_fds[1], STDOUT_FILENO);
-	if (!minishell->input_fd && !read && minishell->pipe_read_store > -1)
+	if (!minishell->input_fd && minishell->pipe_read_store > -1)
 		dup2(minishell->pipe_read_store, STDIN_FILENO);
 	if (minishell->pipe_fds[0] > -1)
 		close(minishell->pipe_fds[0]);
@@ -63,23 +63,23 @@ void	duplicate_fds(t_cmd	*cmd, t_minishell *minishell, int read)
  * @return true if the command name is a builtin and false it it not.
  *
  */
-bool	is_builtin(t_bltn *builtin, char *command)
+t_bltn	confirm_builtin(char *command)
 {
 	if (!ft_strncmp(command, "cd", 3))
-		return (*builtin = CD, true);
+		return (CD);
 	else if (!ft_strncmp(command, "echo", 5))
-		return (*builtin = ECHO, true);
+		return (ECHO);
 	else if (!ft_strncmp(command, "env", 4))
-		return (*builtin = ENV, true);
+		return (ENV);
 	else if (!ft_strncmp(command, "exit", 5))
-		return (*builtin = EXIT, true);
+		return (EXIT);
 	else if (!ft_strncmp(command, "export", 7))
-		return (*builtin = EXPORT, true);
+		return (EXPORT);
 	else if (!ft_strncmp(command, "pwd", 4))
-		return (*builtin = PWD, true);
+		return (PWD);
 	else if (!ft_strncmp(command, "unset", 6))
-		return (*builtin = UNSET, true);
-	return (*builtin = NONE, false);
+		return (UNSET);
+	return (NONE);
 }
 
 /**
@@ -92,23 +92,22 @@ bool	is_builtin(t_bltn *builtin, char *command)
  * @param cmd contains the name of the command that will be compared.
  * @param minishell is sent to the builtins as required.
 */
-bool	exec_builtin(char **command, t_minishell *minishell)
+void	execute_builtin(char **command, t_minishell *minishell)
 {
 	if (minishell->bltn == CD)
-		return (ft_cd(command, minishell), true);
+		ft_cd(command, minishell);
 	else if (minishell->bltn == ECHO)
-		return (ft_echo(command), true);
+		ft_echo(command);
 	else if (minishell->bltn == ENV)
-		return (ft_env(command, minishell->envp), true);
+		ft_env(command, minishell->envp);
 	// else if (minishell->builin_command == EXIT)
-	// 	return (ft_exit(cmd, minishell), true);
+	// 	ft_exit(cmd, minishell);
 	else if (minishell->bltn == EXPORT)
-		return (ft_export(minishell, command), true);
+		ft_export(minishell, command);
 	else if (minishell->bltn == PWD)
-		return (ft_pwd(command), true);
+		ft_pwd(command);
 	else if (minishell->bltn == UNSET)
-		return (ft_unset(minishell, command), true);
-	return (false);
+		ft_unset(minishell, command);
 }
 
 static char	*find_command(char *command, t_env *environment)

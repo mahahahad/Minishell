@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/02 21:55:55 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/04 00:02:52 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,12 +199,12 @@ t_token	*token_duplicate(t_token *token);
 t_token	*wildcard_expansion(char *token);
 
 // Execution
+t_bltn	confirm_builtin(char *str);
 bool	confirm_command(char **cmd, t_env *environment);
-void	duplicate_fds(t_cmd	*cmd, t_minishell *minishell, int read);
-bool	exec_builtin(char **cmd, t_minishell *minishell);
-bool	is_builtin(t_bltn *builtin, char *str);
+void	duplicate_fds(t_cmd	*cmd, t_minishell *minishell);
+void	execute_builtin(char **cmd, t_minishell *minishell);
 void	run_cmd(t_minishell *minishell, char **env);
-void	run_command(t_minishell *minishell, int read);
+void	run_command(t_minishell *minishell, bool piped);
 
 // Built-ins
 bool	add_to_matrix(t_minishell *minishell, char *new_var);

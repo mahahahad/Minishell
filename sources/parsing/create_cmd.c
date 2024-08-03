@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:34:36 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/03 23:53:52 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/04 00:31:32 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,17 +163,3 @@ t_cmd	*create_expr_cmd(t_cmd_type type, t_cmd *cmd_left, t_cmd *cmd_right)
 	expr_cmd->command_right = cmd_right;
 	return ((t_cmd *) expr_cmd);
 }
-
-// t_cmd	*create_heredoc(t_cmd *cmd, char *delimiter)
-// {
-// 	t_cmd_heredoc	*heredoc_cmd;
-// 
-// 	heredoc_cmd = ft_calloc(1, sizeof(t_cmd_heredoc));
-// 	if (!heredoc_cmd)
-// 		return (ft_putendl_fd("Malloc failed in tokenisation.", 2), 
-// 			g_status_code = 1, free_command(cmd), NULL);
-// 	heredoc_cmd->cmd = cmd;
-// 	heredoc_cmd->type = CMD_HEREDOC;
-// 	heredoc_cmd->delimiter = delimiter;
-// 	return ((t_cmd *) heredoc_cmd);
-// }

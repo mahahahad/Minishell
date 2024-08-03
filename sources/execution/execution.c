@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   new_exec.c                                         :+:      :+:    :+:   */
+/*   execution.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 12:05:36 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/02 21:55:36 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/04 00:18:54 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	**convert_command(t_cmd *command, t_token *current)
+static char	**convert_command(t_cmd *command, t_token *current)
 {
 	char	**str_tokens;
 	int		token_count[2];
@@ -47,18 +47,19 @@ char	**convert_command(t_cmd *command, t_token *current)
  * following the format:
  * {command, options}
  */
-void	exec_cmd(t_minishell *minishell, char **command, int read)
+static void	exec_command(t_minishell *minishell, char **command)
 {
 	int		process_id;
 	int		exit_code;
 
-	receive_signal(CHILD);
 	process_id = fork();
 	if (!process_id)
 	{
-		duplicate_fds(minishell->cmd, minishell, read);
-		if (!exec_builtin(command, minishell) && \
-			execve(command[0], command, minishell->envp))
+		receive_signal(CHILD);
+		duplicate_fds(minishell->cmd, minishell);
+		if (minishell->bltn != NONE)
+			execute_builtin(command, minishell);
+		else if (execve(command[0], command, minishell->envp))
 			perror("execve() failed");
 		free_char_command(command);
 		free_parsing(minishell);
@@ -69,7 +70,34 @@ void	exec_cmd(t_minishell *minishell, char **command, int read)
 	g_code = WEXITSTATUS(exit_code);
 }
 
-void	run_command(t_minishell *minishell, int read)
+static void	execute_expression(t_minishell *minishell, t_cmd *command_right)
+{
+	t_cmd_type	type;
+
+	type = minishell->cmd->type;
+	if (type == CMD_PIPE)
+	{
+		if (pipe(minishell->pipe_fds) < 0)
+			return (g_code = WEXITSTATUS(errno), perror("pipe creation"));
+		minishell->cmd = ((t_cmd_expr *)minishell->cmd)->command_left;
+		run_command(minishell, true);
+		minishell->pipe_read_store = minishell->pipe_fds[0];
+		minishell->cmd = command_right;
+		close(minishell->pipe_fds[1]);
+		minishell->pipe_fds[1] = -1;
+		run_command(minishell, true);
+	}
+	else
+	{
+		minishell->cmd = ((t_cmd_expr *)minishell->cmd)->command_left;
+		run_command(minishell, false);
+		minishell->cmd = command_right;
+		if ((type == CMD_AND && !g_code) || (type == CMD_OR && g_code))
+			run_command(minishell, false);
+	}
+}
+
+void	run_command(t_minishell *minishell, bool piped)
 {
 	t_cmd	*cmd;
 	char	**command;
@@ -77,20 +105,21 @@ void	run_command(t_minishell *minishell, int read)
 	cmd = minishell->cmd;
 	if (!cmd)
 		return ;
-	if ((cmd->type > CMD_PIPE && cmd->type < CMD_AND) || cmd->type == CMD_EXEC)
-	{
-		command = convert_command(cmd, NULL);
-		if (!command)
-			return ;
-		is_builtin(&minishell->bltn, *command);
-		if (read < 0 && ((minishell->bltn >= CD && minishell->bltn < ECHO) || \
-			minishell->bltn == CD || (minishell->bltn == EXPORT && command[1])))
-			exec_builtin(command, minishell);
-		else if (minishell->bltn != NONE || \
-			confirm_command(command, minishell->env_variables))
-			exec_cmd(minishell, command, read);
-		free_char_command(command);
-	}
-	// else
-		// exec_pipe(minishell, env);
+	if (cmd->type == CMD_PIPE || cmd->type == CMD_AND || cmd->type == CMD_OR)
+		return (execute_expression(minishell, \
+			((t_cmd_expr *)minishell->cmd)->command_right));
+	command = convert_command(cmd, NULL);
+	if (!command)
+		return ;
+	minishell->bltn = confirm_builtin(*command);
+	if (!piped && ((minishell->bltn >= CD && minishell->bltn < ECHO) || \
+		minishell->bltn == CD || (minishell->bltn == EXPORT && command[1])))
+		execute_builtin(command, minishell);
+	else if (minishell->bltn != NONE || \
+		confirm_command(command, minishell->env_variables))
+		exec_command(minishell, command);
+	free_char_command(command);
+	if (minishell->pipe_read_store > -1)
+		close(minishell->pipe_read_store);
+	minishell->pipe_read_store = -1;
 }

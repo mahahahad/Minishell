@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/02 17:46:12 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/04 00:19:16 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,9 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 		return (ft_putendl_fd("Minishell does not accept arguments.", 2), 1);
 	g_code = 0;
 	setup_environment(&minishell, env);
+	receive_signal(PARENT);
 	while (true)
 	{
-		receive_signal(PARENT);
 		line = readline(B_YELLOW "minishell$ " RESET);
 		if (!line)
 			break ;
@@ -38,7 +38,7 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 		minishell.output_fd = false;
 		minishell.cmd = NULL;
 		parse(&minishell, line, line);
-		run_command(&minishell, -1);
+		run_command(&minishell, false);
 		//! FOR DEBUGGING:
 		// PRINT_CMD(minishell.cmd);
 		free_parsing(&minishell);

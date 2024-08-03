@@ -15,3 +15,4 @@ cat 3
 cat 4
 cat 5
 rm 1 2 3 4 5
+(cat outfil >> outfile || (echo "Error has occured" && cat outfile))
