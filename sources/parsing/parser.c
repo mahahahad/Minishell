@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/04 00:21:16 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/04 00:21:40 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,8 @@ static t_cmd	*parse_parenthesis(t_cmd *command, t_minishell *minishell)
 	command = parse_logical_expr(NULL, minishell);
 	if (!command)
 		return (ft_putendl_fd("Syntax error in parsing logical expr", 2), NULL);
-	minishell->tokens = minishell->tokens->next;
+	if(minishell->tokens)
+		minishell->tokens = minishell->tokens->next;
 	return (command);
 }
 

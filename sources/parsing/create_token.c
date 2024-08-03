@@ -71,7 +71,7 @@ char	*get_token(char **input)
  */
 static t_tkn_type	get_token_type(char *content)
 {
-	if (!content[1])
+	if (content[0] && !content[1])
 	{
 		if (content[0] == '|')
 			return (PIPE);
@@ -84,7 +84,7 @@ static t_tkn_type	get_token_type(char *content)
 		if (content[0] == ')')
 			return (P_CLOSE);
 	}
-	else if (!content[2])
+	else if (content[0] && content[1] && !content[2])
 	{
 		if (content[0] == '>' && content[1] == '>')
 			return (DBL_GREAT);
