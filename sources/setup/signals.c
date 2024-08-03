@@ -6,13 +6,13 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 22:33:34 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/27 19:11:40 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/04 00:18:08 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	handle_signal_parent(int signum)
+static void	handle_signal_parent(int signum)
 {
 	if (signum == SIGINT)
 	{
@@ -24,7 +24,7 @@ void	handle_signal_parent(int signum)
 	}
 }
 
-void	handle_signal_child(int signum)
+static void	handle_signal_child(int signum)
 {
 	int	status;
 

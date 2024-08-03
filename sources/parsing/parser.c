@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/02 21:38:32 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/04 00:21:16 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@
  * This file contains functions directly used for parsing commands
  */
 
-t_cmd	*parse_expr(t_cmd *cmd_left, t_minishell *minishell);
-t_cmd	*parse_exec(t_minishell *minishell);
+static t_cmd	*parse_execution(t_minishell *minishell);
+static t_cmd	*parse_expression(t_cmd *command_left, t_minishell *minishell);
 
 /**
  * @brief Parse a logical expression command.
@@ -25,38 +25,38 @@ t_cmd	*parse_exec(t_minishell *minishell);
  * This function ensures the correct format is followed for logical expressions.
  * <C_LEFT> <OPERATOR> <C_RIGHT>
  * 
- * @param cmd_left The command to be used as the cmd_left for the expression 
- * struct. It is needed here to parse logical commands within brackets.
+ * @param command_left The command to be used as the command_left for the
+ * expression struct. It is needed here to parse logical commands in brackets.
  * @param minishell
  * 
  * @return the command tree with the boolean operators parsed.
  */
-t_cmd	*parse_logical_expr(t_cmd *command_left, t_minishell *minishell)
+static t_cmd	*parse_logical_expr(t_cmd *command_left, t_minishell *minishell)
 {
 	t_cmd	*cmd;
 
 	if (!command_left)
-		cmd = parse_exec(minishell);
+		cmd = parse_execution(minishell);
 	else
 		cmd = command_left;
 	if (minishell->tokens->type == AND)
 	{
 		minishell->tokens = minishell->tokens->next;
 		if (!minishell->tokens || minishell->tokens->type == P_CLOSE)
-			return (free_cmd(cmd), NULL);
-		cmd = create_expr_cmd(CMD_AND, cmd, parse_expr(NULL, minishell));
+			return (free_command(cmd), NULL);
+		cmd = create_expr_cmd(CMD_AND, cmd, parse_expression(NULL, minishell));
 	}
 	else if (minishell->tokens->type == OR)
 	{
 		minishell->tokens = minishell->tokens->next;
 		if (!minishell->tokens || minishell->tokens->type == P_CLOSE)
-			return (free_cmd(cmd), NULL);
-		cmd = create_expr_cmd(CMD_OR, cmd, parse_exec(minishell));
+			return (free_command(cmd), NULL);
+		cmd = create_expr_cmd(CMD_OR, cmd, parse_execution(minishell));
 		if (minishell->tokens)
-			cmd = parse_expr(cmd, minishell);
+			cmd = parse_expression(cmd, minishell);
 	}
 	else
-		return (free_cmd(cmd), NULL);
+		return (free_command(cmd), NULL);
 	return (cmd);
 }
 
@@ -82,7 +82,7 @@ t_cmd	*parse_logical_expr(t_cmd *command_left, t_minishell *minishell)
  * 
  * @return The parsed logical command tree
  */
-t_cmd	*parse_parenthesis(t_cmd *command, t_minishell *minishell)
+static t_cmd	*parse_parenthesis(t_cmd *command, t_minishell *minishell)
 {
 	if (minishell->tokens->type != P_OPEN)
 		return (command);
@@ -131,7 +131,7 @@ t_cmd	*parse_parenthesis(t_cmd *command, t_minishell *minishell)
  * 
  * @return the command tree with the command parsed.
  */
-t_cmd	*parse_exec(t_minishell *minishell)
+static t_cmd	*parse_execution(t_minishell *minishell)
 {
 	t_cmd		*node;
 	t_cmd_exec	*command;
@@ -154,7 +154,7 @@ t_cmd	*parse_exec(t_minishell *minishell)
 		}
 		add_token_back(&command->tokens, token_duplicate(minishell->tokens));
 		if (!command->tokens)
-			return (free_cmd(node), (node = NULL), free(command), NULL);
+			return (free_command(node), (node = NULL), free(command), NULL);
 		minishell->tokens = minishell->tokens->next;
 	}
 	return (node);
@@ -188,23 +188,23 @@ t_cmd	*parse_exec(t_minishell *minishell)
  * remaining tokens which ensures a valid right command.
  * Returns this command structure.
  * 
- * @param cmd_left The command to be used as the cmd_left for the expression 
- * struct. This is necessary for properly parsing the OR operator (see the 
- * parse_logical_expr function)
+ * @param command_left The command to be used as the command_left for the
+ * expression struct. This is necessary for properly parsing the OR operator
+ * (see the parse_logical_expr function)
  * @param minishell
  * 
  * @return The command tree with the AND, OR and PIPE parsed.
  */
-t_cmd	*parse_expr(t_cmd *cmd_left, t_minishell *minishell)
+static t_cmd	*parse_expression(t_cmd *command_left, t_minishell *minishell)
 {
-	t_cmd	*cmd;
+	t_cmd	*command;
 
-	if (cmd_left)
-		cmd = cmd_left;
+	if (command_left)
+		command = command_left;
 	else
-		cmd = parse_exec(minishell);
-	if (!cmd || !minishell->tokens)
-		return (cmd);
+		command = parse_execution(minishell);
+	if (!command || !minishell->tokens)
+		return (command);
 	if (minishell->tokens->type == PIPE)
 	{
 		if (!minishell->tokens->next)
@@ -212,15 +212,16 @@ t_cmd	*parse_expr(t_cmd *cmd_left, t_minishell *minishell)
 		minishell->tokens = minishell->tokens->next;
 		if (!minishell->tokens)
 			return (ft_putendl_fd("Syntax error while parsing pipe", 2), NULL);
-		cmd = create_expr_cmd(CMD_PIPE, cmd, parse_expr(NULL, minishell));
+		command = create_expr_cmd(CMD_PIPE, command, \
+			parse_expression(NULL, minishell));
 	}
 	else if (minishell->tokens->type == AND || minishell->tokens->type == OR)
 	{
-		cmd = parse_logical_expr(cmd, minishell);
-		if (!cmd)
+		command = parse_logical_expr(command, minishell);
+		if (!command)
 			ft_putendl_fd("Syntax error while parsing logical expr", 2);
 	}
-	return (cmd);
+	return (command);
 }
 
 /**
@@ -270,7 +271,7 @@ void	parse(t_minishell *minishell, char *line, char *store)
 	while (minishell->tokens_head && ++minishell->token_count)
 		minishell->tokens_head = minishell->tokens_head->next;
 	minishell->tokens_head = minishell->tokens;
-	minishell->cmd = parse_expr(NULL, minishell);
+	minishell->cmd = parse_expression(NULL, minishell);
 	if (minishell->cmd)
 		add_history(store);
 	free(store);

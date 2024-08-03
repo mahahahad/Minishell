@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/01 17:12:14 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/02 18:30:23 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/04 00:08:22 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ char	*get_token(char **input)
  * 
  * @return the type of token that content is.
  */
-t_tkn_type	get_token_type(char *content)
+static t_tkn_type	get_token_type(char *content)
 {
 	if (!content[1])
 	{
@@ -110,7 +110,7 @@ t_tkn_type	get_token_type(char *content)
  * 
  * @return The token after the quotes are removed.
  */
-char	*quote_trimming(char *token)
+static char	*quote_trimming(char *token)
 {
 	int		token_index;
 	int		quote_index;

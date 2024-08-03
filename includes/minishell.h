@@ -167,8 +167,8 @@ struct s_cmd_redir
 struct s_cmd_expr
 {
 	t_cmd_type	type;
-	t_cmd		*cmd_left;
-	t_cmd		*cmd_right;
+	t_cmd		*command_left;
+	t_cmd		*command_right;
 };
 
 // struct s_cmd_hdoc
@@ -219,7 +219,7 @@ bool	is_argument_valid(const char *string);
 
 // Cleanup
 void	free_char_command(char **cmd);
-void	free_cmd(t_cmd *cmd);
+void	free_command(t_cmd *cmd);
 void	free_environment(t_minishell *minishell);
 void	free_parsing(t_minishell *minishell);
 void	free_tokens(t_token **list);

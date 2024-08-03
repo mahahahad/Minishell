@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 22:36:59 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/02 18:31:37 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/04 00:11:23 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ t_token	*token_duplicate(t_token *token)
  * in a location it should not have been in.
  *
  * @param type used to identify the error message that is needed to be printed.
- * @param command is sent to free_cmd() to free up.
+ * @param command is sent to free_command() to free up.
  *
  * @return NULL
  */
@@ -55,7 +55,7 @@ void	*print_exec_parse_err(t_tkn_type type, t_cmd *command)
 		ft_putendl_fd("Syntax error near unexpected token `&&'", 2);
 	else if (type == OR)
 		ft_putendl_fd("Syntax error near unexpected token `||'", 2);
-	free_cmd(command);
+	free_command(command);
 	return (NULL);
 }
 

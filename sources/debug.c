@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 12:31:23 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/02 21:53:16 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/03 23:26:27 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,12 @@ void	print_token(t_token token, int node_depth, char *prefix)
 			break ;
 		case AND:
 			type = "AND";
+			break ;
+		case P_OPEN:
+			type = "PARAN_OPEN";
+			break ;
+		case P_CLOSE:
+			type = "PARAN_CLOSE";
 			break ;
 		default :
 			type = "Word";
@@ -130,9 +136,9 @@ void	print_expr_cmd(t_cmd_expr *cmd, int node_depth, char *prefix)
 			break;
 	}
 	print_tab_str("Left", node_depth + 1, prefix);
-	print_cmd(cmd->cmd_left, node_depth + 2, prefix);
+	print_cmd(cmd->command_left, node_depth + 2, prefix);
 	print_tab_str("Right", node_depth + 1, prefix);
-	print_cmd(cmd->cmd_right, node_depth + 2, prefix);
+	print_cmd(cmd->command_right, node_depth + 2, prefix);
 }
 
 // void	print_heredoc_cmd(t_cmd_heredoc *cmd, int node_depth, char *prefix)
