@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/04 00:21:40 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/04 17:28:57 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ static t_cmd	*parse_parenthesis(t_cmd *command, t_minishell *minishell)
 	command = parse_logical_expr(NULL, minishell);
 	if (!command)
 		return (ft_putendl_fd("Syntax error in parsing logical expr", 2), NULL);
-	if(minishell->tokens)
+	if (minishell->tokens)
 		minishell->tokens = minishell->tokens->next;
 	return (command);
 }
@@ -213,8 +213,8 @@ static t_cmd	*parse_expression(t_cmd *command_left, t_minishell *minishell)
 		minishell->tokens = minishell->tokens->next;
 		if (!minishell->tokens)
 			return (ft_putendl_fd("Syntax error while parsing pipe", 2), NULL);
-		command = create_expr_cmd(CMD_PIPE, command, \
-			parse_expression(NULL, minishell));
+		command = create_expr_cmd(CMD_PIPE, command,
+				parse_expression(NULL, minishell));
 	}
 	else if (minishell->tokens->type == AND || minishell->tokens->type == OR)
 	{
@@ -262,7 +262,7 @@ void	parse(t_minishell *minishell, char *line, char *store)
 	i = -1;
 	while (++i < minishell->token_count)
 	{
-		add_token_back(&minishell->tokens, \
+		add_token_back(&minishell->tokens,
 			new_token(get_token(&line), minishell->env_variables, true));
 		if (!minishell->tokens)
 			return ;

@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 17:04:29 by mdanish           #+#    #+#             */
-/*   Updated: 2024/07/27 19:11:40 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/04 17:29:16 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ static char	*expand_the_key(char *token, char *value, int start, int *end)
 	{
 		expanded = ft_calloc((tok_len + val_len) - (*end - start) + 1, 1);
 		if (!expanded)
-			return (perror("Dollar Expansion"), g_code = 1, \
+			return (perror("Dollar Expansion"), g_code = 1,
 				free(token), NULL);
 		ft_memcpy(expanded, token, start);
 		ft_memcpy(expanded + start, value, val_len);
@@ -84,7 +84,7 @@ static char	*expand_status_code(char *token, int start, int end, int digits)
 	tok_len = ft_strlen(token);
 	expanded = ft_calloc(tok_len + digits - 1, sizeof(char));
 	if (!expanded)
-		return (perror("Dollar Expansion"), g_code = 1, free(token), \
+		return (perror("Dollar Expansion"), g_code = 1, free(token),
 			NULL);
 	ft_memcpy(expanded, token, start);
 	count = digits;
@@ -174,7 +174,7 @@ static bool	invalid_key(char **token, int *start, int *end, int length)
 		return (replace_status_code(token, *start - 1, *end, length), true);
 	if (ft_isdigit(token[0][*end]) && ++(*end))
 		return (ft_memcpy(*token + *start - 1, *token + *end, length - *end));
-	while (token[0][*end] && (ft_isalnum(token[0][*end]) || \
+	while (token[0][*end] && (ft_isalnum(token[0][*end]) ||
 		token[0][*end] == '_'))
 		(*end)++;
 	if (*end == *start)
@@ -218,8 +218,8 @@ char	*dollar_expansion(char *token, t_env *list)
 				break ;
 			store = store->next;
 		}
-		if (!store && ft_memcpy(token + --start, token + end, \
-			token_length - end + 1))
+		if (!store && ft_memcpy(token + --start, token + end,
+				token_length - end + 1))
 			continue ;
 		token = expand_the_key(token, store->value, start - 1, &end);
 		start = end;

@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 10:07:41 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/01 16:39:39 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/04 17:29:51 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,8 +63,8 @@ static char	**sort_environment_variables(char **environment, int env_count)
 		index_two = index_one;
 		while (++index_two < env_count)
 		{
-			if (ft_strncmp(environment[index_one], \
-				environment[index_two], 100) > 0)
+			if (ft_strncmp(environment[index_one],
+					environment[index_two], 100) > 0)
 			{
 				store = environment[index_two];
 				environment[index_two] = environment[index_one];

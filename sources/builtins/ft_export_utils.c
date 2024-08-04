@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 20:21:11 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/01 15:56:01 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/04 17:27:55 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,10 +116,10 @@ void	create_new_variable(t_env *variable, int *length, char *string)
 		variable->key = ft_substr(string, 0, *length);
 		if (!variable->key)
 			return (g_code = 1, perror("export"));
-		variable->value = ft_substr(string, *length + 1, \
+		variable->value = ft_substr(string, *length + 1,
 				ft_strlen(string) - (*length + 1));
 		if (!variable->value)
-			return (g_code = 1, free(variable->key), variable->key = NULL, \
+			return (g_code = 1, free(variable->key), variable->key = NULL,
 				perror("export"));
 	}
 }

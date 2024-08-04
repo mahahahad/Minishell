@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/01 17:12:14 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/04 00:08:22 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/04 14:39:44 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,8 @@ char	*get_token(char **input)
 			continue ;
 		if (ft_strchr("|<>()&", (*input)[i]))
 		{
-			if ((*input)[i] == (*input)[i + 1] && !i)
+			if (!ft_strchr("()", (*input)[i]) && (*input)[i] == (*input)[i + 1]
+				&& !i)
 				i = 2;
 			if (!i)
 				i = 1;
@@ -186,7 +187,7 @@ void	add_token_back(t_token **tokens_list, t_token *token)
 	t_token	*current;
 
 	if (!token)
-		return (perror("Tokenisation"), g_code = 1, \
+		return (perror("Tokenisation"), g_code = 1,
 			free_tokens(tokens_list));
 	current = (*tokens_list);
 	if (!current)

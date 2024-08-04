@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:51:40 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/02 17:28:35 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/04 17:27:12 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -213,8 +213,8 @@ t_token	*wildcard_expansion(char *token_string)
 	{
 		if (match_pattern(token_string, location, files->d_name))
 		{
-			add_token_back(&token, new_token(ft_strdup(files->d_name), NULL, \
-				false));
+			add_token_back(&token, new_token(ft_strdup(files->d_name), NULL,
+					false));
 			if (!token)
 				break ;
 		}

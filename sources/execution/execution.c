@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 12:05:36 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/04 00:18:54 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/04 17:31:29 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static char	**convert_command(t_cmd *command, t_token *current)
 	{
 		str_tokens[token_count[1]] = ft_strdup(current->content);
 		if (!str_tokens[token_count[1]++])
-			return (free_split(str_tokens, token_count[0]), \
+			return (free_split(str_tokens, token_count[0]),
 				perror("Command conversion"), NULL);
 		current = current->next;
 	}
@@ -106,8 +106,8 @@ void	run_command(t_minishell *minishell, bool piped)
 	if (!cmd)
 		return ;
 	if (cmd->type == CMD_PIPE || cmd->type == CMD_AND || cmd->type == CMD_OR)
-		return (execute_expression(minishell, \
-			((t_cmd_expr *)minishell->cmd)->command_right));
+		return (execute_expression(minishell,
+				((t_cmd_expr *)minishell->cmd)->command_right));
 	command = convert_command(cmd, NULL);
 	if (!command)
 		return ;

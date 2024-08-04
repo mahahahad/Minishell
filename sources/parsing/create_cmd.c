@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:34:36 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/04 00:31:32 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/04 14:39:44 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ static t_cmd	*create_redir_cmd(t_cmd *command, t_cmd_type type, char *file)
 
 	redir_command = ft_calloc(1, sizeof(t_cmd_redir));
 	if (!redir_command)
-		return (perror("Redirection Command"), g_code = 1, \
+		return (perror("Redirection Command"), g_code = 1,
 			free_command(command), NULL);
 	redir_command->cmd = command;
 	redir_command->type = type;
@@ -125,7 +125,7 @@ t_cmd	*parse_redir(t_cmd *command, t_minishell *minishell)
 		if (minishell->tokens->next)
 			content = minishell->tokens->next->content;
 		if (!minishell->tokens->next || minishell->tokens->next->type != WORD)
-			return (ft_putendl_fd("No file for redirection found", 2), \
+			return (ft_putendl_fd("No file for redirection found", 2),
 				free_command(command), NULL);
 		if (type == LESS)
 			command = create_redir_cmd(command, CMD_LESS, content);
@@ -156,7 +156,7 @@ t_cmd	*create_expr_cmd(t_cmd_type type, t_cmd *cmd_left, t_cmd *cmd_right)
 
 	expr_cmd = ft_calloc(1, sizeof(t_cmd_expr));
 	if (!expr_cmd)
-		return (perror("Tokenisation"), g_code = 1, free_command(cmd_left), \
+		return (perror("Tokenisation"), g_code = 1, free_command(cmd_left),
 			free_command(cmd_right), NULL);
 	expr_cmd->type = type;
 	expr_cmd->command_left = cmd_left;
