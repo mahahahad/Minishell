@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:34:36 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/01 23:38:14 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/08/04 20:34:37 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ static int	heredoc_creation(char *delimiter)
 		if (!line)
 		{
 			ft_putendl_fd("Warning: heredoc delimited by end-of-file", 2);
-			g_code = 130;
 			break ;
 		}
 		len2 = ft_strlen(line);
