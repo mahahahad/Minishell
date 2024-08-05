@@ -6,11 +6,38 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/01 15:54:35 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/05 20:06:06 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+static bool	expand_tilde(t_env *home, char **arguments, int arg_length)
+{
+	char	*expanded;
+	int		val_len;
+
+	if (!arguments[1])
+	{
+		free(arguments[0]);
+		arguments[0] = ft_strdup(home->value);
+		if (!arguments[0])
+			return (perror("cd"), true);
+	}
+	else if (!ft_strncmp(arguments[1], "~", 2) || \
+		!ft_strncmp(arguments[1], "~/", 2))
+	{
+		val_len = ft_strlen(home->value);
+		expanded = ft_calloc(arg_length + val_len, sizeof(char));
+		if (!expanded)
+			return (perror("cd"), true);
+		ft_memcpy(expanded, home->value, val_len);
+		ft_memcpy(expanded + val_len, arguments[1] + 1, arg_length);
+		free(arguments[1]);
+		arguments[1] = expanded;
+	}
+	return (false);
+}
 
 /**
  * @brief Checks the arguments for validity.
@@ -41,21 +68,13 @@ static bool	check_invalid_args(char **arguments, t_env *environment)
 		ft_putendl_fd("cd: too many arguments", 2);
 	else if (arguments[1] && arguments[1][0] == '-')
 		ft_putendl_fd("cd: options are not accepted", 2);
-	else if (!arguments[1])
-	{
-		while (environment && !ft_strncmp(environment->key, "HOME", 5))
-			environment = environment->next;
-		if (environment)
-			arguments[1] = environment->value;
-		else
-		{
-			ft_putendl_fd("cd: HOME not set", 2);
-			error_flag = true;
-		}
-	}
-	if (error_flag)
-		g_code = 1;
-	return (error_flag);
+	while (environment && ft_strncmp(environment->key, "HOME", 5))
+		environment = environment->next;
+	if (!environment && (!arguments[1] || !ft_strncmp(arguments[1], "~", 2) || \
+		!ft_strncmp(arguments[1], "~/", 2)))
+		return (ft_putendl_fd("cd: HOME not set", 2), true);
+	error_flag = expand_tilde(environment, arguments, ft_strlen(arguments[1]));
+	return (g_code = error_flag, error_flag);
 }
 
 /**
@@ -104,29 +123,33 @@ static char	*make_value(char *key, char *value, int total_length)
  * @param minishell is used to access the matrix and list to add variables.
  * 
  */
-static void	chg_dir(char **args, t_env *old, t_env *new, t_minishell *minishell)
+static void	chg_dir(char **args, char **old, char **new, t_minishell *minishell)
 {
 	char	*var;
+	char	*export[4];
 
 	var = getcwd(NULL, 0);
-	if (chdir(args[1]))
-		return (g_code = 1, perror("cd"));
+	if (!var || (args[1] && chdir(args[1])) || (!args[1] && chdir(args[0])))
+		return (g_code = 1, perror("cd"), free(var));
+	ft_memset(export, 0, 4 * sizeof(char *));
+	export[1] = make_value("OLDPWD=\"", var, 9 + ft_strlen(var));
 	if (old)
-	{
-		free(old->value);
-		old->value = var;
-		var = make_value("OLDPWD=\"", old->value, 9 + ft_strlen(old->value));
-		add_to_matrix(minishell, var);
+		free(*old);
+	if (old)
+		*old = var;
+	else
 		free(var);
-	}
+	var = getcwd(NULL, 0);
+	export[2] = make_value("PWD=\"", var, 6 + ft_strlen(var));
 	if (new)
-	{
-		free(new->value);
-		new->value = getcwd(NULL, 0);
-		var = make_value("PWD=\"", new->value, 6 + ft_strlen(new->value));
-		add_to_matrix(minishell, var);
+		free(*new);
+	if (new)
+		*new = var;
+	else
 		free(var);
-	}
+	ft_export(minishell, export);
+	free(export[1]);
+	free(export[2]);
 }
 
 /**
@@ -148,8 +171,8 @@ static void	chg_dir(char **args, t_env *old, t_env *new, t_minishell *minishell)
  */
 void	ft_cd(char **arguments, t_minishell *minishell)
 {
-	t_env	*old;
-	t_env	*new;
+	char	**old;
+	char	**new;
 	t_env	*list;
 
 	old = NULL;
@@ -161,9 +184,9 @@ void	ft_cd(char **arguments, t_minishell *minishell)
 	while (list)
 	{
 		if (!ft_strncmp(list->key, "OLDPWD", 7))
-			old = list;
+			old = &list->value;
 		else if (!ft_strncmp(list->key, "PWD", 4))
-			new = list;
+			new = &list->value;
 		list = list->next;
 	}
 	chg_dir(arguments, old, new, minishell);

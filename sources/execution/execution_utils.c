@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/01 19:25:06 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/05 08:57:20 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/05 19:57:21 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
  * 
  * The function goes through the command tree and identifies the first instance
  * of a redirection and duplicates it. It duplicates to the STDOUT or STDIN on
- * the basis of the command type. While it goes through the tree of the
+ * the basis of the redirection type. While it goes through the tree of the
  * redirections, it closes every single open fd to prevent fd leaks.
  * 
  * @param command is the tree to identify redirection from.
@@ -29,10 +29,12 @@ void	duplicate_fds(t_cmd	*command, t_minishell *minishell)
 	while (command->type > CMD_PIPE && command->type < CMD_AND)
 	{
 		if ((command->type == CMD_GREAT || command->type == CMD_DBL_GREAT)
-			&& !minishell->output_fd && dup2(((t_cmd_redir *)command)->fd, 1))
+			&& !minishell->output_fd && ((t_cmd_redir *)command)->fd > -1
+			&& dup2(((t_cmd_redir *)command)->fd, 1))
 			minishell->output_fd = true;
 		else if ((command->type == CMD_LESS || command->type == CMD_HEREDOC)
-			&& !minishell->input_fd && !dup2(((t_cmd_redir *)command)->fd, 0))
+			&& !minishell->input_fd && ((t_cmd_redir *)command)->fd > -1
+			&& !dup2(((t_cmd_redir *)command)->fd, 0))
 			minishell->input_fd = true;
 		if (((t_cmd_redir *)command)->fd > -1)
 			close(((t_cmd_redir *)command)->fd);
