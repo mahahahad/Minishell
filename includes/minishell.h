@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/04 00:02:52 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/05 08:37:35 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,6 +133,7 @@ struct s_minishell
 	t_bltn		bltn;
 	t_env		*env_variables;
 	t_cmd		*cmd;
+	t_cmd		*cmd_head;
 	t_token		*tokens;
 	t_token		*tokens_head;
 };
@@ -189,13 +190,14 @@ t_cmd	*create_expr_cmd(t_cmd_type type, t_cmd *cmd_left, t_cmd *cmd_right);
 bool	count_quotations(char *line);
 int		count_tokens(char *input);
 char	*dollar_expansion(char *token, t_env *list);
-void	ft_print_error(t_err_type type, char *err, char *extra);
+t_cmd	*ft_print_error(t_err_type type, char *err, t_cmd *command);
 char	*get_token(char **input);
 t_token	*new_token(char *content, t_env *list, bool expand);
 void	parse(t_minishell *minishell, char *line, char *store);
 t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell);
 void	*print_exec_parse_err(t_tkn_type type, t_cmd *cmd);
 t_token	*token_duplicate(t_token *token);
+bool	valid_parenthesis(char *line);
 t_token	*wildcard_expansion(char *token);
 
 // Execution

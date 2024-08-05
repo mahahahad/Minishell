@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/04 17:28:57 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/05 09:12:07 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,14 +39,14 @@ static t_cmd	*parse_logical_expr(t_cmd *command_left, t_minishell *minishell)
 		cmd = parse_execution(minishell);
 	else
 		cmd = command_left;
-	if (minishell->tokens->type == AND)
+	if (cmd && minishell->tokens->type == AND)
 	{
 		minishell->tokens = minishell->tokens->next;
 		if (!minishell->tokens || minishell->tokens->type == P_CLOSE)
 			return (free_command(cmd), NULL);
 		cmd = create_expr_cmd(CMD_AND, cmd, parse_expression(NULL, minishell));
 	}
-	else if (minishell->tokens->type == OR)
+	else if (cmd && minishell->tokens->type == OR)
 	{
 		minishell->tokens = minishell->tokens->next;
 		if (!minishell->tokens || minishell->tokens->type == P_CLOSE)
@@ -82,15 +82,13 @@ static t_cmd	*parse_logical_expr(t_cmd *command_left, t_minishell *minishell)
  * 
  * @return The parsed logical command tree
  */
-static t_cmd	*parse_parenthesis(t_cmd *command, t_minishell *minishell)
+static t_cmd	*parse_parenthesis(t_minishell *minishell)
 {
-	if (minishell->tokens->type != P_OPEN)
-		return (command);
+	t_cmd	*command;
+
 	minishell->tokens = minishell->tokens->next;
 	command = parse_logical_expr(NULL, minishell);
-	if (!command)
-		return (ft_putendl_fd("Syntax error in parsing logical expr", 2), NULL);
-	if (minishell->tokens)
+	if (command && minishell->tokens)
 		minishell->tokens = minishell->tokens->next;
 	return (command);
 }
@@ -137,25 +135,25 @@ static t_cmd	*parse_execution(t_minishell *minishell)
 	t_cmd		*node;
 	t_cmd_exec	*command;
 
+	if (minishell->tokens->type == P_OPEN)
+		return (parse_parenthesis(minishell));
 	node = ft_calloc(1, sizeof(t_cmd_exec));
 	if (!node)
 		return (perror("Tokenisation"), g_code = 1, NULL);
 	command = (t_cmd_exec *)node;
-	node = parse_parenthesis(node, minishell);
 	while (minishell->tokens)
 	{
 		node = parse_redir(node, minishell);
 		if (!node || !minishell->tokens)
 			return (node);
+		if (minishell->tokens->type == P_OPEN || (!command->tokens && \
+			minishell->tokens->type > WORD && minishell->tokens->type < P_OPEN))
+			return (ft_print_error(SYNTAX, minishell->tokens->content, node));
 		if (minishell->tokens->type > WORD && minishell->tokens->type < P_OPEN)
-		{
-			if (!command->tokens)
-				return (print_exec_parse_err(minishell->tokens->type, node));
 			break ;
-		}
 		add_token_back(&command->tokens, token_duplicate(minishell->tokens));
 		if (!command->tokens)
-			return (free_command(node), (node = NULL), free(command), NULL);
+			return (free_command(node), NULL);
 		minishell->tokens = minishell->tokens->next;
 	}
 	return (node);
@@ -209,10 +207,8 @@ static t_cmd	*parse_expression(t_cmd *command_left, t_minishell *minishell)
 	if (minishell->tokens->type == PIPE)
 	{
 		if (!minishell->tokens->next)
-			return (ft_print_error(SYNTAX, "|", NULL), NULL);
+			return (ft_print_error(SYNTAX, "|", command));
 		minishell->tokens = minishell->tokens->next;
-		if (!minishell->tokens)
-			return (ft_putendl_fd("Syntax error while parsing pipe", 2), NULL);
 		command = create_expr_cmd(CMD_PIPE, command,
 				parse_expression(NULL, minishell));
 	}
@@ -251,16 +247,15 @@ static t_cmd	*parse_expression(t_cmd *command_left, t_minishell *minishell)
  */
 void	parse(t_minishell *minishell, char *line, char *store)
 {
-	int		i;
+	int		token_count;
 
-	if (!line || !line[0] || count_quotations(line))
+	if (!line || !line[0] || count_quotations(line) || !valid_parenthesis(line))
 		return ;
 	minishell->pipe_fds[0] = -1;
 	minishell->pipe_fds[1] = -1;
-	minishell->pipe_read_store = -1;
 	minishell->token_count = count_tokens(line);
-	i = -1;
-	while (++i < minishell->token_count)
+	token_count = -1;
+	while (++token_count < minishell->token_count)
 	{
 		add_token_back(&minishell->tokens,
 			new_token(get_token(&line), minishell->env_variables, true));
@@ -273,6 +268,7 @@ void	parse(t_minishell *minishell, char *line, char *store)
 		minishell->tokens_head = minishell->tokens_head->next;
 	minishell->tokens_head = minishell->tokens;
 	minishell->cmd = parse_expression(NULL, minishell);
+	minishell->cmd_head = minishell->cmd;
 	if (minishell->cmd)
 		add_history(store);
 	free(store);

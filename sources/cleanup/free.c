@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:38:52 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/04 00:06:54 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/04 20:38:11 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,9 +89,11 @@ void	free_char_command(char **command)
  */
 void	free_parsing(t_minishell *minishell)
 {
-	free_command(minishell->cmd);
+	free_command(minishell->cmd_head);
 	free_tokens(&minishell->tokens_head);
 	minishell->tokens = NULL;
+	minishell->cmd = NULL;
+	minishell->cmd_head = NULL;
 }
 
 /**

@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 22:36:59 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/04 00:11:23 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/04 21:14:54 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,26 +102,27 @@ bool	count_quotations(char *line)
  * 
  * @return int
  */
-bool	valid_brackets(char *line)
+bool	valid_parenthesis(char *line)
 {
-	int		count;
+	int	count;
+	int	index;
 
 	count = 0;
-	while (*line && count < 0)
+	index = -1;
+	while (line[++index] && count > -1)
 	{
-		if (ft_is_quotation(*line))
-			line++;
-		else if (*line == '(' && line++)
+		if (ft_is_quotation(line[index]))
+			continue ;
+		else if (line[index] == '(')
 			count++;
-		else if (*line == ')' && line++)
+		else if (line[index] == ')')
 			count--;
-		else
-			line++;
 	}
 	if (count)
+	{
 		ft_putstr_fd(RED "Bad brackets detected, command rejected.\n" RESET, 2);
-	if (count)
 		g_code = 2;
+	}
 	return (!count);
 }
 

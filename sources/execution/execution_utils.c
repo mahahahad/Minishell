@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/01 19:25:06 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/03 23:47:07 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/05 08:57:20 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,23 +20,23 @@
  * the basis of the command type. While it goes through the tree of the
  * redirections, it closes every single open fd to prevent fd leaks.
  * 
- * @param cmd is the tree to identify redirection from.
+ * @param command is the tree to identify redirection from.
  * @param minishell contains flags for the duplication.
  * @param read is a flag to indicate which end of the pipe to duplicate.
  */
-void	duplicate_fds(t_cmd	*cmd, t_minishell *minishell)
+void	duplicate_fds(t_cmd	*command, t_minishell *minishell)
 {
-	while (cmd->type > CMD_PIPE && cmd->type < CMD_AND)
+	while (command->type > CMD_PIPE && command->type < CMD_AND)
 	{
-		if ((cmd->type == CMD_GREAT || cmd->type == CMD_DBL_GREAT) && \
-			!minishell->output_fd && dup2(((t_cmd_redir *)cmd)->fd, 1))
+		if ((command->type == CMD_GREAT || command->type == CMD_DBL_GREAT)
+			&& !minishell->output_fd && dup2(((t_cmd_redir *)command)->fd, 1))
 			minishell->output_fd = true;
-		else if ((cmd->type == CMD_LESS || cmd->type == CMD_HEREDOC) && \
-			!minishell->input_fd && !dup2(((t_cmd_redir *)cmd)->fd, 0))
+		else if ((command->type == CMD_LESS || command->type == CMD_HEREDOC)
+			&& !minishell->input_fd && !dup2(((t_cmd_redir *)command)->fd, 0))
 			minishell->input_fd = true;
-		if (((t_cmd_redir *)cmd)->fd > -1)
-			close(((t_cmd_redir *)cmd)->fd);
-		cmd = ((t_cmd_redir *)cmd)->cmd;
+		if (((t_cmd_redir *)command)->fd > -1)
+			close(((t_cmd_redir *)command)->fd);
+		command = ((t_cmd_redir *)command)->cmd;
 	}
 	if (!minishell->output_fd && minishell->pipe_fds[1] > -1)
 		dup2(minishell->pipe_fds[1], STDOUT_FILENO);
@@ -48,7 +48,7 @@ void	duplicate_fds(t_cmd	*cmd, t_minishell *minishell)
 		close(minishell->pipe_fds[1]);
 	if (minishell->pipe_read_store > -1)
 		close(minishell->pipe_read_store);
-	minishell->cmd = cmd;
+	minishell->cmd = command;
 }
 
 /**

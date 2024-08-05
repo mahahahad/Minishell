@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/04 00:19:16 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/05 09:17:03 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,14 +36,13 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 			break ;
 		minishell.input_fd = false;
 		minishell.output_fd = false;
-		minishell.cmd = NULL;
+		minishell.pipe_read_store = -1;
 		parse(&minishell, line, line);
 		run_command(&minishell, false);
 		//! FOR DEBUGGING:
-		// PRINT_CMD(minishell.cmd);
+		// PRINT_CMD(minishell.cmd_head);
 		free_parsing(&minishell);
 	}
-	free_environment(&minishell);
-	rl_clear_history();
-	return (ft_putendl_fd("exit", 1), g_code);
+	return (rl_clear_history(), free_environment(&minishell),
+		ft_putendl_fd("exit", 1), g_code);
 }
