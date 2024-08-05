@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/05 09:12:07 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/05 14:32:40 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,20 +43,20 @@ static t_cmd	*parse_logical_expr(t_cmd *command_left, t_minishell *minishell)
 	{
 		minishell->tokens = minishell->tokens->next;
 		if (!minishell->tokens || minishell->tokens->type == P_CLOSE)
-			return (free_command(cmd), NULL);
+			return (ft_print_error(SYNTAX, "&&", cmd));
 		cmd = create_expr_cmd(CMD_AND, cmd, parse_expression(NULL, minishell));
 	}
 	else if (cmd && minishell->tokens->type == OR)
 	{
 		minishell->tokens = minishell->tokens->next;
 		if (!minishell->tokens || minishell->tokens->type == P_CLOSE)
-			return (free_command(cmd), NULL);
+			return (ft_print_error(SYNTAX, "||", cmd));
 		cmd = create_expr_cmd(CMD_OR, cmd, parse_execution(minishell));
 		if (minishell->tokens)
 			cmd = parse_expression(cmd, minishell);
 	}
 	else
-		return (free_command(cmd), NULL);
+		return (ft_print_error(SYNTAX, minishell->tokens->content, cmd));
 	return (cmd);
 }
 
