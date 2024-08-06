@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/05 20:06:06 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/06 21:41:12 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,8 +70,8 @@ static bool	check_invalid_args(char **arguments, t_env *environment)
 		ft_putendl_fd("cd: options are not accepted", 2);
 	while (environment && ft_strncmp(environment->key, "HOME", 5))
 		environment = environment->next;
-	if (!environment && (!arguments[1] || !ft_strncmp(arguments[1], "~", 2) || \
-		!ft_strncmp(arguments[1], "~/", 2)))
+	if ((!environment && (!arguments[1] || !ft_strncmp(arguments[1], "~", 2)
+		|| !ft_strncmp(arguments[1], "~/", 2))) || !environment->value)
 		return (ft_putendl_fd("cd: HOME not set", 2), true);
 	error_flag = expand_tilde(environment, arguments, ft_strlen(arguments[1]));
 	return (g_code = error_flag, error_flag);

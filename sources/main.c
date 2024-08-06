@@ -6,13 +6,13 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/05 09:17:03 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/06 16:12:55 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	g_code;
+unsigned int	g_code;
 
 /*
  * Loops until EOF is detected and reads user input using readline

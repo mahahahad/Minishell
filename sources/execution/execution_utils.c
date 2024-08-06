@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/01 19:25:06 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/05 19:57:21 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/06 23:12:20 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,8 +102,8 @@ void	execute_builtin(char **command, t_minishell *minishell)
 		ft_echo(command);
 	else if (minishell->bltn == ENV)
 		ft_env(command, minishell->envp);
-	// else if (minishell->builin_command == EXIT)
-	// 	ft_exit(cmd, minishell);
+	else if (minishell->bltn == EXIT)
+		ft_exit(command, minishell);
 	else if (minishell->bltn == EXPORT)
 		ft_export(minishell, command);
 	else if (minishell->bltn == PWD)

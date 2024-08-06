@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/05 08:37:35 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/06 23:11:57 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@
 # include <time.h>
 
 /** GLOBAL VARIABLE **/
-extern int					g_code;
+extern unsigned int			g_code;
 
 /** STRUCTURES **/
 typedef struct s_minishell	t_minishell;
@@ -214,6 +214,7 @@ void	create_new_variable(t_env *new_var, int *length, char *string);
 void	ft_cd(char **cmd, t_minishell *minishell);
 void	ft_echo(char **cmd);
 void	ft_env(char **args, char **envp);
+void	ft_exit(char **arguments, t_minishell *minishell);
 void	ft_export(t_minishell *minishell, char **new_variable);
 void	ft_pwd(char **args);
 void	ft_unset(t_minishell *minishell, char **variable);
