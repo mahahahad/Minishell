@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 10:07:41 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/07 16:50:24 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/07 19:55:41 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,18 @@ static void	create_environment(t_minishell *minishell)
 	t_env	*env;
 
 	ft_memset(variable, 0, sizeof(char *) * 3);
+	cwd = getcwd(NULL, 0);
+	variable[1] = make_value("PWD=", cwd, 4 + ft_strlen(cwd), "env setup");
+	ft_export(minishell, variable);
+	free(variable[1]);
+	env = minishell->env_variables;
+	while (env && ft_strncmp(env->key, "SHLVL", 6) && env->key[0] < 'T')
+		env = env->next;
+	if (!env || env->key[0] > 'S')
+	{
+		variable[1] = "SHLVL=1";
+		ft_export(minishell, variable);
+	}
 	env = minishell->env_variables;
 	while (env && ft_strncmp(env->key, "OLDPWD", 7) && env->key[0] < 'P')
 		env = env->next;
@@ -27,17 +39,6 @@ static void	create_environment(t_minishell *minishell)
 		ft_unset(minishell, variable);
 	else if (!env || env->key[0] > 'O')
 		ft_export(minishell, variable);
-	cwd = getcwd(NULL, 0);
-	variable[1] = make_value("PWD=", cwd, 4 + ft_strlen(cwd), "env setup");
-	ft_export(minishell, variable);
-	free(variable[1]);
-	while (env && ft_strncmp(env->key, "SHLVL", 6) && env->key[0] < 'T')
-		env = env->next;
-	if (!env || env->key[0] > 'S')
-	{
-		variable[1] = "SHLVL=1";
-		ft_export(minishell, variable);
-	}
 }
 
 /**
