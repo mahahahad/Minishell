@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 12:05:36 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/04 17:31:29 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/07 19:05:29 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,34 @@ static char	**convert_command(t_cmd *command, t_token *current)
 	return (str_tokens);
 }
 
+static void	change_shlvl(t_minishell *minishell)
+{
+	int	index[2];
+
+	*index = 0;
+	while (minishell->envp[*index] && \
+		ft_strncmp(minishell->envp[*index], "SHLVL", 6) != '=')
+		(*index)++;
+	if (!minishell->envp[*index])
+		return ;
+	index[1] = 0;
+	while (minishell->envp[*index][index[1] + 6] && \
+		ft_isdigit(minishell->envp[*index][index[1] + 6]))
+		index[1]++;
+	if (minishell->envp[*index][index[1] + 6])
+		return ((void)ft_memcpy(minishell->envp[*index], "SHLVL=1", 8));
+	index[1] = ft_atoi(minishell->envp[*index] + 6) + 1;
+	if (index[1] > 1024)
+	{
+		ft_putstr_fd("warning: shell level (", 2);
+		ft_putnbr_fd(index[1], 2);
+		ft_putendl_fd(") too high, resetting to 1", 2);
+		return ((void)ft_memcpy(minishell->envp[*index], "SHLVL=1", 8));
+	}
+	free(minishell->envp[*index]);
+	minishell->envp[*index] = ft_strjoin_free("SHLVL=", ft_itoa(index[1]), 2);
+}
+
 /**
  * @brief Creates a child process and executes the specified command
  * Accepts an array of strings as input that will be passed to execve
@@ -57,6 +85,8 @@ static void	exec_command(t_minishell *minishell, char **command)
 	{
 		receive_signal(CHILD);
 		duplicate_fds(minishell->cmd, minishell);
+		if (ft_strnstr(*command, "minishell", 10))
+			change_shlvl(minishell);
 		if (minishell->bltn != NONE)
 			execute_builtin(command, minishell);
 		else if (execve(command[0], command, minishell->envp))

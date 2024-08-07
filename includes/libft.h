@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 15:29:04 by mdanish           #+#    #+#             */
-/*   Updated: 2024/07/21 16:40:27 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/07 06:49:04 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 # define DECIMAL "0123456789"
 
 void	free_split(char **split, size_t word_count);
+long	ft_atoi(char const *string);
 void	*ft_calloc(size_t count, size_t size);
 char	*ft_c_strjoin_free(char *s1, char *s2, char c, int free_string);
 char	*ft_char_strjoin(char const *s1, char const *s2, char const c);
@@ -34,6 +35,7 @@ int		ft_isalnum(int character);
 int		ft_isalpha(int letter);
 int		ft_isdigit(int character);
 bool	ft_isspace(char c);
+char	*ft_itoa(long num);
 char	*ft_join(char **tab);
 void	*ft_memcpy(void *destination, void *source, size_t bytes);
 void	*ft_memset(void *array, int character, size_t bytes);
@@ -52,6 +54,7 @@ char	*ft_strjoin(char const *s1, char const *s2);
 size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize);
 size_t	ft_strlen(const char *str);
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
+bool	ft_strnstr(char *haystack, char *needle, int length);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 size_t	word_counter(char const *string, char delimiter);
 size_t	word_length(char const *string, char delimiter);
