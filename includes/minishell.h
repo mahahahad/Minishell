@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/06 23:11:57 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/07 05:29:18 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,6 +219,7 @@ void	ft_export(t_minishell *minishell, char **new_variable);
 void	ft_pwd(char **args);
 void	ft_unset(t_minishell *minishell, char **variable);
 bool	is_argument_valid(const char *string);
+char	*make_value(char *key, char *cwd, int total_length, char *err);
 
 // Cleanup
 void	free_char_command(char **cmd);

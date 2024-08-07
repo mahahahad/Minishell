@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/29 13:34:56 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/06 19:47:24 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/07 04:37:59 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ void	ft_unset(t_minishell *minishell, char **variable)
 	int			var_len;
 	int			index;
 
-	while (*variable)
+	while (*(++variable))
 	{
 		index = -1;
 		var_len = ft_strlen(*variable);
@@ -95,7 +95,6 @@ void	ft_unset(t_minishell *minishell, char **variable)
 			}
 		}
 		unset_from_list(minishell, *variable, var_len + 1);
-		variable++;
 	}
 	g_code = 0;
 }
