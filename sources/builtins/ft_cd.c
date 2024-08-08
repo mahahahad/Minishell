@@ -6,11 +6,38 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/27 19:11:40 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/07 16:27:25 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+static bool	expand_tilde(t_env *home, char **arguments, int arg_length)
+{
+	char	*expanded;
+	int		val_len;
+
+	if (!arguments[1])
+	{
+		free(arguments[0]);
+		arguments[0] = ft_strdup(home->value);
+		if (!arguments[0])
+			return (perror("cd"), true);
+	}
+	else if (!ft_strncmp(arguments[1], "~", 2) || \
+		!ft_strncmp(arguments[1], "~/", 2))
+	{
+		val_len = ft_strlen(home->value);
+		expanded = ft_calloc(arg_length + val_len, sizeof(char));
+		if (!expanded)
+			return (perror("cd"), true);
+		ft_memcpy(expanded, home->value, val_len);
+		ft_memcpy(expanded + val_len, arguments[1] + 1, arg_length);
+		free(arguments[1]);
+		arguments[1] = expanded;
+	}
+	return (false);
+}
 
 /**
  * @brief Checks the arguments for validity.
@@ -24,38 +51,30 @@
  * environment variables to identify the value stored in the HOME variable.
  * The value is then set as the argument for cd.
  * 
- * @param args contain the path to which the directory will be changed to.
- * @param list is the linked list of variable used to search for HOME directory.
+ * @param arguments contain the path to which the directory will be changed to.
+ * @param environment is the list of variable used to search for HOME directory.
  * 
  * @return true is invalid arguments are detected, false if arguments are valid.
  * 
  */
-static bool	check_invalid_args(char **args, t_env *list)
+static bool	check_invalid_args(char **arguments, t_env *variables)
 {
 	bool	error_flag;
 
 	error_flag = false;
-	if (args[1] && (args[2] || args[1][0] == '-'))
+	if (arguments[1] && (arguments[2] || arguments[1][0] == '-'))
 		error_flag = true;
-	if (args[1] && args[2])
+	if (arguments[1] && arguments[2])
 		ft_putendl_fd("cd: too many arguments", 2);
-	else if (args[1] && args[1][0] == '-')
+	else if (arguments[1] && arguments[1][0] == '-')
 		ft_putendl_fd("cd: options are not accepted", 2);
-	else if (!args[1])
-	{
-		while (list && !ft_strncmp(list->key, "HOME", 5))
-			list = list->next;
-		if (list)
-			args[1] = list->value;
-		else
-		{
-			ft_putendl_fd("cd: HOME not set", 2);
-			error_flag = true;
-		}
-	}
-	if (error_flag)
-		g_code = 1;
-	return (error_flag);
+	while (variables && ft_strncmp(variables->key, "HOME", 5))
+		variables = variables->next;
+	if ((!variables && (!arguments[1] || !ft_strncmp(arguments[1], "~", 2) || \
+	!ft_strncmp(arguments[1], "~/", 2))) || (variables && !variables->value))
+		return (ft_putendl_fd("cd: HOME not set", 2), true);
+	error_flag = expand_tilde(variables, arguments, ft_strlen(arguments[1]));
+	return (g_code = error_flag, error_flag);
 }
 
 /**
@@ -71,62 +90,25 @@ static bool	check_invalid_args(char **args, t_env *list)
  * @return the final string matching the above form.
  * 
  */
-static char	*make_value(char *key, char *value, int total_length)
+char	*make_value(char *key, char *cwd, int total_length, char *err)
 {
 	char	*matrix_index;
-	int		index;
+	int		index_one;
+	int		index_two;
 
-	index = 0;
+	index_one = 0;
+	if (!cwd)
+		return (perror(err), g_code = WEXITSTATUS(errno), NULL);
 	matrix_index = ft_calloc(total_length + 1, sizeof(char));
 	if (!matrix_index)
-		return (perror("cd"), g_code = 1, NULL);
-	while (index < total_length - 1 && *key)
-		matrix_index[index++] = *key++;
-	while (index < total_length - 1 && *value)
-		matrix_index[index++] = *value++;
-	matrix_index[index++] = '"';
-	matrix_index[index] = '\0';
+		return (perror(err), g_code = 1, NULL);
+	while (index_one < total_length && *key)
+		matrix_index[index_one++] = *key++;
+	index_two = -1;
+	while (index_one < total_length && cwd[++index_two])
+		matrix_index[index_one++] = cwd[index_two];
+	free(cwd);
 	return (matrix_index);
-}
-
-/**
- * @brief Changes the directory and updates env stores.
- * 
- * This function changes the directory using a function call to chdir(). In case
- * of failure, it prints an error message and set g_code to 1. Upon
- * success, it changes the node of the list if available and then uses
- * make_value() to create the argument for add_to_matrix(). Doing so will update
- * both the matrix and the list stores of the environment variables.
- * 
- * @param args contain the path to which the directory will be changed to.
- * @param old is a pointer to the node containing the env variable "OLDPWD".
- * @param new is a pointer to the node containing the env variable "PWD".
- * @param minishell is used to access the matrix and list to add variables.
- * 
- */
-static void	chg_dir(char **args, t_env *old, t_env *new, t_minishell *minishell)
-{
-	char	*var;
-
-	var = getcwd(NULL, 0);
-	if (chdir(args[1]))
-		return (g_code = 1, perror("cd"));
-	if (old)
-	{
-		free(old->value);
-		old->value = var;
-		var = make_value("OLDPWD=\"", old->value, 9 + ft_strlen(old->value));
-		add_to_matrix(minishell, var);
-		free(var);
-	}
-	if (new)
-	{
-		free(new->value);
-		new->value = getcwd(NULL, 0);
-		var = make_value("PWD=\"", new->value, 6 + ft_strlen(new->value));
-		add_to_matrix(minishell, var);
-		free(var);
-	}
 }
 
 /**
@@ -146,25 +128,23 @@ static void	chg_dir(char **args, t_env *old, t_env *new, t_minishell *minishell)
  * @param minishell contains the env stores that will be updated on success.
  * 
  */
-void	ft_cd(char **args, t_minishell *minishell)
+void	ft_cd(char **arguments, t_minishell *minishell)
 {
-	t_env	*old;
-	t_env	*new;
-	t_env	*list;
+	char	*cwd;
+	char	*export[3];
 
-	old = NULL;
-	new = NULL;
-	list = minishell->env_variables;
-	if (check_invalid_args(args, list))
+	if (check_invalid_args(arguments, minishell->env_variables))
 		return ;
-	g_code = 0;
-	while (list)
-	{
-		if (!ft_strncmp(list->key, "OLDPWD", 7))
-			old = list;
-		else if (!ft_strncmp(list->key, "PWD", 4))
-			new = list;
-		list = list->next;
-	}
-	chg_dir(args, old, new, minishell);
+	cwd = getcwd(NULL, 0);
+	if (!cwd || (arguments[1] && chdir(arguments[1])) || \
+		(!arguments[1] && chdir(arguments[0])))
+		return (g_code = 1, perror("cd"), free(cwd));
+	ft_memset(export, 0, 3 * sizeof(char *));
+	export[1] = make_value("OLDPWD=", cwd, 7 + ft_strlen(cwd), "cd");
+	ft_export(minishell, export);
+	free(export[1]);
+	cwd = getcwd(NULL, 0);
+	export[1] = make_value("PWD=", cwd, 4 + ft_strlen(cwd), "cd");
+	ft_export(minishell, export);
+	free(export[1]);
 }

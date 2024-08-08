@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/20 17:06:47 by mdanish           #+#    #+#             */
-/*   Updated: 2024/06/21 01:57:44 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/07 19:02:05 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ char	*ft_strjoin_free(char *s1, char *s2, int free_string)
 		final_string = ft_strjoin("", s2);
 	if (!s2)
 		final_string = ft_strjoin(s1, "");
+	if (s1 && s2)
+		final_string = ft_strjoin(s1, s2);
 	if (free_string == 1 || free_string == 3)
 		free(s1);
 	if (free_string == 2 || free_string == 3)

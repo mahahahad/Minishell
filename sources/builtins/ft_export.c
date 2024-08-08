@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 19:45:08 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/01 14:28:07 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/06 21:35:40 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,23 +22,23 @@
  * In the case that the key exists but the value is NULL, nothing happens.
  * 
  * @param list is the linked list in which the key will be searched for.
- * @param var is the new node of which the key will be searched for.
- * @param len is the length of the key of the new node.
+ * @param variable is the new node of which the key will be searched for.
+ * @param length is the length of the key of the new node.
  * 
  * @return true if the key exists, false if the key is not found in the list
  * 
  */
-static bool	check_for_existing_value(t_env *list, t_env *var, int len)
+static bool	check_for_existing_value(t_env *list, t_env *variable, int length)
 {
-	if (!ft_strncmp(list->key, var->key, len))
+	if (!ft_strncmp(list->key, variable->key, length))
 	{
-		if (var->value)
+		if (variable->value)
 		{
 			free(list->value);
-			list->value = var->value;
+			list->value = variable->value;
 		}
-		free(var->key);
-		free(var);
+		free(variable->key);
+		free(variable);
 		return (true);
 	}
 	return (false);
@@ -56,34 +56,36 @@ static bool	check_for_existing_value(t_env *list, t_env *var, int len)
  * that the new node is properly added to the list.
  * 
  * @param minishell is used to access the linked list of the variables.
- * @param var is the new node that will be added to the linked list.
- * @param len is the length of the key of the new node.
+ * @param variable is the new node that will be added to the linked list.
+ * @param length is the length of the key of the new node.
  * 
  */
-static void	add_to_list(t_minishell *minishell, t_env *var, int len)
+static void	add_to_list(t_minishell *minishell, t_env *variable, int length)
 {
 	t_env	*list;
 	t_env	*store;
 
 	list = minishell->env_variables;
+	if (!list)
+		return (minishell->env_variables = variable, (void)variable);
 	while (list)
 	{
-		if (check_for_existing_value(list, var, len + 1))
+		if (check_for_existing_value(list, variable, length + 1))
 			return ;
-		if (ft_strncmp(list->key, var->key, len + 1) > 0)
+		if (ft_strncmp(list->key, variable->key, length + 1) > 0)
 		{
-			var->next = list;
+			variable->next = list;
 			if (list == minishell->env_variables)
-				minishell->env_variables = var;
+				minishell->env_variables = variable;
 			else
-				store->next = var;
+				store->next = variable;
 			return ;
 		}
 		store = list;
 		list = list->next;
 	}
 	if (!list)
-		store->next = var;
+		store->next = variable;
 }
 
 /**
@@ -92,23 +94,23 @@ static void	add_to_list(t_minishell *minishell, t_env *var, int len)
  * It goes through the linked list og env variables and prints them according
  * to whethter there is a content or not using the put_fd functions.
  * 
- * @param env is the linked list of variables that will be printed to stdout.
+ * @param environment is the list of variables that will be printed to stdout.
  * 
  */
-static void	ft_print_export(t_env *env)
+static void	ft_print_export(t_env *environment)
 {
-	while (env)
+	while (environment)
 	{
 		ft_putstr_fd("declare -x ", 1);
-		ft_putstr_fd(env->key, 1);
-		if (env->value)
+		ft_putstr_fd(environment->key, 1);
+		if (environment->value)
 		{
 			ft_putstr_fd("=\"", 1);
-			ft_putstr_fd(env->value, 1);
+			ft_putstr_fd(environment->value, 1);
 			ft_putchar_fd('\"', 1);
 		}
 		ft_putchar_fd('\n', 1);
-		env = env->next;
+		environment = environment->next;
 	}
 }
 
@@ -128,31 +130,31 @@ static void	ft_print_export(t_env *env)
  * Upon completion, it sets g_code to 0.
  * 
  * @param minishell is used to access the matrix and list to add variables.
- * @param new_variables will be exported individually. (NULL terminated)
+ * @param arguments will be exported individually.
  * 
  */
-void	ft_export(t_minishell *minishell, char **args)
+void	ft_export(t_minishell *minishell, char **arguments)
 {
 	t_env	*var;
 	int		length;
 
 	g_code = 0;
-	if (!args[1])
+	if (!arguments[1])
 		return (ft_print_export(minishell->env_variables));
-	if (args[1][0] == '-')
+	if (arguments[1][0] == '-')
 		return (g_code = 2, ft_putendl_fd("Export does not accept options", 2));
-	while (*(++args))
+	while (*(++arguments))
 	{
-		if (!is_argument_valid(*args))
+		if (!is_argument_valid(*arguments))
 			continue ;
 		var = ft_calloc(1, sizeof(t_env));
 		if (!var)
 			return (g_code = 1, perror("export"));
-		create_new_variable(var, &length, *args);
+		create_new_variable(var, &length, *arguments);
 		if (!var->key)
 			return (free(var));
 		add_to_list(minishell, var, length);
-		if (!add_to_matrix(minishell, *args))
+		if (!add_to_matrix(minishell, *arguments))
 			return ;
 	}
 }

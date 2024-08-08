@@ -1,17 +1,73 @@
 echo something
+echo $? > exit_codes2
 echo something | cat -e
+echo $? >> exit_codes2
 echo something | cat -e | grep a
+echo $? >> exit_codes2
 echo something | cat -e | grep $
+echo $? >> exit_codes2
 echo something | cat -e | grep $ >file
+echo $? >> exit_codes2
 cat file
+echo $? >> exit_codes2
 rm file
+echo $? >> exit_codes2
 >file echo something | cat -e | grep $
+echo $? >> exit_codes2
 cat file
+echo $? >> exit_codes2
 rm file
+echo $? >> exit_codes2
 echo hi > 1 > 2 > 3 > 4 > 5
+echo $? >> exit_codes2
 cat 1
+echo $? >> exit_codes2
 cat 2
+echo $? >> exit_codes2
 cat 3
+echo $? >> exit_codes2
 cat 4
+echo $? >> exit_codes2
 cat 5
+echo $? >> exit_codes2
 rm 1 2 3 4 5
+(cat outfil >> outfile || (echo "Error has occured" && cat outfile))
+echo $? >> exit_codes2
+cat outfil >> outfile || echo "Error has occured" && cat outfile
+echo $? >> exit_codes2
+echo hi || echo why || echo bye
+echo $? >> exit_codes2
+echo hi || echo why || echo bye
+echo $? >> exit_codes2
+cat hi || cat why || ec ho bye
+echo $? >> exit_codes2
+echo hi && cat hi || ca t why || echo bye
+echo $? >> exit_codes2
+echo hi && cat hi || c at why || echo bye
+echo $? >> exit_codes2
+cat hi || cat why || e cho bye
+echo $? >> exit_codes2
+echo what && echo hi && cat hi || cat why || echo bye
+echo $? >> exit_codes2
+echo hi && cat hi || c at why || echo bye || echo what
+echo $? >> exit_codes2
+echo hi && cat hi || cat why || cat bye || echo what
+echo $? >> exit_codes2
+echo hi || echo why || echo bye
+echo $? >> exit_codes2
+(echo hi || echo why || echo bye)
+echo $? >> exit_codes2
+(cat hi || cat why || ec ho bye)
+echo $? >> exit_codes2
+(echo hi && cat hi || ca t why || echo bye)
+echo $? >> exit_codes2
+(echo hi && (cat hi || c at why || echo bye))
+echo $? >> exit_codes2
+((cat hi || cat why || e cho bye))
+echo $? >> exit_codes2
+echo what && (echo hi && (cat hi || cat why || echo bye))
+echo $? >> exit_codes2
+(echo hi && (cat hi || c at why || echo bye)) || echo what
+echo $? >> exit_codes2
+(echo hi && (cat hi || cat why || cat bye)) || echo what
+echo $? >> exit_codes2

@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:38:52 by maabdull          #+#    #+#             */
-/*   Updated: 2024/07/30 20:26:58 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/04 20:38:11 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
  * Simply goes through the list and frees the content and the node itself.
  * It can be used in case of malloc fail or when performing a general cleanup.
  * 
- * @param list is the list of tokens.
+ * @param tokens is the list of tokens.
  */
 void	free_tokens(t_token **tokens)
 {
@@ -39,33 +39,34 @@ void	free_tokens(t_token **tokens)
 /**
  * @brief Frees the linked list version of the command.
  * 
- * @param cmd is the list of the command.
+ * @param command is the list of the command.
  */
-void	free_cmd(t_cmd *cmd)
+void	free_command(t_cmd *command)
 {
-	if (!cmd)
+	if (!command)
 		return ;
-	if (cmd->type == CMD_PIPE || cmd->type == CMD_AND || cmd->type == CMD_OR)
+	if (command->type == CMD_PIPE || command->type == CMD_AND || \
+		command->type == CMD_OR)
 	{
-		free_cmd(((t_cmd_expr *)cmd)->cmd_left);
-		free_cmd(((t_cmd_expr *)cmd)->cmd_right);
+		free_command(((t_cmd_expr *)command)->command_left);
+		free_command(((t_cmd_expr *)command)->command_right);
 	}
-	else if (cmd->type == CMD_GREAT || cmd->type == CMD_DBL_GREAT || \
-		cmd->type == CMD_LESS || cmd->type == CMD_HEREDOC)
+	else if (command->type == CMD_GREAT || command->type == CMD_DBL_GREAT || \
+		command->type == CMD_LESS || command->type == CMD_HEREDOC)
 	{
-		if (((t_cmd_redir *)cmd)->fd > -1)
-			close(((t_cmd_redir *)cmd)->fd);
-		free_cmd(((t_cmd_redir *)cmd)->cmd);
+		if (((t_cmd_redir *)command)->fd > -1)
+			close(((t_cmd_redir *)command)->fd);
+		free_command(((t_cmd_redir *)command)->cmd);
 	}
-	else if (cmd->type == CMD_EXEC)
-		free_tokens(&((t_cmd_exec *)cmd)->tokens);
-	free(cmd);
+	else if (command->type == CMD_EXEC)
+		free_tokens(&((t_cmd_exec *)command)->tokens);
+	free(command);
 }
 
 /**
  * @brief Frees the char double pointer version of the command.
  * 
- * @param cmd is the double pointer of the command.
+ * @param command is the double pointer of the command.
  */
 void	free_char_command(char **command)
 {
@@ -81,16 +82,18 @@ void	free_char_command(char **command)
 /**
  * @brief General command to free up the entirety of parsing
  * 
- * Calls the free_tokens() and the free_cmd() functions to cleanup the command
- * and the token list. It also sets the pointer to tokens to NULL;
+ * Calls the free_tokens() and the free_command() functions to cleanup the
+ * command and the token list. It also sets the pointer to tokens to NULL;
  * 
- * @param cmd is the double pointer of the command.
+ * @param minishell contains the stuff to be freed.
  */
 void	free_parsing(t_minishell *minishell)
 {
-	free_cmd(minishell->cmd);
+	free_command(minishell->cmd_head);
 	free_tokens(&minishell->tokens_head);
 	minishell->tokens = NULL;
+	minishell->cmd = NULL;
+	minishell->cmd_head = NULL;
 }
 
 /**

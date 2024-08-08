@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   simple_builtins.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/29 13:21:03 by mdanish           #+#    #+#             */
-/*   Updated: 2024/07/27 19:11:40 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/08 13:16:28 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,10 @@
  * 
  * After completion, it sets the g_code to 0.
  * 
- * @param cmd points to the strings ft_echo needs to print. (NULL terminated)
+ * @param command points to the strings ft_echo needs to print.
  *
  */
-void	ft_echo(char **cmd)
+void	ft_echo(char **command)
 {
 	int		index;
 	int		i;
@@ -35,20 +35,20 @@ void	ft_echo(char **cmd)
 
 	index = 0;
 	option_flag = false;
-	while (cmd[++index] && cmd[index][0] == '-')
+	while (command[++index] && command[index][0] == '-')
 	{
 		i = 1;
-		while (cmd[index][i] == 'n')
+		while (command[index][i] == 'n')
 			i++;
-		if (!cmd[index][i])
+		if (!command[index][i])
 			option_flag = true;
 		else
 			break ;
 	}
-	while (cmd[index])
+	while (command[index])
 	{
-		ft_putstr_fd(cmd[index], 1);
-		if (cmd[++index])
+		ft_putstr_fd(command[index], 1);
+		if (command[++index])
 			ft_putchar_fd(' ', 1);
 	}
 	if (!option_flag)
@@ -67,16 +67,16 @@ void	ft_echo(char **cmd)
  * 
  * Upon completion, it sets the g_code to 0.
  * 
- * @param args a char ** pointing to the arguments sent by the command line.
- * @param envp a char ** pointing to the matrix ft_env needs to print.
+ * @param arguments points to the arguments sent by the command line.
+ * @param envp points to the matrix ft_env needs to print.
  *
  */
-void	ft_env(char **args, char **envp)
+void	ft_env(char **arguments, char **envp)
 {
-	if (args[1] && args[1][0])
+	if (arguments[1] && arguments[1][0])
 	{
 		g_code = 1;
-		return (ft_putendl_fd("env does not accecpt options or arguments.", 2));
+		return (ft_putendl_fd("env does not accept options or arguments.", 2));
 	}
 	while (*envp)
 	{
@@ -97,20 +97,61 @@ void	ft_env(char **args, char **envp)
  * 
  * Upon completion, it sets the g_code to 0.
  * 
- * @param args is used to ensure that no arguments or options are provided.
+ * @param arguments is used to ensure that no arguments or options are provided.
  *
  */
-void	ft_pwd(char **args)
+void	ft_pwd(char **arguments)
 {
-	char	current_working_directory[PATH_MAX];
+	char	*current_working_directory;
 
-	if (args[1] && args[1][0] == '-')
-	{
-		g_code = 1;
-		return (ft_putendl_fd("pwd does not accecpt options.", 2));
-	}
-	current_working_directory[0] = '\0';
-	getcwd(current_working_directory, PATH_MAX);
+	if (arguments[1] && arguments[1][0] == '-')
+		return (g_code = 1, ft_putendl_fd("pwd does not accept options.", 2));
+	current_working_directory = getcwd(NULL, 0);
+	if (!current_working_directory)
+		return (g_code = WEXITSTATUS(errno), perror("pwd"));
 	ft_putendl_fd(current_working_directory, 1);
+	free(current_working_directory);
 	g_code = 0;
+}
+
+static int	convert_to_exit_code(char *string, int index, int sign)
+{
+	size_t	number;
+
+	number = 0;
+	while (string[index] == 32 || (string[index] > 8 && string[index] < 14))
+		index++;
+	if (string[index] == '+')
+		index++;
+	else if (string[index] == '-' && ++index)
+		sign = -1;
+	while (string[index] == 48)
+		index++;
+	while (string[index] > 47 && string[index] < 58 && number <= INT64_MAX)
+		number = (number * 10) + string[index++] - 48;
+	if ((number > INT64_MAX && (sign == 1 || number - INT64_MAX != 1))
+		|| string[index])
+	{
+		ft_putstr_fd("exit: ", 2);
+		ft_putstr_fd(string, 2);
+		ft_putendl_fd(": numeric argument required", 2);
+		return (500);
+	}
+	return ((number % 256) * sign);
+}
+
+void	ft_exit(char **arguments, t_minishell *minishell)
+{
+	if (arguments[1])
+	{
+		g_code = convert_to_exit_code(arguments[1], 0, 1);
+		if (g_code == 500)
+			g_code = 2;
+		else if (arguments[2])
+			return (g_code = 1, ft_putendl_fd("exit: too many arguments", 2));
+	}
+	free_char_command(arguments);
+	free_parsing(minishell);
+	free_environment(minishell);
+	exit(g_code);
 }

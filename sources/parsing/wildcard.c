@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:51:40 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/01 12:15:03 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/04 17:27:12 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,10 +45,7 @@ static bool	wildcards_are_present(char *token, int *location, DIR **cwd)
 		getcwd(cwd_path, PATH_MAX);
 		*cwd = opendir(cwd_path);
 		if (*cwd)
-		{
-			errno = 0;
-			return (true);
-		}
+			return (errno = 0, true);
 		perror("getcwd() in wildcard expansion");
 		g_code = WEXITSTATUS(errno);
 	}
@@ -201,7 +198,7 @@ static bool	match_pattern(char *token, int location, char *file)
  * 
  * @return the pointer to the final token.
  */
-t_token	*wildcards(char *token_string)
+t_token	*wildcard_expansion(char *token_string)
 {
 	DIR		*cwd_stream;
 	int		location;
@@ -216,8 +213,8 @@ t_token	*wildcards(char *token_string)
 	{
 		if (match_pattern(token_string, location, files->d_name))
 		{
-			add_token_back(&token, new_token(ft_strdup(files->d_name), NULL, \
-				false));
+			add_token_back(&token, new_token(ft_strdup(files->d_name), NULL,
+					false));
 			if (!token)
 				break ;
 		}
