@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:34:36 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/08 16:06:36 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/08/08 22:13:44 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,6 +154,8 @@ t_cmd	*create_expr_cmd(t_cmd_type type, t_cmd *cmd_left, t_cmd *cmd_right)
 	t_cmd_expr	*expr_cmd;
 
 	expr_cmd = ft_calloc(1, sizeof(t_cmd_expr));
+	if (!cmd_left || !cmd_right)
+		return (NULL);
 	if (!expr_cmd)
 		return (perror("Tokenisation"), g_code = 1, free_command(cmd_left),
 			free_command(cmd_right), NULL);
