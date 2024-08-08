@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/08 12:34:09 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/08/08 14:58:27 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,13 +172,6 @@ struct s_cmd_expr
 	t_cmd		*command_left;
 	t_cmd		*command_right;
 };
-
-// struct s_cmd_hdoc
-// {
-// 	t_cmd_type	type;
-// 	t_cmd		*cmd;
-// 	char		*delimiter;
-// };
 
 /** FUNCTIONS **/
 
