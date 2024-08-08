@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 22:36:59 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/04 21:14:54 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/08 20:31:10 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,28 +35,6 @@ t_token	*token_duplicate(t_token *token)
 		return (free(token_copy), NULL);
 	token_copy->type = token->type;
 	return (token_copy);
-}
-
-/**
- * @brief Print the appropriate error message indicating a symbol was found
- * in a location it should not have been in.
- *
- * @param type used to identify the error message that is needed to be printed.
- * @param command is sent to free_command() to free up.
- *
- * @return NULL
- */
-void	*print_exec_parse_err(t_tkn_type type, t_cmd *command)
-{
-	g_code = 2;
-	if (type == PIPE)
-		ft_putendl_fd("Syntax error near unexpected token `|'", 2);
-	else if (type == AND)
-		ft_putendl_fd("Syntax error near unexpected token `&&'", 2);
-	else if (type == OR)
-		ft_putendl_fd("Syntax error near unexpected token `||'", 2);
-	free_command(command);
-	return (NULL);
 }
 
 /**
@@ -161,4 +139,30 @@ int	count_tokens(char *input)
 		}
 	}
 	return (i != 0);
+}
+
+/**
+ * @brief Error printing function.
+ * 
+ * This function is used to print syntax errors.
+ * It is meant to be used when a token is encountered in a place it
+ * should not have been in.
+ * It frees the command tree since the command is not supposed to be run.
+ * 
+ * @param token The token near which the error was found
+ * @param command
+ */
+t_cmd	*print_syntax_error(char *token, t_cmd *command)
+{
+	g_code = 2;
+	ft_putstr_fd("Syntax error ", 2);
+	if (token)
+	{
+		ft_putstr_fd("near unexpected token `", 2);
+		ft_putstr_fd(token, 2);
+		ft_putstr_fd("'", 2);
+	}
+	ft_putendl_fd("", 2);
+	free_command(command);
+	return (NULL);
 }

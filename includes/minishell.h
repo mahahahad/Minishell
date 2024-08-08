@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/08 14:58:27 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/08 21:32:14 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ typedef struct s_prompt		t_prompt;
 typedef struct s_token		t_token;
 typedef enum e_token_types	t_tkn_type;
 typedef enum e_cmd_types	t_cmd_type;
-typedef enum e_err_types	t_err_type;
 typedef enum e_sig_rec		t_sig_rec;
 typedef enum e_bltn			t_bltn;
 typedef struct dirent		t_dir;
@@ -87,11 +86,6 @@ enum e_sig_rec
 {
 	CHILD,
 	PARENT
-};
-
-enum e_err_types
-{
-	SYNTAX,
 };
 
 # undef ECHO
@@ -184,12 +178,12 @@ t_cmd	*create_expr_cmd(t_cmd_type type, t_cmd *cmd_left, t_cmd *cmd_right);
 bool	count_quotations(char *line);
 int		count_tokens(char *input);
 char	*dollar_expansion(char *token, t_env *list);
-t_cmd	*ft_print_error(t_err_type type, char *err, t_cmd *command);
 char	*get_token(char **input);
+bool	has_expr_symbol(t_cmd *command);
 t_token	*new_token(char *content, t_env *list, bool expand);
 void	parse(t_minishell *minishell, char *line, char *store);
 t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell);
-void	*print_exec_parse_err(t_tkn_type type, t_cmd *cmd);
+t_cmd	*print_syntax_error(char *err, t_cmd *command);
 t_token	*token_duplicate(t_token *token);
 bool	valid_parenthesis(char *line);
 t_token	*wildcard_expansion(char *token);
