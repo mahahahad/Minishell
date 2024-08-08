@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/06 16:12:55 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/08 13:18:56 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,9 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 		return (ft_putendl_fd("Minishell does not accept arguments.", 2), 1);
 	g_code = 0;
 	setup_environment(&minishell, env);
-	receive_signal(PARENT);
 	while (true)
 	{
+		receive_signal(PARENT);
 		line = readline(B_YELLOW "minishell$ " RESET);
 		if (!line)
 			break ;
@@ -39,8 +39,6 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 		minishell.pipe_read_store = -1;
 		parse(&minishell, line, line);
 		run_command(&minishell, false);
-		//! FOR DEBUGGING:
-		// PRINT_CMD(minishell.cmd_head);
 		free_parsing(&minishell);
 	}
 	return (rl_clear_history(), free_environment(&minishell),

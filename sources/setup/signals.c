@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signals.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 22:33:34 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/04 00:18:08 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/08 12:25:23 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ static void	handle_signal_parent(int signum)
 {
 	if (signum == SIGINT)
 	{
-		ft_putchar_fd('\n', 1);
+		ft_putchar_fd('\n', 2);
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
@@ -28,6 +28,7 @@ static void	handle_signal_child(int signum)
 {
 	int	status;
 
+	status = 0;
 	waitpid(-1, &status, 0);
 	if (WIFEXITED(status) == false)
 	{

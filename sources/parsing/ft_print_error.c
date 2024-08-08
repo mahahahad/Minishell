@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_print_error.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/01 22:21:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/05 08:37:35 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/08 12:50:36 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,6 @@ t_cmd	*ft_print_error(t_err_type type, char *err, t_cmd *command)
 			ft_putstr_fd(err, 2);
 			ft_putstr_fd("'", 2);
 		}
-		// if (extra)
-		// 	ft_putstr_fd(extra, 2);
 		ft_putendl_fd("", 2);
 	}
 	free_command(command);

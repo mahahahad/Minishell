@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   debug.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 12:31:23 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/03 23:26:27 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/08 13:17:29 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,10 +176,6 @@ void	print_cmd(t_cmd *cmd, int node_depth, char *prefix)
 		case CMD_HEREDOC:
 			print_redir_cmd((t_cmd_redir *) cmd, node_depth, prefix);
 			break;
-
-		// case CMD_HEREDOC:
-		// 	print_heredoc_cmd((t_cmd_heredoc *) cmd, node_depth, prefix);
-		// 	break;
 
 		case CMD_AND:
 			__attribute__((fallthrough));

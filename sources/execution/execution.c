@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 12:05:36 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/07 19:05:29 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/08 11:56:53 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,10 +80,10 @@ static void	exec_command(t_minishell *minishell, char **command)
 	int		process_id;
 	int		exit_code;
 
+	receive_signal(CHILD);
 	process_id = fork();
 	if (!process_id)
 	{
-		receive_signal(CHILD);
 		duplicate_fds(minishell->cmd, minishell);
 		if (ft_strnstr(*command, "minishell", 10))
 			change_shlvl(minishell);

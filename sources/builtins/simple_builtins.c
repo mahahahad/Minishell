@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/29 13:21:03 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/08 12:56:44 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/08/08 13:16:28 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ void	ft_env(char **arguments, char **envp)
 	if (arguments[1] && arguments[1][0])
 	{
 		g_code = 1;
-		return (ft_putendl_fd("env does not accecpt options or arguments.", 2));
+		return (ft_putendl_fd("env does not accept options or arguments.", 2));
 	}
 	while (*envp)
 	{
@@ -105,7 +105,7 @@ void	ft_pwd(char **arguments)
 	char	*current_working_directory;
 
 	if (arguments[1] && arguments[1][0] == '-')
-		return (g_code = 1, ft_putendl_fd("pwd does not accecpt options.", 2));
+		return (g_code = 1, ft_putendl_fd("pwd does not accept options.", 2));
 	current_working_directory = getcwd(NULL, 0);
 	if (!current_working_directory)
 		return (g_code = WEXITSTATUS(errno), perror("pwd"));
