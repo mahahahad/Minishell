@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   simple_builtins.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/29 13:21:03 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/08 12:38:17 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/08 12:56:44 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,6 +110,7 @@ void	ft_pwd(char **arguments)
 	if (!current_working_directory)
 		return (g_code = WEXITSTATUS(errno), perror("pwd"));
 	ft_putendl_fd(current_working_directory, 1);
+	free(current_working_directory);
 	g_code = 0;
 }
 
