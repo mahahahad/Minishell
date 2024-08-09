@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/01 19:25:06 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/06 23:12:20 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/09 00:45:41 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,10 +157,10 @@ bool	confirm_command(char **cmd, t_env *environment)
 	{
 		if (access(*cmd, F_OK) == -1)
 			return (ft_putstr_fd(*cmd, 2), g_code = 127,
-				ft_putendl_fd(": no such file or directory", 2), false);
+				ft_putendl_fd(": No such file or directory", 2), false);
 		else if (access(*cmd, X_OK) == -1)
 			return (ft_putstr_fd(*cmd, 2), g_code = 126,
-				ft_putendl_fd(": permission denied", 2), false);
+				ft_putendl_fd(": Permission denied", 2), false);
 	}
 	return (true);
 }

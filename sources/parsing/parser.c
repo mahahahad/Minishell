@@ -259,10 +259,10 @@ void	parse(t_minishell *minishell, char *line, char *store)
 	{
 		add_token_back(&minishell->tokens,
 			new_token(get_token(&line), minishell->env_variables, true));
-		if (!minishell->tokens)
-			return ;
 	}
 	minishell->tokens_head = minishell->tokens;
+	if (!minishell->tokens_head)
+		return (free(store));
 	minishell->token_count = 0;
 	while (minishell->tokens_head && ++minishell->token_count)
 		minishell->tokens_head = minishell->tokens_head->next;

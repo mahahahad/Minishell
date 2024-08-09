@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/01 17:12:14 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/04 14:39:44 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/08 20:33:46 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,11 +166,7 @@ t_token	*new_token(char *content, t_env *list, bool expand)
 			return (NULL);
 		store = wildcard_expansion(token->content);
 		if (store)
-		{
-			free(content);
-			free(token);
-			return (store);
-		}
+			return (free(content), free(token), store);
 		token->content = quote_trimming(token->content);
 	}
 	return (token);
@@ -187,14 +183,12 @@ void	add_token_back(t_token **tokens_list, t_token *token)
 	t_token	*current;
 
 	if (!token)
-		return (perror("Tokenisation"), g_code = 1,
-			free_tokens(tokens_list));
+		return (perror("Tokenisation"), g_code = 1, free_tokens(tokens_list));
+	if (!token->content[0])
+		return (free(token->content), free(token));
 	current = (*tokens_list);
 	if (!current)
-	{
-		(*tokens_list) = token;
-		return ;
-	}
+		return ((void)((*tokens_list) = token));
 	while (current->next)
 		current = current->next;
 	current->next = token;

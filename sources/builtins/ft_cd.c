@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/07 16:27:25 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/08 19:00:51 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,12 +62,12 @@ static bool	check_invalid_args(char **arguments, t_env *variables)
 	bool	error_flag;
 
 	error_flag = false;
-	if (arguments[1] && (arguments[2] || arguments[1][0] == '-'))
-		error_flag = true;
 	if (arguments[1] && arguments[2])
 		ft_putendl_fd("cd: too many arguments", 2);
 	else if (arguments[1] && arguments[1][0] == '-')
 		ft_putendl_fd("cd: options are not accepted", 2);
+	if (arguments[1] && (arguments[2] || arguments[1][0] == '-'))
+		return (g_code = 1, true);
 	while (variables && ft_strncmp(variables->key, "HOME", 5))
 		variables = variables->next;
 	if ((!variables && (!arguments[1] || !ft_strncmp(arguments[1], "~", 2) || \
