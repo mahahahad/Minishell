@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 12:05:36 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/08 11:56:53 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/08/10 21:13:16 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,12 +77,11 @@ static void	change_shlvl(t_minishell *minishell)
  */
 static void	exec_command(t_minishell *minishell, char **command)
 {
-	int		process_id;
 	int		exit_code;
 
 	receive_signal(CHILD);
-	process_id = fork();
-	if (!process_id)
+	minishell->process_id = fork();
+	if (!minishell->process_id)
 	{
 		duplicate_fds(minishell->cmd, minishell);
 		if (ft_strnstr(*command, "minishell", 10))
@@ -96,12 +95,13 @@ static void	exec_command(t_minishell *minishell, char **command)
 		free_environment(minishell);
 		exit(WEXITSTATUS(errno));
 	}
-	waitpid(process_id, &exit_code, 0);
-	g_code = WEXITSTATUS(exit_code);
+	if (!minishell->piped && waitpid(minishell->process_id, &exit_code, 0))
+		g_code = WEXITSTATUS(exit_code);
 }
 
 static void	execute_expression(t_minishell *minishell, t_cmd *command_right)
 {
+	int			exit_code;
 	t_cmd_type	type;
 
 	type = minishell->cmd->type;
@@ -110,24 +110,24 @@ static void	execute_expression(t_minishell *minishell, t_cmd *command_right)
 		if (pipe(minishell->pipe_fds) < 0)
 			return (g_code = WEXITSTATUS(errno), perror("pipe creation"));
 		minishell->cmd = ((t_cmd_expr *)minishell->cmd)->command_left;
-		run_command(minishell, true);
+		minishell->piped = true;
+		run_command(minishell);
 		minishell->pipe_read_store = minishell->pipe_fds[0];
 		minishell->cmd = command_right;
-		close(minishell->pipe_fds[1]);
-		minishell->pipe_fds[1] = -1;
-		run_command(minishell, true);
+		run_command(minishell);
+		if (minishell->piped && waitpid(minishell->process_id, &exit_code, 0))
+			g_code = WEXITSTATUS(exit_code);
+		minishell->piped = false;
+		return ;
 	}
-	else
-	{
-		minishell->cmd = ((t_cmd_expr *)minishell->cmd)->command_left;
-		run_command(minishell, false);
-		minishell->cmd = command_right;
-		if ((type == CMD_AND && !g_code) || (type == CMD_OR && g_code))
-			run_command(minishell, false);
-	}
+	minishell->cmd = ((t_cmd_expr *)minishell->cmd)->command_left;
+	run_command(minishell);
+	minishell->cmd = command_right;
+	if ((type == CMD_AND && !g_code) || (type == CMD_OR && g_code))
+		run_command(minishell);
 }
 
-void	run_command(t_minishell *minishell, bool piped)
+void	run_command(t_minishell *minishell)
 {
 	t_cmd	*cmd;
 	char	**command;
@@ -142,14 +142,15 @@ void	run_command(t_minishell *minishell, bool piped)
 	if (!command)
 		return ;
 	minishell->bltn = confirm_builtin(*command);
-	if (!piped && ((minishell->bltn >= CD && minishell->bltn < ECHO) || \
-		minishell->bltn == CD || (minishell->bltn == EXPORT && command[1])))
+	if (!minishell->piped && ((minishell->bltn >= CD && minishell->bltn < ECHO) \
+		|| minishell->bltn == CD || (minishell->bltn == EXPORT && command[1])))
 		execute_builtin(command, minishell);
 	else if (minishell->bltn != NONE || \
 		confirm_command(command, minishell->env_variables))
 		exec_command(minishell, command);
 	free_char_command(command);
-	if (minishell->pipe_read_store > -1)
-		close(minishell->pipe_read_store);
-	minishell->pipe_read_store = -1;
+	if (minishell->pipe_read_store > -1 && !close(minishell->pipe_read_store))
+		minishell->pipe_read_store = -1;
+	if (minishell->pipe_fds[1] > -1 && !close(minishell->pipe_fds[1]))
+		minishell->pipe_fds[1] = -1;
 }

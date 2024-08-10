@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/08 14:58:27 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/09 15:39:16 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,10 +126,12 @@ struct s_minishell
 {
 	bool		input_fd;
 	bool		output_fd;
+	bool		piped;
 	char		**envp;
 	int			envp_count;
 	int			pipe_fds[2];
 	int			pipe_read_store;
+	int			process_id;
 	int			token_count;
 	t_bltn		bltn;
 	t_env		*env_variables;
@@ -199,8 +201,7 @@ t_bltn	confirm_builtin(char *str);
 bool	confirm_command(char **cmd, t_env *environment);
 void	duplicate_fds(t_cmd	*cmd, t_minishell *minishell);
 void	execute_builtin(char **cmd, t_minishell *minishell);
-void	run_cmd(t_minishell *minishell, char **env);
-void	run_command(t_minishell *minishell, bool piped);
+void	run_command(t_minishell *minishell);
 
 // Built-ins
 bool	add_to_matrix(t_minishell *minishell, char *new_var);
@@ -212,7 +213,7 @@ void	ft_exit(char **arguments, t_minishell *minishell);
 void	ft_export(t_minishell *minishell, char **new_variable);
 void	ft_pwd(char **args);
 void	ft_unset(t_minishell *minishell, char **variable);
-bool	is_argument_valid(const char *string);
+bool	is_argument_valid(char *string);
 char	*make_value(char *key, char *cwd, int total_length, char *err);
 
 // Cleanup
