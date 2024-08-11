@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:51:40 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/04 17:27:12 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/10 21:27:42 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ static bool	match_trailers(char *token, char *file)
 		else if (token[bytes] != file[--index])
 			return (false);
 	}
-	if (!index)
+	if (!index && bytes > -1)
 		return (false);
 	return (true);
 }

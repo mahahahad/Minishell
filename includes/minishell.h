@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/09 15:39:16 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/11 19:25:08 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 # include <readline/readline.h>
 # include <signal.h>
 # include <string.h>
+# include <sys/stat.h>
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <termios.h>
@@ -41,6 +42,7 @@ extern unsigned int			g_code;
 /** STRUCTURES **/
 typedef struct s_minishell	t_minishell;
 typedef struct s_prompt		t_prompt;
+typedef struct stat			t_stat;
 typedef struct s_token		t_token;
 typedef enum e_token_types	t_tkn_type;
 typedef enum e_cmd_types	t_cmd_type;
