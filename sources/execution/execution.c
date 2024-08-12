@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 12:05:36 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/10 21:13:16 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/11 21:00:28 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,17 +83,19 @@ static void	exec_command(t_minishell *minishell, char **command)
 	minishell->process_id = fork();
 	if (!minishell->process_id)
 	{
-		duplicate_fds(minishell->cmd, minishell);
-		if (ft_strnstr(*command, "minishell", 10))
-			change_shlvl(minishell);
-		if (minishell->bltn != NONE)
-			execute_builtin(command, minishell);
-		else if (execve(command[0], command, minishell->envp))
-			perror("execve() failed");
+		if (duplicate_fds(minishell->cmd, minishell))
+		{
+			if (ft_strnstr(*command, "minishell", 10))
+				change_shlvl(minishell);
+			if (minishell->bltn != NONE)
+				execute_builtin(command, minishell);
+			else if (execve(command[0], command, minishell->envp))
+				perror("execve() failed");
+		}
 		free_char_command(command);
 		free_parsing(minishell);
 		free_environment(minishell);
-		exit(WEXITSTATUS(errno));
+		exit(g_code);
 	}
 	if (!minishell->piped && waitpid(minishell->process_id, &exit_code, 0))
 		g_code = WEXITSTATUS(exit_code);

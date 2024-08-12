@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:34:36 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/04 14:39:44 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/12 16:46:45 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,23 +72,36 @@ static t_cmd	*create_redir_cmd(t_cmd *command, t_cmd_type type, char *file)
 
 	redir_command = ft_calloc(1, sizeof(t_cmd_redir));
 	if (!redir_command)
-		return (perror("Redirection Command"), g_code = 1,
-			free_command(command), NULL);
+		return (perror(file), g_code = 1, free_command(command), NULL);
 	redir_command->cmd = command;
 	redir_command->type = type;
 	redir_command->file = file;
 	redir_command->fd = -1;
-	if (type == CMD_GREAT)
+	if (file && type == CMD_GREAT)
 		redir_command->fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-	else if (type == CMD_DBL_GREAT)
+	else if (file && type == CMD_DBL_GREAT)
 		redir_command->fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0666);
-	else if (type == CMD_LESS)
+	else if (file && type == CMD_LESS)
 		redir_command->fd = open(file, O_RDONLY);
-	else if (type == CMD_HEREDOC)
+	else if (file && type == CMD_HEREDOC)
 		redir_command->fd = heredoc_creation(file);
-	if (redir_command->fd < 0)
-		perror("Opening a file for redirection");
+	if (redir_command->fd < 0 && file)
+		return (redir_command->file = NULL, perror(file), g_code = 1, \
+			(t_cmd *)redir_command);
 	return ((t_cmd *)redir_command);
+}
+
+static t_cmd	*create_redirection(t_cmd *command, t_tkn_type type, char *file)
+{
+	if (type == LESS)
+		command = create_redir_cmd(command, CMD_LESS, file);
+	else if (type == GREAT)
+		command = create_redir_cmd(command, CMD_GREAT, file);
+	else if (type == DBL_GREAT)
+		command = create_redir_cmd(command, CMD_DBL_GREAT, file);
+	else if (type == DBL_LESS)
+		command = create_redir_cmd(command, CMD_HEREDOC, file);
+	return (command);
 }
 
 /**
@@ -117,25 +130,22 @@ t_cmd	*parse_redir(t_cmd *command, t_minishell *minishell)
 	char		*content;
 	t_tkn_type	type;
 
-	while (minishell->tokens)
+	minishell->invalid = false;
+	type = minishell->tokens->type;
+	while (minishell->tokens && type >= LESS && type < WORD)
 	{
-		type = minishell->tokens->type;
-		if (!(type >= LESS && type < WORD))
-			break ;
-		if (minishell->tokens->next)
+		content = NULL;
+		if (!minishell->invalid && minishell->tokens->next)
 			content = minishell->tokens->next->content;
 		if (!minishell->tokens->next || minishell->tokens->next->type != WORD)
 			return (ft_putendl_fd("No file for redirection found", 2),
 				free_command(command), NULL);
-		if (type == LESS)
-			command = create_redir_cmd(command, CMD_LESS, content);
-		else if (type == GREAT)
-			command = create_redir_cmd(command, CMD_GREAT, content);
-		else if (type == DBL_GREAT)
-			command = create_redir_cmd(command, CMD_DBL_GREAT, content);
-		else if (type == DBL_LESS)
-			command = create_redir_cmd(command, CMD_HEREDOC, content);
+		command = create_redirection(command, type, content);
+		if (((t_cmd_redir *)command)->fd == -1)
+			minishell->invalid = true;
 		minishell->tokens = minishell->tokens->next->next;
+		if (minishell->tokens)
+			type = minishell->tokens->type;
 	}
 	return (command);
 }

@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/11 19:25:08 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/11 20:48:23 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,6 +127,7 @@ struct s_env
 struct s_minishell
 {
 	bool		input_fd;
+	bool		invalid;
 	bool		output_fd;
 	bool		piped;
 	char		**envp;
@@ -167,7 +168,6 @@ struct s_cmd_redir
 	t_cmd		*cmd;
 	char		*file;
 	int			fd;
-	// int			stdfd;
 };
 
 struct s_cmd_expr
@@ -201,9 +201,10 @@ t_token	*wildcard_expansion(char *token);
 // Execution
 t_bltn	confirm_builtin(char *str);
 bool	confirm_command(char **cmd, t_env *environment);
-void	duplicate_fds(t_cmd	*cmd, t_minishell *minishell);
+bool	duplicate_fds(t_cmd	*cmd, t_minishell *minishell);
 void	execute_builtin(char **cmd, t_minishell *minishell);
 void	run_command(t_minishell *minishell);
+bool	open_fds(t_cmd *command);
 
 // Built-ins
 bool	add_to_matrix(t_minishell *minishell, char *new_var);
