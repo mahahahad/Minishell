@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/08 21:32:14 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/08/13 18:50:29 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 # include <readline/readline.h>
 # include <signal.h>
 # include <string.h>
+# include <sys/stat.h>
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <termios.h>
@@ -41,6 +42,7 @@ extern unsigned int			g_code;
 /** STRUCTURES **/
 typedef struct s_minishell	t_minishell;
 typedef struct s_prompt		t_prompt;
+typedef struct stat			t_stat;
 typedef struct s_token		t_token;
 typedef enum e_token_types	t_tkn_type;
 typedef enum e_cmd_types	t_cmd_type;
@@ -119,11 +121,14 @@ struct s_env
 struct s_minishell
 {
 	bool		input_fd;
+	bool		invalid;
 	bool		output_fd;
+	bool		piped;
 	char		**envp;
 	int			envp_count;
 	int			pipe_fds[2];
 	int			pipe_read_store;
+	int			process_id;
 	int			token_count;
 	t_bltn		bltn;
 	t_env		*env_variables;
@@ -157,7 +162,6 @@ struct s_cmd_redir
 	t_cmd		*cmd;
 	char		*file;
 	int			fd;
-	// int			stdfd;
 };
 
 struct s_cmd_expr
@@ -191,10 +195,10 @@ t_token	*wildcard_expansion(char *token);
 // Execution
 t_bltn	confirm_builtin(char *str);
 bool	confirm_command(char **cmd, t_env *environment);
-void	duplicate_fds(t_cmd	*cmd, t_minishell *minishell);
+bool	duplicate_fds(t_cmd	*cmd, t_minishell *minishell);
 void	execute_builtin(char **cmd, t_minishell *minishell);
-void	run_cmd(t_minishell *minishell, char **env);
-void	run_command(t_minishell *minishell, bool piped);
+void	run_command(t_minishell *minishell);
+bool	open_fds(t_cmd *command);
 
 // Built-ins
 bool	add_to_matrix(t_minishell *minishell, char *new_var);
@@ -206,7 +210,7 @@ void	ft_exit(char **arguments, t_minishell *minishell);
 void	ft_export(t_minishell *minishell, char **new_variable);
 void	ft_pwd(char **args);
 void	ft_unset(t_minishell *minishell, char **variable);
-bool	is_argument_valid(const char *string);
+bool	is_argument_valid(char *string);
 char	*make_value(char *key, char *cwd, int total_length, char *err);
 
 // Cleanup
@@ -228,7 +232,7 @@ void	print_cmd(t_cmd *cmd, int node_depth, char *prefix);
 
 /**
  * @brief alias for the print_cmd function which allows users to not specify the
- * node_depth while calling it manually. 
+ * node_depth while calling it manually.
  */
 // # define PRINT_CMD(cmd, ...) print_cmd(cmd, 0, "  ")
 

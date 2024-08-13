@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:34:36 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/08 22:13:44 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/08/13 18:50:41 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,13 @@
 
 /**
  * @brief Create the heredoc file
- * 
+ *
  * It opens a new pipe to which return of readline are written to. Once a prompt
  * that matches the delimiter is found, it will break and return the read end of
  * the pipe to the calling function.
- * 
+ *
  * @param delimiter is the string that will terminate the document creation.
- * 
+ *
  * @return the read end of the pipe.
  */
 static int	heredoc_creation(char *delimiter)
@@ -58,11 +58,11 @@ static int	heredoc_creation(char *delimiter)
 
 /**
  * @brief Create a cmd_redir struct
- * 
+ *
  * @param command The command to execute
  * @param type The type of redirection this is
  * @param file The file to read from or write to
- * 
+ *
  * @return the redirection command struct.
  */
 static t_cmd	*create_redir_cmd(t_cmd *command, t_cmd_type type, char *file)
@@ -71,28 +71,41 @@ static t_cmd	*create_redir_cmd(t_cmd *command, t_cmd_type type, char *file)
 
 	redir_command = ft_calloc(1, sizeof(t_cmd_redir));
 	if (!redir_command)
-		return (perror("Redirection Command"), g_code = 1,
-			free_command(command), NULL);
+		return (perror(file), g_code = 1, free_command(command), NULL);
 	redir_command->cmd = command;
 	redir_command->type = type;
 	redir_command->file = file;
 	redir_command->fd = -1;
-	if (type == CMD_GREAT)
+	if (file && type == CMD_GREAT)
 		redir_command->fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-	else if (type == CMD_DBL_GREAT)
+	else if (file && type == CMD_DBL_GREAT)
 		redir_command->fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0666);
-	else if (type == CMD_LESS)
+	else if (file && type == CMD_LESS)
 		redir_command->fd = open(file, O_RDONLY);
-	else if (type == CMD_HEREDOC)
+	else if (file && type == CMD_HEREDOC)
 		redir_command->fd = heredoc_creation(file);
-	if (redir_command->fd < 0)
-		perror("Opening a file for redirection");
+	if (redir_command->fd < 0 && file)
+		return (redir_command->file = NULL, perror(file), g_code = 1, \
+			(t_cmd *)redir_command);
 	return ((t_cmd *)redir_command);
+}
+
+static t_cmd	*create_redirection(t_cmd *command, t_tkn_type type, char *file)
+{
+	if (type == LESS)
+		command = create_redir_cmd(command, CMD_LESS, file);
+	else if (type == GREAT)
+		command = create_redir_cmd(command, CMD_GREAT, file);
+	else if (type == DBL_GREAT)
+		command = create_redir_cmd(command, CMD_DBL_GREAT, file);
+	else if (type == DBL_LESS)
+		command = create_redir_cmd(command, CMD_HEREDOC, file);
+	return (command);
 }
 
 /**
  * @brief Parse a redirection command.
- * 
+ *
  * This function ensures the current token and next token match the format
  * needed for redirection commands:
  * <SYMBOL> <FILE_NAME>
@@ -102,13 +115,13 @@ static t_cmd	*create_redir_cmd(t_cmd *command, t_cmd_type type, char *file)
  * Starts a loop until either the tokens are over, or the current token's type
  * is a non-redirection type and performs the following actions:
  * - Check and return if the next token doesn't exist or isn't of the WORD type
- * - Check and create a redirection command struct based on the type of 
+ * - Check and create a redirection command struct based on the type of
  * redirection
  * Return the original or modified command struct
- * 
+ *
  * @param command is the command tree
  * @param minishell is the main struct
- * 
+ *
  * @return the command tree with the redirections parsed.
  */
 t_cmd	*parse_redir(t_cmd *command, t_minishell *minishell)
@@ -116,25 +129,22 @@ t_cmd	*parse_redir(t_cmd *command, t_minishell *minishell)
 	char		*content;
 	t_tkn_type	type;
 
-	while (minishell->tokens)
+	minishell->invalid = false;
+	type = minishell->tokens->type;
+	while (minishell->tokens && type >= LESS && type < WORD)
 	{
-		type = minishell->tokens->type;
-		if (!(type >= LESS && type < WORD))
-			break ;
-		if (minishell->tokens->next)
+		content = NULL;
+		if (!minishell->invalid && minishell->tokens->next)
 			content = minishell->tokens->next->content;
 		if (!minishell->tokens->next || minishell->tokens->next->type != WORD)
 			return (ft_putendl_fd("No file for redirection found", 2),
 				free_command(command), NULL);
-		if (type == LESS)
-			command = create_redir_cmd(command, CMD_LESS, content);
-		else if (type == GREAT)
-			command = create_redir_cmd(command, CMD_GREAT, content);
-		else if (type == DBL_GREAT)
-			command = create_redir_cmd(command, CMD_DBL_GREAT, content);
-		else if (type == DBL_LESS)
-			command = create_redir_cmd(command, CMD_HEREDOC, content);
+		command = create_redirection(command, type, content);
+		if (((t_cmd_redir *)command)->fd == -1)
+			minishell->invalid = true;
 		minishell->tokens = minishell->tokens->next->next;
+		if (minishell->tokens)
+			type = minishell->tokens->type;
 	}
 	return (command);
 }
@@ -143,10 +153,10 @@ t_cmd	*parse_redir(t_cmd *command, t_minishell *minishell)
  * @brief Create a general expression command struct
  * These commands have a left and right side as well as an operator
  * in the middle such as AND, OR or the PIPE commands
- * 
+ *
  * @param cmd_left The command to the left of the operator
  * @param cmd_right The command to the right of the operator
- * 
+ *
  * @return the expression command struct.
  */
 t_cmd	*create_expr_cmd(t_cmd_type type, t_cmd *cmd_left, t_cmd *cmd_right)

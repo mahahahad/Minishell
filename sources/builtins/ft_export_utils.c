@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 20:21:11 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/04 17:27:55 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/08 19:04:20 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,7 +139,7 @@ void	create_new_variable(t_env *variable, int *length, char *string)
  * @return true if valid, false if invalid.
  * 
  */
-bool	is_argument_valid(const char *string)
+bool	is_argument_valid(char *string)
 {
 	int	index;
 
@@ -154,11 +154,7 @@ bool	is_argument_valid(const char *string)
 			break ;
 	}
 	if (ft_isdigit(string[0]) || !string[0] || \
-		(string[index] && string[index] != '='))
-	{
-		ft_putendl_fd("Invalid identifier detected in the arguments.", 2);
-		g_code = 1;
-		return (false);
-	}
+		string[0] == '=' || (string[index] && string[index] != '='))
+		return (ft_putendl_fd(" not a valid identifier", 2), g_code = 1, false);
 	return (true);
 }

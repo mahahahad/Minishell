@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/08 20:14:35 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/08/13 18:50:54 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,10 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 			break ;
 		minishell.input_fd = false;
 		minishell.output_fd = false;
+		minishell.piped = false;
 		minishell.pipe_read_store = -1;
 		parse(&minishell, line, line);
-		run_command(&minishell, false);
+		run_command(&minishell);
 		free_parsing(&minishell);
 	}
 	return (rl_clear_history(), free_environment(&minishell),

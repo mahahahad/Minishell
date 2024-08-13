@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/01 19:25:06 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/06 23:12:20 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/12 16:48:38 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,9 @@
  * @param minishell contains flags for the duplication.
  * @param read is a flag to indicate which end of the pipe to duplicate.
  */
-void	duplicate_fds(t_cmd	*command, t_minishell *minishell)
+bool	duplicate_fds(t_cmd	*command, t_minishell *minishell)
 {
-	while (command->type > CMD_PIPE && command->type < CMD_AND)
+	while (command->type != CMD_EXEC && ((t_cmd_redir *)command)->file)
 	{
 		if ((command->type == CMD_GREAT || command->type == CMD_DBL_GREAT)
 			&& !minishell->output_fd && ((t_cmd_redir *)command)->fd > -1
@@ -50,7 +50,7 @@ void	duplicate_fds(t_cmd	*command, t_minishell *minishell)
 		close(minishell->pipe_fds[1]);
 	if (minishell->pipe_read_store > -1)
 		close(minishell->pipe_read_store);
-	minishell->cmd = command;
+	return (minishell->cmd = command, command->type == CMD_EXEC);
 }
 
 /**
@@ -143,6 +143,7 @@ static char	*find_command(char *command, t_env *environment)
 bool	confirm_command(char **cmd, t_env *environment)
 {
 	char	*cmd_original;
+	t_stat	stat_buffer;
 
 	if (!ft_strchr(*cmd, '/'))
 	{
@@ -151,16 +152,17 @@ bool	confirm_command(char **cmd, t_env *environment)
 		if (!*cmd)
 			return (ft_putstr_fd(cmd_original, 2), *cmd = cmd_original, \
 				g_code = 127, ft_putendl_fd(": command not found", 2), false);
-		free(cmd_original);
+		return (free(cmd_original), true);
 	}
-	else
-	{
-		if (access(*cmd, F_OK) == -1)
-			return (ft_putstr_fd(*cmd, 2), g_code = 127,
-				ft_putendl_fd(": no such file or directory", 2), false);
-		else if (access(*cmd, X_OK) == -1)
-			return (ft_putstr_fd(*cmd, 2), g_code = 126,
-				ft_putendl_fd(": permission denied", 2), false);
-	}
+	stat(*cmd, &stat_buffer);
+	if (S_ISDIR(stat_buffer.st_mode))
+		return (ft_putstr_fd(*cmd, 2), g_code = 126,
+			ft_putendl_fd(": Is a directory", 2), false);
+	else if (!S_ISREG(stat_buffer.st_mode))
+		return (ft_putstr_fd(*cmd, 2), g_code = 127,
+			ft_putendl_fd(": No such file or directory", 2), false);
+	else if (!(stat_buffer.st_mode & S_IXUSR))
+		return (ft_putstr_fd(*cmd, 2), g_code = 126,
+			ft_putendl_fd(": Permission denied", 2), false);
 	return (true);
 }
