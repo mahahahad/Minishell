@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/01 17:12:14 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/08 20:33:46 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/13 18:19:43 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ char	*get_token(char **input)
  * 
  * @return the type of token that content is.
  */
-static t_tkn_type	get_token_type(char *content)
+int	get_token_type(char *content)
 {
 	if (content[0] && !content[1])
 	{
@@ -147,10 +147,12 @@ static char	*quote_trimming(char *token)
  * 
  * @return the token created and NULL in case of error.
  */
-t_token	*new_token(char *content, t_env *list, bool expand)
+t_token	*new_token(char *content, int type, t_env *list, bool expand)
 {
-	t_token	*token;
-	t_token	*store;
+	t_token				*token;
+	t_token				*store;
+	static t_tkn_type	previous_type = WORD;
+	static int			id = 1;
 
 	if (!content)
 		return (NULL);
@@ -158,17 +160,18 @@ t_token	*new_token(char *content, t_env *list, bool expand)
 	if (!token)
 		return (free(content), g_code = 1, NULL);
 	token->content = content;
-	token->type = get_token_type(token->content);
-	if (token->type == WORD && expand)
+	token->type = (t_tkn_type)type;
+	if (token->type == WORD && expand && previous_type != DBL_LESS)
 	{
 		token->content = dollar_expansion(token->content, list);
 		if (!token->content)
 			return (NULL);
-		store = wildcard_expansion(token->content);
+		store = wildcard_expansion(token->content, -1, id++, NULL);
 		if (store)
-			return (free(content), free(token), store);
-		token->content = quote_trimming(token->content);
+			return (previous_type = WORD, free(content), free(token), store);
 	}
+	token->content = quote_trimming(token->content);
+	previous_type = token->type;
 	return (token);
 }
 
@@ -178,18 +181,20 @@ t_token	*new_token(char *content, t_env *list, bool expand)
  * @param tokens_list is the pointer to the list of tokens.
  * @param token is the new token that is to be added to the tokens_list.
  */
-void	add_token_back(t_token **tokens_list, t_token *token)
+bool	add_token_back(t_token **tokens_list, t_token *token)
 {
 	t_token	*current;
 
 	if (!token)
-		return (perror("Tokenisation"), g_code = 1, free_tokens(tokens_list));
-	if (!token->content[0])
-		return (free(token->content), free(token));
+		return (perror("Tokenisation"), g_code = 1, free_tokens(tokens_list), \
+		false);
+	if (!token->content[0] && !*tokens_list)
+		return (free(token->content), free(token), false);
 	current = (*tokens_list);
 	if (!current)
-		return ((void)((*tokens_list) = token));
+		return ((*tokens_list) = token, true);
 	while (current->next)
 		current = current->next;
 	current->next = token;
+	return (true);
 }

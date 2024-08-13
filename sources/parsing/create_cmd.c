@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:34:36 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/13 18:50:41 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/08/13 21:00:45 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ static int	heredoc_creation(char *delimiter)
 		if (!line)
 		{
 			ft_putendl_fd("Warning: heredoc delimited by end-of-file", 2);
+			g_code = 130;
 			break ;
 		}
 		length[1] = ft_strlen(line);
@@ -65,7 +66,7 @@ static int	heredoc_creation(char *delimiter)
  *
  * @return the redirection command struct.
  */
-static t_cmd	*create_redir_cmd(t_cmd *command, t_cmd_type type, char *file)
+t_cmd	*create_redir_cmd(t_cmd *command, t_cmd_type type, char *file, bool wc)
 {
 	t_cmd_redir	*redir_command;
 
@@ -76,30 +77,49 @@ static t_cmd	*create_redir_cmd(t_cmd *command, t_cmd_type type, char *file)
 	redir_command->type = type;
 	redir_command->file = file;
 	redir_command->fd = -1;
-	if (file && type == CMD_GREAT)
+	if (file && !wc && type == CMD_GREAT)
 		redir_command->fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-	else if (file && type == CMD_DBL_GREAT)
+	else if (file && !wc && type == CMD_DBL_GREAT)
 		redir_command->fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0666);
-	else if (file && type == CMD_LESS)
+	else if (file && !wc && type == CMD_LESS)
 		redir_command->fd = open(file, O_RDONLY);
-	else if (file && type == CMD_HEREDOC)
+	else if (file && !wc && type == CMD_HEREDOC)
 		redir_command->fd = heredoc_creation(file);
+	if (wc)
+		return (ft_putstr_fd(file, 2), ft_putendl_fd(": ambiguous redirect", 2),
+			g_code = 1, (t_cmd *)redir_command);
 	if (redir_command->fd < 0 && file)
 		return (redir_command->file = NULL, perror(file), g_code = 1, \
 			(t_cmd *)redir_command);
 	return ((t_cmd *)redir_command);
 }
 
-static t_cmd	*create_redirection(t_cmd *command, t_tkn_type type, char *file)
+static t_cmd	*create_redir(t_cmd *command, t_tkn_type type, t_minishell *ms)
 {
+	char	*file;
+	bool	wildcard;
+
+	file = NULL;
+	wildcard = false;
+	if (!*ms->tokens->content)
+		wildcard = true;
+	else if (ms->tokens->id && ms->tokens->next
+		&& ms->tokens->id == ms->tokens->next->id)
+	{
+		while (ms->tokens->next && ms->tokens->id == ms->tokens->next->id)
+			ms->tokens = ms->tokens->next;
+		wildcard = true;
+	}
+	else if (!ms->invalid)
+		file = ms->tokens->content;
 	if (type == LESS)
-		command = create_redir_cmd(command, CMD_LESS, file);
+		command = create_redir_cmd(command, CMD_LESS, file, wildcard);
 	else if (type == GREAT)
-		command = create_redir_cmd(command, CMD_GREAT, file);
+		command = create_redir_cmd(command, CMD_GREAT, file, wildcard);
 	else if (type == DBL_GREAT)
-		command = create_redir_cmd(command, CMD_DBL_GREAT, file);
+		command = create_redir_cmd(command, CMD_DBL_GREAT, file, wildcard);
 	else if (type == DBL_LESS)
-		command = create_redir_cmd(command, CMD_HEREDOC, file);
+		command = create_redir_cmd(command, CMD_HEREDOC, file, wildcard);
 	return (command);
 }
 
@@ -126,23 +146,20 @@ static t_cmd	*create_redirection(t_cmd *command, t_tkn_type type, char *file)
  */
 t_cmd	*parse_redir(t_cmd *command, t_minishell *minishell)
 {
-	char		*content;
 	t_tkn_type	type;
 
 	minishell->invalid = false;
 	type = minishell->tokens->type;
 	while (minishell->tokens && type >= LESS && type < WORD)
 	{
-		content = NULL;
-		if (!minishell->invalid && minishell->tokens->next)
-			content = minishell->tokens->next->content;
 		if (!minishell->tokens->next || minishell->tokens->next->type != WORD)
 			return (ft_putendl_fd("No file for redirection found", 2),
 				free_command(command), NULL);
-		command = create_redirection(command, type, content);
+		minishell->tokens = minishell->tokens->next;
+		command = create_redir(command, type, minishell);
 		if (((t_cmd_redir *)command)->fd == -1)
 			minishell->invalid = true;
-		minishell->tokens = minishell->tokens->next->next;
+		minishell->tokens = minishell->tokens->next;
 		if (minishell->tokens)
 			type = minishell->tokens->type;
 	}
@@ -164,8 +181,6 @@ t_cmd	*create_expr_cmd(t_cmd_type type, t_cmd *cmd_left, t_cmd *cmd_right)
 	t_cmd_expr	*expr_cmd;
 
 	expr_cmd = ft_calloc(1, sizeof(t_cmd_expr));
-	if (!cmd_left || !cmd_right)
-		return (NULL);
 	if (!expr_cmd)
 		return (perror("Tokenisation"), g_code = 1, free_command(cmd_left),
 			free_command(cmd_right), NULL);

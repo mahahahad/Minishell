@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 20:21:11 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/08 19:04:20 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/13 20:47:26 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,6 +155,6 @@ bool	is_argument_valid(char *string)
 	}
 	if (ft_isdigit(string[0]) || !string[0] || \
 		string[0] == '=' || (string[index] && string[index] != '='))
-		return (ft_putendl_fd(" not a valid identifier", 2), g_code = 1, false);
+		return (ft_putendl_fd("not a valid identifier", 2), g_code = 1, false);
 	return (true);
 }

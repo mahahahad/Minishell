@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   simple_builtins.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/29 13:21:03 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/08 13:16:28 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/08/13 19:34:09 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ void	ft_pwd(char **arguments)
 		return (g_code = 1, ft_putendl_fd("pwd does not accept options.", 2));
 	current_working_directory = getcwd(NULL, 0);
 	if (!current_working_directory)
-		return (g_code = WEXITSTATUS(errno), perror("pwd"));
+		return (g_code = 2, perror("pwd"));
 	ft_putendl_fd(current_working_directory, 1);
 	free(current_working_directory);
 	g_code = 0;

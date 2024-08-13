@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:51:40 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/10 21:27:42 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/13 20:48:57 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@
  */
 static bool	wildcards_are_present(char *token, int *location, DIR **cwd)
 {
-	char	cwd_path[PATH_MAX];
+	char	*current_working_directory;
 
 	*location = -1;
 	while (token[++*location])
@@ -41,13 +41,15 @@ static bool	wildcards_are_present(char *token, int *location, DIR **cwd)
 	}
 	if (cwd && token[*location] == '*')
 	{
-		cwd_path[0] = '\0';
-		getcwd(cwd_path, PATH_MAX);
-		*cwd = opendir(cwd_path);
+		current_working_directory = getcwd(NULL, 0);
+		if (!current_working_directory)
+			return (perror("getcwd() in wildcard expansion"), false);
+		*cwd = opendir(current_working_directory);
+		free(current_working_directory);
 		if (*cwd)
 			return (errno = 0, true);
 		perror("getcwd() in wildcard expansion");
-		g_code = WEXITSTATUS(errno);
+		g_code = 2;
 	}
 	return (false);
 }
@@ -198,31 +200,31 @@ static bool	match_pattern(char *token, int location, char *file)
  * 
  * @return the pointer to the final token.
  */
-t_token	*wildcard_expansion(char *token_string)
+t_token	*wildcard_expansion(char *token, int location, int id, t_token *store)
 {
 	DIR		*cwd_stream;
-	int		location;
-	t_dir	*files;
-	t_token	*token;
+	t_dir	*file;
+	t_token	*list;
 
-	if (!wildcards_are_present(token_string, &location, &cwd_stream))
+	if (!wildcards_are_present(token, &location, &cwd_stream))
 		return (NULL);
-	files = readdir(cwd_stream);
-	token = NULL;
-	while (files)
+	file = readdir(cwd_stream);
+	list = NULL;
+	while (file)
 	{
-		if (match_pattern(token_string, location, files->d_name))
-		{
-			add_token_back(&token, new_token(ft_strdup(files->d_name), NULL,
-					false));
-			if (!token)
-				break ;
-		}
-		files = readdir(cwd_stream);
+		if (match_pattern(token, location, file->d_name) && \
+		!add_token_back(&list, new_token(ft_strdup(file->d_name), 4, NULL, 0)))
+			break ;
+		file = readdir(cwd_stream);
 	}
-	closedir(cwd_stream);
-	g_code = WEXITSTATUS(errno);
 	if (errno)
-		return (perror("Wildcard expansion"), free_tokens(&token), NULL);
-	return (token);
+		return (perror("Wildcard expansion"), g_code = 3, \
+		closedir(cwd_stream), free_tokens(&list), NULL);
+	store = list;
+	while (store)
+	{
+		store->id = id;
+		store = store->next;
+	}
+	return (g_code = 0, closedir(cwd_stream), list);
 }
