@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:47:16 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/08 19:00:51 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/13 19:35:17 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ char	*make_value(char *key, char *cwd, int total_length, char *err)
 
 	index_one = 0;
 	if (!cwd)
-		return (perror(err), g_code = WEXITSTATUS(errno), NULL);
+		return (perror(err), g_code = 2, NULL);
 	matrix_index = ft_calloc(total_length + 1, sizeof(char));
 	if (!matrix_index)
 		return (perror(err), g_code = 1, NULL);

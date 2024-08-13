@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:24:25 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/11 20:48:23 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/13 19:00:10 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,7 @@ struct s_token
 {
 	t_tkn_type	type;
 	char		*content;
+	int			id;
 	t_token		*next;
 };
 
@@ -183,20 +184,21 @@ struct s_cmd_expr
 void	receive_signal(t_sig_rec receiver);
 
 // Parsing
-void	add_token_back(t_token **tokens_list, t_token *token);
+bool	add_token_back(t_token **tokens_list, t_token *token);
 t_cmd	*create_expr_cmd(t_cmd_type type, t_cmd *cmd_left, t_cmd *cmd_right);
 bool	count_quotations(char *line);
 int		count_tokens(char *input);
 char	*dollar_expansion(char *token, t_env *list);
 t_cmd	*ft_print_error(t_err_type type, char *err, t_cmd *command);
 char	*get_token(char **input);
-t_token	*new_token(char *content, t_env *list, bool expand);
+int		get_token_type(char *content);
+t_token	*new_token(char *content, int type, t_env *list, bool expand);
 void	parse(t_minishell *minishell, char *line, char *store);
 t_cmd	*parse_redir(t_cmd *cmd, t_minishell *minishell);
 void	*print_exec_parse_err(t_tkn_type type, t_cmd *cmd);
 t_token	*token_duplicate(t_token *token);
 bool	valid_parenthesis(char *line);
-t_token	*wildcard_expansion(char *token);
+t_token	*wildcard_expansion(char *token, int location, int id, t_token *store);
 
 // Execution
 t_bltn	confirm_builtin(char *str);

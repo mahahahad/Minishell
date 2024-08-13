@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 12:05:36 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/11 21:00:28 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/13 20:48:16 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ static void	execute_expression(t_minishell *minishell, t_cmd *command_right)
 	if (type == CMD_PIPE)
 	{
 		if (pipe(minishell->pipe_fds) < 0)
-			return (g_code = WEXITSTATUS(errno), perror("pipe creation"));
+			return (g_code = 13, perror("pipe creation"));
 		minishell->cmd = ((t_cmd_expr *)minishell->cmd)->command_left;
 		minishell->piped = true;
 		run_command(minishell);

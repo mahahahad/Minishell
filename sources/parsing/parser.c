@@ -6,7 +6,7 @@
 /*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/05 14:32:40 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/13 20:51:09 by mdanish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -247,26 +247,26 @@ static t_cmd	*parse_expression(t_cmd *command_left, t_minishell *minishell)
  */
 void	parse(t_minishell *minishell, char *line, char *store)
 {
+	char	*token;
 	int		token_count;
 
 	if (!line || !line[0] || count_quotations(line) || !valid_parenthesis(line))
 		return ;
 	minishell->pipe_fds[0] = -1;
 	minishell->pipe_fds[1] = -1;
+	minishell->pipe_read_store = -1;
+	minishell->piped = false;
 	minishell->token_count = count_tokens(line);
 	token_count = -1;
 	while (++token_count < minishell->token_count)
 	{
-		add_token_back(&minishell->tokens,
-			new_token(get_token(&line), minishell->env_variables, true));
+		token = get_token(&line);
+		add_token_back(&minishell->tokens, \
+		new_token(token, get_token_type(token), minishell->env_variables, 1));
 	}
 	minishell->tokens_head = minishell->tokens;
 	if (!minishell->tokens_head)
 		return (free(store));
-	minishell->token_count = 0;
-	while (minishell->tokens_head && ++minishell->token_count)
-		minishell->tokens_head = minishell->tokens_head->next;
-	minishell->tokens_head = minishell->tokens;
 	minishell->cmd = parse_expression(NULL, minishell);
 	minishell->cmd_head = minishell->cmd;
 	if (minishell->cmd)
