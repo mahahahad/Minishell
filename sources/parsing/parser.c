@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:41:15 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/13 21:01:08 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/08/13 21:25:38 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,25 +43,25 @@ static t_cmd	*parse_logical_expr(t_cmd *command_left, t_minishell *minishell)
 	{
 		minishell->tokens = minishell->tokens->next;
 		if (!minishell->tokens || minishell->tokens->type == P_CLOSE)
-			return (ft_print_error(SYNTAX, "&&", cmd));
+			return (print_syntax_error("&&", cmd));
 		cmd = create_expr_cmd(CMD_AND, cmd, parse_expression(NULL, minishell));
 	}
 	else if (cmd && minishell->tokens->type == OR)
 	{
 		minishell->tokens = minishell->tokens->next;
 		if (!minishell->tokens || minishell->tokens->type == P_CLOSE)
-			return (ft_print_error(SYNTAX, "||", cmd));
+			return (print_syntax_error("||", cmd));
 		cmd = create_expr_cmd(CMD_OR, cmd, parse_execution(minishell));
 		if (minishell->tokens)
 			cmd = parse_expression(cmd, minishell);
 	}
-	else
-		return (ft_print_error(SYNTAX, minishell->tokens->content, cmd));
+	else if (cmd && !has_expr_symbol(cmd))
+		return (print_syntax_error(minishell->tokens->content, cmd));
 	return (cmd);
 }
 
 /**
- * @brief Parse a pair of paranthesis.
+ * @brief Parse a pair of parenthesis.
  *
  * This function ensures that commands that are within brackets
  * follow the proper format:
@@ -69,12 +69,12 @@ static t_cmd	*parse_logical_expr(t_cmd *command_left, t_minishell *minishell)
  * It also throws an error if an operator is not detected after the first
  * command.
  *
- * Checks if the first token is an opening paranthesis.
+ * Checks if the first token is an opening parenthesis.
  * Moves the tokens list to the next token if it is and performs various checks.
  * Calls the parse_logical_expr function that checks if the tokens are in the
  * form needed for logical expressions. This function returns NULL when a non
  * logical token type is found.
- * Moves the tokens list to the next token to skip the closing paranthesis.
+ * Moves the tokens list to the next token to skip the closing parenthesis.
  *
  *
  * @param command The created command structure that will hold the executable
@@ -148,7 +148,7 @@ static t_cmd	*parse_execution(t_minishell *minishell)
 			return (node);
 		if (minishell->tokens->type == P_OPEN || (!command->tokens && \
 			minishell->tokens->type > WORD && minishell->tokens->type < P_OPEN))
-			return (ft_print_error(SYNTAX, minishell->tokens->content, node));
+			return (print_syntax_error(minishell->tokens->content, node));
 		if (minishell->tokens->type > WORD && minishell->tokens->type < P_OPEN)
 			break ;
 		add_token_back(&command->tokens, token_duplicate(minishell->tokens));
@@ -207,17 +207,13 @@ static t_cmd	*parse_expression(t_cmd *command_left, t_minishell *minishell)
 	if (minishell->tokens->type == PIPE)
 	{
 		if (!minishell->tokens->next)
-			return (ft_print_error(SYNTAX, "|", command));
+			return (print_syntax_error("|", command));
 		minishell->tokens = minishell->tokens->next;
 		command = create_expr_cmd(CMD_PIPE, command,
 				parse_expression(NULL, minishell));
 	}
 	else if (minishell->tokens->type == AND || minishell->tokens->type == OR)
-	{
 		command = parse_logical_expr(command, minishell);
-		if (!command)
-			ft_putendl_fd("Syntax error while parsing logical expr", 2);
-	}
 	return (command);
 }
 
@@ -269,7 +265,7 @@ void	parse(t_minishell *minishell, char *line, char *store)
 		return (free(store));
 	minishell->cmd = parse_expression(NULL, minishell);
 	minishell->cmd_head = minishell->cmd;
-	if (minishell->cmd)
+	if (minishell->token_count)
 		add_history(store);
 	free(store);
 }

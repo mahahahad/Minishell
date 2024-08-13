@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:34:36 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/13 21:00:45 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/08/13 21:24:33 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,7 @@ static int	heredoc_creation(char *delimiter)
 		line = readline("> ");
 		if (!line)
 		{
-			ft_putendl_fd("Warning: heredoc delimited by end-of-file", 2);
-			g_code = 130;
+			ft_putendl_fd("warning: heredoc delimited by end-of-file", 2);
 			break ;
 		}
 		length[1] = ft_strlen(line);
@@ -152,9 +151,13 @@ t_cmd	*parse_redir(t_cmd *command, t_minishell *minishell)
 	type = minishell->tokens->type;
 	while (minishell->tokens && type >= LESS && type < WORD)
 	{
-		if (!minishell->tokens->next || minishell->tokens->next->type != WORD)
-			return (ft_putendl_fd("No file for redirection found", 2),
-				free_command(command), NULL);
+		if (!minishell->tokens->next)
+			return (NULL);
+		if (!minishell->tokens->next && !minishell->invalid)
+			return (print_syntax_error("newline", command));
+		if (minishell->tokens->next->type != WORD && !minishell->invalid)
+			return (print_syntax_error(minishell->tokens->next->content, \
+				command));
 		minishell->tokens = minishell->tokens->next;
 		command = create_redir(command, type, minishell);
 		if (((t_cmd_redir *)command)->fd == -1)
