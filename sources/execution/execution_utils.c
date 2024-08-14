@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/01 19:25:06 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/12 16:48:38 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/14 15:23:42 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,12 @@
 
 /**
  * @brief Duplicates the fds as necessary.
- * 
+ *
  * The function goes through the command tree and identifies the first instance
  * of a redirection and duplicates it. It duplicates to the STDOUT or STDIN on
  * the basis of the redirection type. While it goes through the tree of the
  * redirections, it closes every single open fd to prevent fd leaks.
- * 
+ *
  * @param command is the tree to identify redirection from.
  * @param minishell contains flags for the duplication.
  * @param read is a flag to indicate which end of the pipe to duplicate.
@@ -154,6 +154,7 @@ bool	confirm_command(char **cmd, t_env *environment)
 				g_code = 127, ft_putendl_fd(": command not found", 2), false);
 		return (free(cmd_original), true);
 	}
+	ft_memset(&stat_buffer, 0, sizeof(t_stat));
 	stat(*cmd, &stat_buffer);
 	if (S_ISDIR(stat_buffer.st_mode))
 		return (ft_putstr_fd(*cmd, 2), g_code = 126,

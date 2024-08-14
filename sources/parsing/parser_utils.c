@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 22:36:59 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/13 19:15:42 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/08/14 15:03:05 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,9 +64,11 @@ bool	count_quotations(char *line)
 		}
 	}
 	if (count % 2)
+	{
 		ft_putstr_fd(RED "Open quotes detected, command rejected.\n" RESET, 2);
-	if (count % 2)
 		g_code = 2;
+		add_history(line);
+	}
 	return (count % 2);
 }
 
@@ -100,6 +102,7 @@ bool	valid_parenthesis(char *line)
 	{
 		ft_putstr_fd(RED "Bad brackets detected, command rejected.\n" RESET, 2);
 		g_code = 2;
+		add_history(line);
 	}
 	return (!count);
 }
@@ -128,7 +131,8 @@ int	count_tokens(char *input)
 			continue ;
 		if (ft_isspace(input[i]) && input[i + 1])
 			return (count_tokens(input + i + 1) + 1);
-		if (ft_strchr("|<>()&", input[i]))
+		if (ft_strchr("|<>()", input[i]) || (input[i] == '&' && \
+			input[i] == input[i + 1]))
 		{
 			extra_token = false;
 			if (i > 0 && !ft_isspace(input[i - 1]))

@@ -31,7 +31,7 @@ RESET := \033[0m
 ifeq ($(shell uname -s), Darwin)
 # Ultimate solution to finding the readline library on macos
 # MACOS_INCLUDE_PATHS := /usr/local/opt/readline/ /opt/local/ /usr/local/ /usr/
-	MACOS_INCLUDE_PATHS := /opt/vagrant/embedded/ 
+	MACOS_INCLUDE_PATHS := /opt/vagrant/embedded/
 	ADDITIONAL_FLAGS += $(patsubst %, -I%include, $(MACOS_INCLUDE_PATHS))
 	ADDITIONAL_FLAGS += $(patsubst %, -L%lib, $(MACOS_INCLUDE_PATHS))
 # ADDITIONAL_FLAGS += -I/usr/local/opt/readline/include -L/usr/local/opt/readline/lib
@@ -52,7 +52,7 @@ $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c | $(OBJS_DIR)
 $(OBJS_DIR):
 	@mkdir -p $(patsubst $(SRCS_DIR)%, $(OBJS_DIR)%, $(SUB_DIRS))
 
-$(UTILS): 
+$(UTILS):
 	@make -C $(UTILS_DIR)
 
 clean:

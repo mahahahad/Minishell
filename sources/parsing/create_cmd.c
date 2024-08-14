@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 17:34:36 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/13 21:24:33 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/08/14 19:34:59 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,8 +85,8 @@ t_cmd	*create_redir_cmd(t_cmd *command, t_cmd_type type, char *file, bool wc)
 	else if (file && !wc && type == CMD_HEREDOC)
 		redir_command->fd = heredoc_creation(file);
 	if (wc)
-		return (ft_putstr_fd(file, 2), ft_putendl_fd(": ambiguous redirect", 2),
-			g_code = 1, (t_cmd *)redir_command);
+		return (ft_putendl_fd(": ambiguous redirect", 2), g_code = 1,
+			(t_cmd *)redir_command);
 	if (redir_command->fd < 0 && file)
 		return (redir_command->file = NULL, perror(file), g_code = 1, \
 			(t_cmd *)redir_command);
@@ -100,7 +100,7 @@ static t_cmd	*create_redir(t_cmd *command, t_tkn_type type, t_minishell *ms)
 
 	file = NULL;
 	wildcard = false;
-	if (!*ms->tokens->content)
+	if (!*ms->tokens->content && type != DBL_LESS)
 		wildcard = true;
 	else if (ms->tokens->id && ms->tokens->next
 		&& ms->tokens->id == ms->tokens->next->id)
@@ -151,13 +151,15 @@ t_cmd	*parse_redir(t_cmd *command, t_minishell *minishell)
 	type = minishell->tokens->type;
 	while (minishell->tokens && type >= LESS && type < WORD)
 	{
-		if (!minishell->tokens->next)
-			return (NULL);
 		if (!minishell->tokens->next && !minishell->invalid)
 			return (print_syntax_error("newline", command));
+		if (!minishell->tokens->next)
+			return (free_command(command), NULL);
 		if (minishell->tokens->next->type != WORD && !minishell->invalid)
 			return (print_syntax_error(minishell->tokens->next->content, \
 				command));
+		if (minishell->tokens->next->type != WORD)
+			return (free_command(command), NULL);
 		minishell->tokens = minishell->tokens->next;
 		command = create_redir(command, type, minishell);
 		if (((t_cmd_redir *)command)->fd == -1)

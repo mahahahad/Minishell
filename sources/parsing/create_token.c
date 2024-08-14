@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   create_token.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/01 17:12:14 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/13 18:19:43 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/13 21:43:01 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,8 @@ char	*get_token(char **input)
 	{
 		if (ft_is_quotation((*input)[i]))
 			continue ;
-		if (ft_strchr("|<>()&", (*input)[i]))
+		if (ft_strchr("|<>()", (*input)[i]) || ((*input)[i] == '&' && \
+			(*input)[i] == (*input)[i + 1]))
 		{
 			if (!ft_strchr("()", (*input)[i]) && (*input)[i] == (*input)[i + 1]
 				&& !i)
@@ -63,11 +64,11 @@ char	*get_token(char **input)
 /**
  * @brief Identify the type of the token passed using the content parameter
  *
- * Returns word by default if the content parameter doesn't satisfy any of the 
+ * Returns word by default if the content parameter doesn't satisfy any of the
  * requirements
- * 
+ *
  * @param content is the token
- * 
+ *
  * @return the type of token that content is.
  */
 int	get_token_type(char *content)
@@ -101,14 +102,14 @@ int	get_token_type(char *content)
 
 /**
  * @brief Removes the quotes from the token.
- * 
+ *
  * For all the tokens of type [ WORD ], this function identifies any quotes in
  * the token at removes it. This is done by using two indexes and copying the
  * indexs over from within the string itself, all while ignoring the quotes that
  * are needed to be ommited.
- * 
+ *
  * @param token is the string that contains the token itself.
- * 
+ *
  * @return The token after the quotes are removed.
  */
 static char	*quote_trimming(char *token)
@@ -135,16 +136,16 @@ static char	*quote_trimming(char *token)
 
 /**
  * @brief Creates a new node for the token list.
- * 
+ *
  * The function mallocs for t_token node and stores within it the content that
  * is provided as an argument. It then calls get_token_type() to identify the
  * type of the content and is stored within the token. For tokens of the type
  * [ WORD ], dollar_expansion() and wildcard_expansion() are called to take care
  * of all the expansion part of the parsing.
- * 
+ *
  * @param content is the content of the token.
  * @param list refers to the environment variables.
- * 
+ *
  * @return the token created and NULL in case of error.
  */
 t_token	*new_token(char *content, int type, t_env *list, bool expand)
@@ -177,7 +178,7 @@ t_token	*new_token(char *content, int type, t_env *list, bool expand)
 
 /**
  * @brief Add the specified token to the end of the tokens list
- * 
+ *
  * @param tokens_list is the pointer to the list of tokens.
  * @param token is the new token that is to be added to the tokens_list.
  */

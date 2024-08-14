@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   dollar.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 17:04:29 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/04 17:29:16 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/14 16:37:06 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,20 @@
 
 /**
  * @brief Copies the pre-existing definition of a key into the token.
- * 
+ *
  * The function identifies if the length of the value is greater than the key,
  * through which it will decide whether to malloc for a new string or alter the
  * pre-existing string
- * 
+ *
  * It overwrites the [ $ ] as well as the entire key with the value, leaving
  * the rest of the token completely unaffected, regardless of the size of the
  * value.
- * 
+ *
  * @param token is the string that needs to get the value added to.
  * @param value is the string that needs to be added to the token.
  * @param start is the index at which the [ $ ] is located at.
  * @param end is the index at which the key ends.
- * 
+ *
  * @return the pointer to the final expanded token.
  */
 static char	*expand_the_key(char *token, char *value, int start, int *end)
@@ -61,16 +61,16 @@ static char	*expand_the_key(char *token, char *value, int start, int *end)
 
 /**
  * @brief Expands the token [ $? ] to the last status code.
- * 
+ *
  * The function mallocs for the complete expansion of the token and copies over
  * the token just before the [ $ ] is encountered. The digits are then copied to
  * the string. Then the rest of the token is copied over.
- * 
+ *
  * @param token is the string that needs to get the value added to.
  * @param start is the index at which the [ $ ] is located at.
  * @param end is the index at which the key ends.
  * @param digits is the number of digits that need to be placed into the token.
- * 
+ *
  * @return the pointer to the final expanded token.
  */
 static char	*expand_status_code(char *token, int start, int end, int digits)
@@ -84,8 +84,7 @@ static char	*expand_status_code(char *token, int start, int end, int digits)
 	tok_len = ft_strlen(token);
 	expanded = ft_calloc(tok_len + digits - 1, sizeof(char));
 	if (!expanded)
-		return (perror("Dollar Expansion"), g_code = 1, free(token),
-			NULL);
+		return (perror("Dollar Expansion"), g_code = 1, free(token), NULL);
 	ft_memcpy(expanded, token, start);
 	count = digits;
 	while (count--)
@@ -100,19 +99,19 @@ static char	*expand_status_code(char *token, int start, int end, int digits)
 
 /**
  * @brief Replaces the token [ $? ] to become last status code.
- * 
+ *
  * The function identifies if the length of the value is lesser than or equal to
  * [ $? ]. If it is the case, it will alter the pre-existing string. If the
  * length of the value is greater, expand_status_code() takes care of it.
- * 
+ *
  * It overwrites the [ $ ] as well as the [ ? ] with the value, leaving the rest
  * of the token completely unaffected, regardless of the size of the value.
- * 
+ *
  * @param token is the string that needs to get the value added to.
  * @param start is the index at which the [ $ ] is located at.
  * @param end is the index at which the key ends.
  * @param length is the length of the token.
- * 
+ *
  */
 static void	replace_status_code(char **token, int start, int end, int length)
 {
@@ -139,21 +138,21 @@ static void	replace_status_code(char **token, int start, int end, int length)
 
 /**
  * @brief Checks for any invalid [ $ ] expansion.
- * 
+ *
  * The function identifies if there is a [ $ ] that needs to be expanded. If it
  * is found, it will check if it is the special case of [ $? ] or a variable
  * that begins with a digit. If it is the former case, it will send it to
  * replace_status_code() and if it is the latter case, ft_memcpy() is used.
- * 
+ *
  * If it is neither of the cases, it will identify the indexes at which the key
  * begins and ends, and stores those values in the parameters after
  * dereferencing them.
- * 
+ *
  * @param token is the string that is checked for a key.
  * @param start is the index at which the [ $ ] is located at.
  * @param end is the index at which the key ends.
  * @param length is the length of the token.
- * 
+ *
  * @return true if invalid key is found and false is a valid key is found.
  */
 static bool	invalid_key(char **token, int *start, int *end, int length)
@@ -184,18 +183,18 @@ static bool	invalid_key(char **token, int *start, int *end, int length)
 
 /**
  * @brief Expands any and all dollar signs if found.
- * 
+ *
  * The function uses invalid_key() to identify if the token contains any valid
  * keys. This function will also store the index at which the key starts and
  * ends by updating the variable which will be sent to it. In the case that an
  * invalid key is provided, the function will handle the behaviour for it.
- * 
+ *
  * When a valid expansion string is found, it is sent to expand_the_key(), which
  * will return the final token depending on it previous definition.
- * 
+ *
  * @param token is the token that needs to be checked for the dollar expansion.
  * @param list of the environment variables that is searched for expansions.
- * 
+ *
  * @return the pointer to the final token.
  */
 char	*dollar_expansion(char *token, t_env *list)

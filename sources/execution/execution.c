@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanish <mdanish@student.42abudhabi.ae>    +#+  +:+       +#+        */
+/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 12:05:36 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/13 20:48:16 by mdanish          ###   ########.fr       */
+/*   Updated: 2024/08/14 19:35:30 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,8 @@ static void	change_shlvl(t_minishell *minishell)
  */
 static void	exec_command(t_minishell *minishell, char **command)
 {
-	int		exit_code;
+	int	code;
+	int	i;
 
 	receive_signal(CHILD);
 	minishell->process_id = fork();
@@ -92,18 +93,20 @@ static void	exec_command(t_minishell *minishell, char **command)
 			else if (execve(command[0], command, minishell->envp))
 				perror("execve() failed");
 		}
-		free_char_command(command);
-		free_parsing(minishell);
-		free_environment(minishell);
-		exit(g_code);
+		i = 0;
+		while (i < 1025)
+			close(i++);
+		return (free_char_command(command), free_parsing(minishell), \
+			free_environment(minishell), exit(g_code));
 	}
-	if (!minishell->piped && waitpid(minishell->process_id, &exit_code, 0))
-		g_code = WEXITSTATUS(exit_code);
+	if (!minishell->piped && waitpid(minishell->process_id, &code, 0) && \
+		WIFEXITED(code))
+		g_code = WEXITSTATUS(code);
 }
 
 static void	execute_expression(t_minishell *minishell, t_cmd *command_right)
 {
-	int			exit_code;
+	int			code;
 	t_cmd_type	type;
 
 	type = minishell->cmd->type;
@@ -117,8 +120,9 @@ static void	execute_expression(t_minishell *minishell, t_cmd *command_right)
 		minishell->pipe_read_store = minishell->pipe_fds[0];
 		minishell->cmd = command_right;
 		run_command(minishell);
-		if (minishell->piped && waitpid(minishell->process_id, &exit_code, 0))
-			g_code = WEXITSTATUS(exit_code);
+		if (minishell->piped && waitpid(minishell->process_id, &code, 0) && \
+			WIFEXITED(code))
+			g_code = WEXITSTATUS(code);
 		minishell->piped = false;
 		return ;
 	}

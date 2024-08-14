@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 22:33:34 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/08 12:25:23 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/08/14 19:34:28 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ static void	handle_signal_child(int signum)
 		}
 		else if (signum == SIGQUIT)
 		{
-			ft_putendl_fd("Quit: 3", 2);
+			ft_putendl_fd("Quit", 2);
 			g_code = 131;
 		}
 	}
@@ -49,8 +49,8 @@ static void	handle_signal_child(int signum)
  * @brief Main signal handling function.
  * Checks if the CHILD or PARENT process should have their signals handled
  * using the parameter passed to the function.
- * 
- * @param receiver 
+ *
+ * @param receiver
  */
 void	receive_signal(t_sig_rec receiver)
 {
