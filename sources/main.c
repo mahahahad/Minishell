@@ -6,7 +6,7 @@
 /*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/31 13:43:49 by maabdull          #+#    #+#             */
-/*   Updated: 2024/08/14 17:44:40 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/08/15 14:22:04 by maabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ unsigned int	g_code;
 int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 {
 	char		*line;
+	int			code;
 	t_minishell	minishell;
 
 	if (argc != 1)
@@ -31,6 +32,7 @@ int	main(int argc, char *argv[]__attribute__((unused)), char **env)
 	while (true)
 	{
 		receive_signal(PARENT);
+		wait(&code);
 		line = readline(B_YELLOW "minishell$ " RESET);
 		if (!line)
 			break ;
