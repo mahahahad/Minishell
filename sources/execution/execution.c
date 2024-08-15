@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maabdull <maabdull@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: myousaf <myousaf@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 12:05:36 by mdanish           #+#    #+#             */
-/*   Updated: 2024/08/14 19:35:30 by maabdull         ###   ########.fr       */
+/*   Updated: 2024/08/15 14:08:15 by myousaf          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,9 +104,9 @@ static void	exec_command(t_minishell *minishell, char **command)
 		g_code = WEXITSTATUS(code);
 }
 
-static void	execute_expression(t_minishell *minishell, t_cmd *command_right)
+static void	execute_expression(t_minishell *minishell, t_cmd *command_right, \
+	int code)
 {
-	int			code;
 	t_cmd_type	type;
 
 	type = minishell->cmd->type;
@@ -123,12 +123,13 @@ static void	execute_expression(t_minishell *minishell, t_cmd *command_right)
 		if (minishell->piped && waitpid(minishell->process_id, &code, 0) && \
 			WIFEXITED(code))
 			g_code = WEXITSTATUS(code);
-		minishell->piped = false;
-		return ;
+		return ((void)(minishell->piped = false));
 	}
 	minishell->cmd = ((t_cmd_expr *)minishell->cmd)->command_left;
-	run_command(minishell);
-	minishell->cmd = command_right;
+	(run_command(minishell), minishell->cmd = command_right);
+	if (minishell->cmd->type != CMD_PIPE && 
+		waitpid(minishell->process_id, &code, 0) && WIFEXITED(code))
+		g_code = WEXITSTATUS(code);
 	if ((type == CMD_AND && !g_code) || (type == CMD_OR && g_code))
 		run_command(minishell);
 }
@@ -143,7 +144,7 @@ void	run_command(t_minishell *minishell)
 		return ;
 	if (cmd->type == CMD_PIPE || cmd->type == CMD_AND || cmd->type == CMD_OR)
 		return (execute_expression(minishell,
-				((t_cmd_expr *)minishell->cmd)->command_right));
+				((t_cmd_expr *)minishell->cmd)->command_right, 0));
 	command = convert_command(cmd, NULL);
 	if (!command)
 		return ;
